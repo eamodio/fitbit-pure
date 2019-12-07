@@ -1,0 +1,45 @@
+<svg>
+	<defs>
+		<symbol id="time-separator-group">
+			<image id="time-separator" href="images/separator.png" class="digit opacity-3" x="50%-8" y="0">
+				<animate attributeName="fill-opacity" from="0.45" to="0" dur="1s" begin="enable" end="disable" easing="ease-in" repeatCount="indefinite" />
+			</image>
+		</symbol>
+	</defs>
+
+	<rect id="background" />
+
+	<!-- <svg id="battery-display" x="0" y="99%">
+		<text id="battery-level" class="text--small opacity-7" text-anchor="start" text-length="4" y="0" />
+	</svg> -->
+
+	<svg id="battery-display" x="0" y="6">
+		<image id="battery-icon" href="images/battery-100.png" class="icon opacity-7" x="10" y="-4" />
+		<text id="battery-level" class="text--bold opacity-8" text-anchor="start" text-length="4" x="52" y="25" />
+	</svg>
+
+	<svg id="heartrate-display" x="0" y="6">
+		<image id="heartrate-icon" href="images/heart.png" class="icon opacity-7" y="-4" />
+		<text id="heartrate-rate" class="text--bold opacity-8" text-anchor="end" text-length="3" y="25" />
+		<text id="heartrate-resting" class="text--small text--bold opacity-6" text-anchor="end" text-length="5" y="20" />
+
+		<!-- <g id="heartrate-pulse" transform="translate(185,-1)" fill="fb-white" fill-opacity="0.1">
+			<image id="heartrate-icon2" href="images/heart.png" class="icon" x="0" y="0" />
+			<animateTransform attributeType="scale" from="1" to="1.2" dur="0.5s" easing="ease-in-out" repeatCount="indefinite" />
+		</g> -->
+	</svg>
+
+	<svg id="time-display" x="0" y="33%">
+		<image id="time-hour0" href="images/0.png" class="digit opacity-7" x="1%" y="0" />
+		<image id="time-hour1" href="images/0.png" class="digit opacity-7" x="1%+66" y="0" />
+		<use id="time-separator-group" href="#time-separator-group" />
+		<image id="time-minute0" href="images/0.png" class="digit opacity-7" x="55%" y="0" />
+		<image id="time-minute1" href="images/0.png" class="digit opacity-7" x="55%+66" y="0" />
+	</svg>
+
+	<!-- <svg id="date-display" x="0" y="84%"> -->
+	<svg id="date-display" x="0" y="98%">
+		<text id="date-date" class="text--normal opacity-6" text-anchor="middle" text-length="11" x="50%" y="0" />
+		<text id="date-highlight" class="text--normal opacity-7" text-anchor="end" text-length="11" y="0" />
+	</svg>
+</svg>
