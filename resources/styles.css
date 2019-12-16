@@ -45,18 +45,18 @@
 
 .text--normal {
 	font-family: SevilleSharp-Book;
-	font-size: 40;
+	font-size: 36;
 	fill: fb-white;
 }
 
 .text--bold {
 	font-family: SevilleSharp-Regular;
-	font-size: 40;
+	font-size: 36;
 	fill: fb-white;
 }
 
 .text--small {
 	font-family: SevilleSharp-Book;
-	font-size: 26;
+	font-size: 22;
 	fill: fb-white;
 }

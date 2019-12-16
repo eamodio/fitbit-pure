@@ -41,23 +41,25 @@
 	},
 	"scripts": {
 		"build": "fitbit-build",
-		"debug": "fitbit",
+		"fitbit": "fitbit",
 		"generate-fonts:light": "npx fitfont-generate fonts/SourceSansPro-ExtraLight.ttf 140 \"0123456789:\"",
 		"generate-fonts:normal": "npx fitfont-generate fonts/SourceSansPro-SemiBold.ttf 120 \"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ @$:~%#.,-+?[]\"",
+		"generate-colors": "node scripts/colors.js",
 		"lint": "eslint src/**/*.ts --fix",
 		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\""
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@fitbit/sdk": "4.1.0-pre.5",
+		"@fitbit/sdk": "4.0.1",
 		"@fitbit/sdk-cli": "1.7.1",
 		"@typescript-eslint/eslint-plugin": "2.11.0",
 		"@typescript-eslint/parser": "2.11.0",
+		"chroma-js": "2.1.0",
 		"eslint": "6.7.2",
 		"eslint-cli": "1.1.1",
 		"eslint-config-prettier": "6.7.0",
 		"eslint-plugin-import": "2.19.1",
-		"fitbit-sdk-types": "4.2.0",
+		"fitbit-sdk-types": "4.2.2",
 		"fitfont": "1.2.5",
 		"prettier": "1.19.1"
 	}

@@ -1,7 +1,8 @@
 import clock, { TickEvent } from 'clock';
 import { display, Display } from 'display';
 import { preferences } from 'user-settings';
-import { configuration } from './configuration';
+import { ConfigChanged, configuration } from './configuration';
+import { defer, log } from '../common/system';
 
 const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
 
@@ -20,26 +21,50 @@ export class TimeDisplay {
 
 		display.addEventListener('change', () => this.onDisplayChanged(display));
 		this.onDisplayChanged(display);
+
+		configuration.onDidChange(this.onConfigurationChanged, this);
 	}
 
-	private onDisplayChanged(sensor: Display) {
-		// console.log(`TimeDisplay.onDisplayChanged: on=${sensor.on}`);
+	@log('TimeDisplay', {
+		0: e => `e.key=${e?.key}`
+	})
+	private onConfigurationChanged(e?: ConfigChanged) {
+		if (!display.on && e?.key != null && e.key !== 'animateSeparator' && e.key !== 'showLeadingZero') {
+			return;
+		}
+
+		if (e?.key == null || e?.key === 'animateSeparator') {
+			this.$separator.animate(configuration.get('animateSeparator') ? 'enable' : 'disable');
+
+			return;
+		}
 
 		this.render();
+	}
 
-		if (configuration.get('blinkSeparator')) {
+	@log('TimeDisplay', {
+		0: sensor => `on=${sensor.on}`
+	})
+	private onDisplayChanged(sensor: Display) {
+		this.render();
+
+		if (configuration.get('animateSeparator')) {
 			this.$separator.animate(sensor.on ? 'enable' : 'disable');
 		}
 	}
 
+	@log('TimeDisplay', {
+		0: e => `date=${e.date}`
+	})
 	private onTick({ date }: TickEvent) {
 		this._date = date;
 		this.render();
 	}
 
+	@defer()
+	@log('TimeDisplay')
 	render() {
 		const date = this._date ?? emptyDate;
-		// console.log(`TimeDisplay.render: date=${date}`);
 
 		const hour = zeroPad(preferences.clockDisplay === '12h' ? date.getHours() % 12 || 12 : date.getHours());
 

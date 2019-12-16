@@ -1,9 +1,8 @@
-import document from 'document';
 import clock from 'clock';
+import document from 'document';
 import { TimeDisplay } from './time';
 import { HeartRateDisplay } from './heartRate';
 import { DateDisplay } from './date';
-import { configuration } from './configuration';
 import { BatteryDisplay } from './battery';
 // import { Snow } from './snow';
 
@@ -20,13 +19,11 @@ const displays = [
 		getElementById<ImageElement>('time-minute0'),
 		getElementById<ImageElement>('time-minute1')
 	),
-	configuration.get('showDate') !== 'off'
-		? new DateDisplay(
-				getElementById<GraphicsElement>('date-display'),
-				getElementById<TextElement>('date-date'),
-				getElementById<TextElement>('date-highlight')
-		  )
-		: undefined,
+	new DateDisplay(
+		getElementById<GraphicsElement>('date-display'),
+		getElementById<TextElement>('date-date'),
+		getElementById<TextElement>('date-highlight')
+	),
 	new BatteryDisplay(
 		getElementById<GraphicsElement>('battery-display'),
 		getElementById<ImageElement>('battery-icon'),
@@ -34,10 +31,13 @@ const displays = [
 	),
 	new HeartRateDisplay(
 		getElementById<GraphicsElement>('heartrate-display'),
-		getElementById<ImageElement>('heartrate-icon'),
+		{
+			off: getElementById<GraphicsElement>('heartrate-icon--off'),
+			interval: getElementById<GraphicsElement>('heartrate-icon--interval'),
+			pulse: getElementById<GraphicsElement>('heartrate-icon--pulse')
+		},
 		getElementById<TextElement>('heartrate-rate'),
-		getElementById<TextElement>('heartrate-resting'),
-		getElementById<GroupElement>('heartrate-pulse')
+		getElementById<TextElement>('heartrate-resting')
 	)
 	// new Snow()
 ];

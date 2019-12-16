@@ -1,4 +1,4 @@
 {
 	"extends": "../tsconfig.json",
-	"include": ["**/*.ts", "../node_modules/fitbit-sdk-types/types/device"]
+	"include": ["**/*", "../node_modules/fitbit-sdk-types/types/device"]
 }

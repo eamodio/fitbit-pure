@@ -1,5 +1,7 @@
 import { battery, Battery } from 'power';
-import { configuration } from './configuration';
+import { display } from 'display';
+import { ConfigChanged, configuration } from './configuration';
+import { debounce, defer, log } from '../common/system';
 
 export class BatteryDisplay {
 	private _level: number | undefined;
@@ -11,18 +13,32 @@ export class BatteryDisplay {
 	) {
 		battery.addEventListener('change', () => this.onBatteryChanged(battery));
 		this.onBatteryChanged(battery);
+
+		configuration.onDidChange(this.onConfigurationChanged, this);
 	}
 
-	private onBatteryChanged(sensor: Battery) {
-		// console.log(`BatteryDisplay.onBatteryChanged: on=${sensor.on}`);
+	@log('BatteryDisplay', {
+		0: e => `e.key=${e?.key}`
+	})
+	private onConfigurationChanged(e?: ConfigChanged) {
+		if (!display.on && e?.key != null && e.key !== 'showBatteryPercentage') return;
 
+		this.render();
+	}
+
+	@debounce(500)
+	@log('BatteryDisplay', {
+		0: sensor => `chargeLevel=${sensor.chargeLevel}`
+	})
+	private onBatteryChanged(sensor: Battery) {
 		this._level = Math.floor(sensor.chargeLevel);
 		this.render();
 	}
 
+	@defer()
+	@log('BatteryDisplay')
 	render() {
 		const level = this._level ?? 0;
-		// console.log(`BatteryDisplay.render: level=${level}`);
 
 		this.$level.text = `${level > 0 ? level : '--'}%`;
 		this.$level.style.visibility = configuration.get('showBatteryPercentage') ? 'visible' : 'hidden';
