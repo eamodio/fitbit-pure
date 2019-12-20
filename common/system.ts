@@ -7,6 +7,30 @@ export interface Disposable {
 	dispose(): void;
 }
 
+export namespace Disposable {
+	export function from(...disposables: (Disposable | undefined)[]): Disposable {
+		let disposed = false;
+		return {
+			dispose: () => {
+				if (disposed) return;
+				if (disposables == null || disposables.length === 0) {
+					disposed = true;
+
+					return;
+				}
+
+				for (const d of disposables) {
+					if (typeof d?.dispose === 'function') {
+						d.dispose();
+					}
+				}
+
+				disposed = true;
+			}
+		};
+	}
+}
+
 declare global {
 	interface EventTarget<EventMap = {}> {
 		// Needed get EventMap<T> to work below

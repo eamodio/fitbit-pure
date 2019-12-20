@@ -23,7 +23,7 @@ export class HeartRateDisplay {
 	private _rate: number | undefined;
 
 	constructor(
-		private readonly $container: GraphicsElement,
+		private readonly $container: GroupElement,
 		private readonly $icon: { off: GraphicsElement; interval: GraphicsElement; pulse: GraphicsElement },
 		private readonly $rate: TextElement,
 		private readonly $restingRate: TextElement
@@ -32,6 +32,7 @@ export class HeartRateDisplay {
 
 		if (HeartRateSensor == null || !app.permissions.granted('access_heart_rate')) {
 			this.$container.style.display = 'none';
+
 			return;
 		}
 
@@ -43,7 +44,7 @@ export class HeartRateDisplay {
 
 		display.addEventListener('change', () => this.onDisplayChanged(display));
 
-		if (BodyPresenceSensor) {
+		if (BodyPresenceSensor && app.permissions.granted('access_activity')) {
 			const sensor = new BodyPresenceSensor();
 			this.bodyPresenceSensor = sensor;
 
@@ -55,27 +56,8 @@ export class HeartRateDisplay {
 
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
+		this.onConfigurationChanged();
 		this.updateState();
-		this.render();
-	}
-
-	@log('HeartRateDisplay', {
-		0: e => `e.key=${e?.key}`
-	})
-	private onConfigurationChanged(e?: ConfigChanged) {
-		if (!display.on && e?.key != null && e.key !== 'animateHeartRate' && e.key !== 'showRestingHeartRate') {
-			return;
-		}
-
-		if (e?.key == null || e.key === 'animateHeartRate') {
-			this.$icon.off.style.display = 'none';
-			this.$icon.interval.style.display = 'none';
-			this.$icon.pulse.style.display = 'none';
-
-			this.stopAnimation();
-		}
-
-		this.render();
 	}
 
 	@debounce(250)
@@ -88,9 +70,42 @@ export class HeartRateDisplay {
 	}
 
 	@log('HeartRateDisplay', {
-		0: sensor => `on=${sensor.on}`
+		0: e => `e.key=${e?.key}`
+	})
+	private onConfigurationChanged(e?: ConfigChanged) {
+		if (e?.key != null && e.key !== 'animateHeartRate' && e.key !== 'showRestingHeartRate') {
+			return;
+		}
+
+		if (e?.key == null || e.key === 'showRestingHeartRate') {
+			if (configuration.get('showRestingHeartRate')) {
+				this.$restingRate.style.display = 'inline';
+			} else {
+				this.$restingRate.style.display = 'none';
+			}
+		}
+
+		if (e?.key == null || e.key === 'animateHeartRate') {
+			this.$icon.off.style.display = 'none';
+			this.$icon.interval.style.display = 'none';
+			this.$icon.pulse.style.display = 'none';
+
+			this.stopAnimation();
+		}
+
+		if (display.on && !display.aodActive) {
+			this.render();
+		}
+	}
+
+	@log('HeartRateDisplay', {
+		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
 	})
 	private onDisplayChanged(sensor: Display) {
+		if (sensor.aodAvailable && sensor.aodAllowed) {
+			requestAnimationFrame(() => this.$container.animate(sensor.aodActive ? 'unload' : 'load'));
+		}
+
 		this.updateState();
 	}
 
@@ -108,24 +123,15 @@ export class HeartRateDisplay {
 	@defer()
 	@log('HeartRateDisplay')
 	private render() {
-		const rate = this._rate ?? 0;
+		const rate = this._rate ?? this.heartRateSensor?.heartRate ?? 0;
 
 		this.$rate.text = `${rate > 0 ? rate : '--'}`;
+		this.$restingRate.text = `${this._hasUserProfileAccess ? user.restingHeartRate ?? '' : ''}`;
 
 		// const iconWidth = this.$icon.getBBox().width;
-		let x = screenWidth - iconWidth - this.$rate.getBBox().width - 20;
+		const x = screenWidth - iconWidth - this.$rate.getBBox().width - 20;
 		this.$rate.x = x;
-
-		if (configuration.get('showRestingHeartRate') && this._hasUserProfileAccess && user.restingHeartRate != null) {
-			this.$restingRate.text = `${user.restingHeartRate ?? ''}`;
-
-			x -= 10;
-			this.$restingRate.x = x;
-
-			x -= this.$restingRate.getBBox().width + 10;
-		} else {
-			this.$restingRate.text = '';
-		}
+		this.$restingRate.x = x - 10;
 
 		const color = getHeartRateColor(rate);
 
@@ -133,7 +139,11 @@ export class HeartRateDisplay {
 		$icon.style.fill = color;
 		$icon.style.display = 'inline';
 
-		this.startAnimation(rate);
+		if (rate <= 0) {
+			this.stopAnimation();
+		} else {
+			this.startAnimation(rate);
+		}
 	}
 
 	private _animationHandle: number | undefined;
@@ -141,13 +151,10 @@ export class HeartRateDisplay {
 
 	@log('HeartRateDisplay', { 0: rate => `rate=${rate}` })
 	private startAnimation(rate: number) {
-		if (rate <= 0) return;
-
 		const animation = configuration.get('animateHeartRate');
+		if (animation === 'off') return;
 
 		// console.log(`HeartRateDisplay.startAnimation: rate=${rate}, animation=${animation}`);
-
-		if (animation === 'off') return;
 
 		const $icon = this.$icon[animation];
 
@@ -183,7 +190,7 @@ export class HeartRateDisplay {
 	private updateState() {
 		if (this.heartRateSensor == null) return;
 
-		if (!display.on) {
+		if (!display.on || display.aodActive) {
 			// console.log(`HeartRateDisplay.updateState: display.on=${display.on}; stopping sensors...`);
 
 			this.stopAnimation();
@@ -227,7 +234,9 @@ export class HeartRateDisplay {
 			}
 
 			this._rate = undefined;
-			this.render();
+			if (display.on && !display.aodActive) {
+				this.render();
+			}
 		}
 	}
 }
@@ -242,209 +251,171 @@ function getHeartRateColor(rate: number) {
 	// 	zone = 'resting';
 	// }
 	// return heartRateZoneColorMap[zone];
-	return heartRateColors[Math.max(Math.min(rate - 20, 200), 0)];
+
+	if (rate <= 0) return 'fb-white';
+	return heartRateColors[Math.max(Math.min(rate - 40, 160), 0)];
 }
 
 export const heartRateColors = [
 	'#3399ff',
-	'#3799ff',
-	'#3a98ff',
-	'#3d98ff',
-	'#4097ff',
+	'#3798ff',
+	'#3c98ff',
+	'#3f97ff',
 	'#4397ff',
-	'#4696ff',
-	'#4996ff',
-	'#4b96ff',
-	'#4e95ff',
+	'#4796ff',
+	'#4a96ff',
+	'#4d95ff',
 	'#5195ff',
-	'#5394ff',
-	'#5594ff',
-	'#5893ff',
+	'#5494ff',
+	'#5794ff',
 	'#5a93ff',
 	'#5c92fe',
 	'#5f92fe',
-	'#6191fe',
-	'#6391fe',
+	'#6291fe',
 	'#6591fe',
 	'#6790fe',
-	'#6990fd',
-	'#6b8ffd',
-	'#6e8ffd',
-	'#708efd',
+	'#6a8ffd',
+	'#6d8ffd',
+	'#6f8efd',
 	'#728efd',
-	'#738dfc',
-	'#758cfc',
-	'#778cfc',
-	'#798bfc',
+	'#748dfc',
+	'#768cfc',
+	'#798cfc',
 	'#7b8bfb',
 	'#7d8afb',
-	'#7f8afb',
-	'#8189fa',
+	'#808afa',
 	'#8289fa',
 	'#8488fa',
-	'#8688f9',
-	'#8887f9',
-	'#8a86f8',
+	'#8687f9',
+	'#8987f9',
 	'#8b86f8',
 	'#8d85f8',
 	'#8f85f7',
-	'#9084f7',
-	'#9284f6',
-	'#9483f6',
+	'#9184f7',
+	'#9383f6',
 	'#9582f5',
 	'#9782f5',
 	'#9981f4',
-	'#9a81f4',
-	'#9c80f3',
+	'#9b80f4',
 	'#9d7ff3',
 	'#9f7ff2',
-	'#a07ef2',
-	'#a27df1',
-	'#a47df1',
+	'#a17ef1',
+	'#a37df1',
 	'#a57cf0',
-	'#a77cef',
-	'#a87bef',
-	'#aa7aee',
+	'#a77bef',
+	'#a97bef',
 	'#ab7aee',
 	'#ad79ed',
 	'#ae78ec',
-	'#af78ec',
-	'#b177eb',
+	'#b077eb',
 	'#b276ea',
 	'#b476ea',
 	'#b575e9',
-	'#b674e8',
-	'#b873e7',
+	'#b774e8',
 	'#b973e7',
 	'#bb72e6',
 	'#bc71e5',
-	'#bd71e4',
-	'#be70e3',
-	'#c06fe3',
+	'#be70e4',
+	'#bf6fe3',
 	'#c16ee2',
-	'#c26ee1',
+	'#c36ee1',
 	'#c46de0',
-	'#c56cdf',
-	'#c66cde',
+	'#c66cdf',
 	'#c76bde',
-	'#c96add',
-	'#ca69dc',
-	'#cb69db',
+	'#c96adc',
+	'#ca69db',
 	'#cc68da',
 	'#cd67d9',
 	'#cf66d8',
 	'#d065d7',
-	'#d165d6',
-	'#d264d5',
+	'#d264d6',
 	'#d363d4',
 	'#d462d3',
-	'#d562d2',
-	'#d661d1',
-	'#d760d0',
+	'#d661d2',
+	'#d760d1',
 	'#d85fcf',
-	'#d95ece',
-	'#db5ecd',
-	'#dc5dcc',
-	'#dd5ccb',
+	'#da5ece',
+	'#db5dcd',
+	'#dc5ccb',
 	'#de5bca',
 	'#df5ac9',
-	'#e05ac8',
 	'#e059c7',
 	'#e158c6',
 	'#e257c5',
-	'#e356c4',
-	'#e455c2',
-	'#e555c1',
+	'#e456c3',
+	'#e555c2',
 	'#e654c0',
 	'#e753bf',
 	'#e852be',
-	'#e951bd',
-	'#e950bc',
-	'#ea50ba',
+	'#e951bc',
+	'#ea50bb',
 	'#eb4fb9',
 	'#ec4eb8',
-	'#ed4db7',
-	'#ed4cb6',
-	'#ee4bb4',
+	'#ed4db6',
+	'#ee4cb5',
 	'#ef4bb3',
 	'#f04ab2',
-	'#f049b1',
-	'#f148af',
-	'#f247ae',
+	'#f149b0',
+	'#f248ae',
 	'#f247ad',
-	'#f346ac',
-	'#f445aa',
-	'#f444a9',
+	'#f346ab',
+	'#f444aa',
 	'#f543a8',
 	'#f642a7',
-	'#f642a5',
-	'#f741a4',
+	'#f641a5',
 	'#f740a3',
-	'#f83fa1',
+	'#f83fa2',
 	'#f93ea0',
-	'#f93e9f',
+	'#f93e9e',
 	'#fa3d9d',
-	'#fa3c9c',
-	'#fb3b9b',
+	'#fa3c9b',
 	'#fb3b99',
 	'#fc3a98',
-	'#fc3997',
-	'#fc3895',
+	'#fc3996',
 	'#fd3894',
 	'#fd3793',
 	'#fe3691',
-	'#fe3690',
 	'#fe358f',
-	'#ff348d',
+	'#ff358e',
 	'#ff348c',
 	'#ff338a',
-	'#ff3389',
 	'#ff3288',
-	'#ff3186',
+	'#ff3287',
 	'#ff3185',
-	'#ff3084',
-	'#ff3082',
-	'#ff2f81',
-	'#ff2f7f',
+	'#ff3083',
+	'#ff3081',
+	'#ff2f80',
 	'#ff2e7e',
-	'#ff2e7d',
-	'#ff2e7b',
+	'#ff2e7c',
 	'#ff2d7a',
-	'#ff2d78',
+	'#ff2d79',
 	'#ff2d77',
 	'#ff2c75',
-	'#ff2c74',
 	'#ff2c73',
-	'#ff2c71',
+	'#ff2c72',
 	'#ff2b70',
 	'#ff2b6e',
-	'#ff2b6d',
-	'#ff2b6b',
+	'#ff2b6c',
 	'#ff2b6a',
 	'#ff2b69',
 	'#ff2b67',
-	'#ff2b66',
-	'#ff2b64',
+	'#ff2b65',
 	'#ff2b63',
 	'#ff2b61',
 	'#ff2b60',
-	'#ff2c5f',
-	'#ff2c5d',
+	'#ff2c5e',
 	'#ff2c5c',
 	'#ff2c5a',
-	'#ff2d59',
+	'#ff2d58',
 	'#ff2d57',
-	'#ff2d56',
-	'#ff2e54',
+	'#ff2d55',
 	'#ff2e53',
 	'#ff2e51',
-	'#ff2f50',
-	'#ff2f4e',
+	'#ff2f4f',
 	'#ff304d',
 	'#ff304b',
 	'#ff314a',
-	'#ff3148',
-	'#ff3247',
+	'#ff3248',
 	'#ff3246',
 	'#ff3344'
 ];

@@ -1,5 +1,5 @@
 import { battery, Battery } from 'power';
-import { display } from 'display';
+import { display, Display } from 'display';
 import { ConfigChanged, configuration } from './configuration';
 import { debounce, defer, log } from '../common/system';
 
@@ -7,23 +7,19 @@ export class BatteryDisplay {
 	private _level: number | undefined;
 
 	constructor(
-		private readonly $container: GraphicsElement,
+		private readonly $container: GroupElement,
 		private readonly $icon: ImageElement,
-		private readonly $level: TextElement
+		private readonly $percentage: TextElement
 	) {
 		battery.addEventListener('change', () => this.onBatteryChanged(battery));
-		this.onBatteryChanged(battery);
-
+		display.addEventListener('change', () => this.onDisplayChanged(display));
 		configuration.onDidChange(this.onConfigurationChanged, this);
-	}
 
-	@log('BatteryDisplay', {
-		0: e => `e.key=${e?.key}`
-	})
-	private onConfigurationChanged(e?: ConfigChanged) {
-		if (!display.on && e?.key != null && e.key !== 'showBatteryPercentage') return;
+		this.onConfigurationChanged();
 
-		this.render();
+		if (display.on && !display.aodActive) {
+			this.render();
+		}
 	}
 
 	@debounce(500)
@@ -35,16 +31,44 @@ export class BatteryDisplay {
 		this.render();
 	}
 
+	@log('BatteryDisplay', {
+		0: e => `e.key=${e?.key}`
+	})
+	private onConfigurationChanged(e?: ConfigChanged) {
+		if (e?.key != null && e.key !== 'showBatteryPercentage') return;
+
+		if (configuration.get('showBatteryPercentage')) {
+			this.$percentage.style.display = 'inline';
+		} else {
+			this.$percentage.style.display = 'none';
+		}
+	}
+
+	@log('BatteryDisplay', {
+		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
+	})
+	private onDisplayChanged(sensor: Display) {
+		if (sensor.aodAvailable && sensor.aodAllowed) {
+			requestAnimationFrame(() => this.$container.animate(sensor.aodActive ? 'unload' : 'load'));
+		}
+	}
+
 	@defer()
 	@log('BatteryDisplay')
 	render() {
-		const level = this._level ?? 0;
+		const level = this._level ?? battery.chargeLevel ?? 0;
 
-		this.$level.text = `${level > 0 ? level : '--'}%`;
-		this.$level.style.visibility = configuration.get('showBatteryPercentage') ? 'visible' : 'hidden';
+		this.$percentage.text = `${level > 0 ? level : '--'}%`;
 
 		this.$icon.href = `images/battery-${
 			level <= 15 ? 10 : level <= 30 ? 25 : level <= 55 ? 50 : level <= 80 ? 75 : level <= 95 ? 90 : 100
 		}.png`;
+
+		// TODO: Deal with the battery overlay when the battery is lower than or equal to 16%
+		// if (level <= 16) {
+		// 	this.$icon.style.display = 'none';
+		// } else {
+		// 	this.$icon.style.display = 'inline';
+		// }
 	}
 }

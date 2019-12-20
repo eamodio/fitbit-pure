@@ -10,7 +10,7 @@ export class TimeDisplay {
 	private _date: Date | undefined;
 
 	constructor(
-		private readonly $container: GraphicsElement,
+		private readonly $container: GroupElement,
 		private readonly $hour0: ImageElement,
 		private readonly $hour1: ImageElement,
 		private readonly $separator: ImageElement,
@@ -18,11 +18,10 @@ export class TimeDisplay {
 		private readonly $minute1: ImageElement
 	) {
 		clock.addEventListener('tick', e => this.onTick(e));
-
 		display.addEventListener('change', () => this.onDisplayChanged(display));
-		this.onDisplayChanged(display);
-
 		configuration.onDidChange(this.onConfigurationChanged, this);
+
+		this.onDisplayChanged(display);
 	}
 
 	@log('TimeDisplay', {
@@ -34,7 +33,7 @@ export class TimeDisplay {
 		}
 
 		if (e?.key == null || e?.key === 'animateSeparator') {
-			this.$separator.animate(configuration.get('animateSeparator') ? 'enable' : 'disable');
+			this.$separator.animate(!display.aodActive && configuration.get('animateSeparator') ? 'enable' : 'disable');
 
 			return;
 		}
@@ -43,14 +42,20 @@ export class TimeDisplay {
 	}
 
 	@log('TimeDisplay', {
-		0: sensor => `on=${sensor.on}`
+		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
 	})
 	private onDisplayChanged(sensor: Display) {
 		this.render();
 
-		if (configuration.get('animateSeparator')) {
-			this.$separator.animate(sensor.on ? 'enable' : 'disable');
-		}
+		requestAnimationFrame(() => {
+			if (sensor.aodAvailable && sensor.aodAllowed && sensor.aodEnabled) {
+				this.$container.animate(sensor.aodActive ? 'unload' : 'load');
+			}
+
+			if (configuration.get('animateSeparator')) {
+				this.$separator.animate(sensor.on && !sensor.aodActive ? 'enable' : 'disable');
+			}
+		});
 	}
 
 	@log('TimeDisplay', {
@@ -73,10 +78,10 @@ export class TimeDisplay {
 			if (configuration.get('showLeadingZero')) {
 				this.$hour0.style.visibility = 'visible';
 				this.$hour0.style.fillOpacity = 0.4;
-				this.$container.x = 0;
+				this.$container.groupTransform!.translate.x = 0;
 			} else {
 				this.$hour0.style.visibility = 'hidden';
-				this.$container.x = -33;
+				this.$container.groupTransform!.translate.x = -33;
 			}
 		} else {
 			this.$hour0.style.fillOpacity = 0.7;

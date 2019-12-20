@@ -1,5 +1,5 @@
 import clock, { TickEvent } from 'clock';
-// import { display } from 'display';
+import { display, Display } from 'display';
 import { ConfigChanged, configuration } from './configuration';
 import { getLocalizedDate } from './locale';
 import { addEventListener, defer, Disposable, log } from '../common/system';
@@ -9,13 +9,10 @@ export class DateDisplay {
 	private _disposable: Disposable | undefined;
 
 	constructor(
-		private readonly $container: GraphicsElement,
+		private readonly $container: GroupElement,
 		private readonly $date: TextElement,
 		private readonly $dateHighlight: TextElement
 	) {
-		// display.addEventListener('change', () => this.onDisplayChanged(display));
-		// this.onDisplayChanged(display);
-
 		configuration.onDidChange(this.onConfigurationChanged, this);
 		this.onConfigurationChanged();
 	}
@@ -28,9 +25,16 @@ export class DateDisplay {
 
 		if (configuration.get('showDate')) {
 			if (this._disposable == null) {
-				this._disposable = addEventListener(clock, 'tick', e => this.onTick(e));
+				this._disposable = Disposable.from(
+					addEventListener(clock, 'tick', e => this.onTick(e)),
+					addEventListener(display, 'change', () => this.onDisplayChanged(display))
+				);
 
-				this.render();
+				this.$container.style.display = 'inline';
+
+				if (display.on && !display.aodActive) {
+					this.render();
+				}
 			}
 		} else {
 			this._disposable?.dispose();
@@ -40,12 +44,14 @@ export class DateDisplay {
 		}
 	}
 
-	// @log('DateDisplay', {
-	// 	0: sensor => `on=${sensor.on}`
-	// })
-	// private onDisplayChanged(sensor: Display) {
-	// 	this.render();
-	// }
+	@log('DateDisplay', {
+		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
+	})
+	private onDisplayChanged(sensor: Display) {
+		if (sensor.aodAvailable && sensor.aodAllowed) {
+			requestAnimationFrame(() => this.$container.animate(sensor.aodActive ? 'unload' : 'load'));
+		}
+	}
 
 	@log('DateDisplay', {
 		0: e => `date=${e.date}`
@@ -65,7 +71,5 @@ export class DateDisplay {
 		const x = this.$date.getBBox().right;
 		this.$dateHighlight.x = x;
 		this.$dateHighlight.text = `${date.getDate()}`;
-
-		this.$container.style.display = 'inline';
 	}
 }

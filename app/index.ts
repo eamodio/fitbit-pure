@@ -1,4 +1,6 @@
+import { me as app } from 'appbit';
 import clock from 'clock';
+import { display } from 'display';
 import document from 'document';
 import { TimeDisplay } from './time';
 import { HeartRateDisplay } from './heartRate';
@@ -9,10 +11,15 @@ import { BatteryDisplay } from './battery';
 // Update the clock every minute
 clock.granularity = 'minutes';
 
+if (display.aodAvailable && app.permissions.granted('access_aod')) {
+	// Says we support AOD
+	display.aodAllowed = true;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const displays = [
 	new TimeDisplay(
-		getElementById<GraphicsElement>('time-display'),
+		getElementById<GroupElement>('time-display'),
 		getElementById<ImageElement>('time-hour0'),
 		getElementById<ImageElement>('time-hour1'),
 		getElementById<ImageElement>('time-separator'),
@@ -20,17 +27,17 @@ const displays = [
 		getElementById<ImageElement>('time-minute1')
 	),
 	new DateDisplay(
-		getElementById<GraphicsElement>('date-display'),
+		getElementById<GroupElement>('date-display'),
 		getElementById<TextElement>('date-date'),
 		getElementById<TextElement>('date-highlight')
 	),
 	new BatteryDisplay(
-		getElementById<GraphicsElement>('battery-display'),
+		getElementById<GroupElement>('battery-display'),
 		getElementById<ImageElement>('battery-icon'),
 		getElementById<TextElement>('battery-level')
 	),
 	new HeartRateDisplay(
-		getElementById<GraphicsElement>('heartrate-display'),
+		getElementById<GroupElement>('heartrate-display'),
 		{
 			off: getElementById<GraphicsElement>('heartrate-icon--off'),
 			interval: getElementById<GraphicsElement>('heartrate-icon--interval'),

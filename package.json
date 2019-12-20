@@ -24,6 +24,7 @@
 		"wipeColor": "",
 		"requestedPermissions": [
 			"access_activity",
+			"access_aod",
 			"access_heart_rate",
 			"access_user_profile"
 		],
@@ -50,16 +51,16 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@fitbit/sdk": "4.0.1",
+		"@fitbit/sdk": "4.1.0",
 		"@fitbit/sdk-cli": "1.7.1",
-		"@typescript-eslint/eslint-plugin": "2.11.0",
-		"@typescript-eslint/parser": "2.11.0",
+		"@typescript-eslint/eslint-plugin": "2.12.0",
+		"@typescript-eslint/parser": "2.12.0",
 		"chroma-js": "2.1.0",
 		"eslint": "6.7.2",
 		"eslint-cli": "1.1.1",
 		"eslint-config-prettier": "6.7.0",
 		"eslint-plugin-import": "2.19.1",
-		"fitbit-sdk-types": "4.2.2",
+		"fitbit-sdk-types": "4.3.0",
 		"fitfont": "1.2.5",
 		"prettier": "1.19.1"
 	}
