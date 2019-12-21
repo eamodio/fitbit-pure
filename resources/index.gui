@@ -72,8 +72,8 @@
 
 	<!-- <g id="date-display" transform="translate(0, 85%)" display="none"> -->
 	<g id="date-display" transform="translate(0, 95%)" display="none">
-		<text id="date-date" class="text--normal opacity-6" text-anchor="middle" text-length="11" x="50%" y="0" />
-		<text id="date-highlight" class="text--normal opacity-7" text-anchor="end" text-length="11" y="0" />
+		<text id="date-date" class="text--normal opacity-6" text-anchor="middle" text-length="16" x="50%" y="0" />
+		<text id="date-highlight" class="text--normal opacity-7" text-anchor="end" text-length="2" y="0" />
 
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
