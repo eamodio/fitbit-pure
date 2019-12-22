@@ -19,28 +19,16 @@
 	width: 16;
 }
 
-.opacity-8 {
-	fill-opacity: 0.8;
+.primary {
+	fill-opacity: 1;
 }
 
-.opacity-7 {
+.secondary {
 	fill-opacity: 0.7;
 }
 
-.opacity-6 {
-	fill-opacity: 0.6;
-}
-
-.opacity-5 {
+.dim {
 	fill-opacity: 0.5;
-}
-
-.opacity-3 {
-	fill-opacity: 0.3;
-}
-
-.opacity-2 {
-	fill-opacity: 0.25;
 }
 
 .text--normal {
@@ -49,14 +37,12 @@
 	fill: fb-white;
 }
 
-.text--bold {
-	font-family: SevilleSharp-Regular;
-	font-size: 36;
-	fill: fb-white;
-}
-
 .text--small {
 	font-family: SevilleSharp-Book;
 	font-size: 22;
 	fill: fb-white;
+}
+
+.text--bold {
+	font-family: SevilleSharp-Regular;
 }

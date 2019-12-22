@@ -2,8 +2,8 @@
 	<rect id="background" />
 
 	<g id="battery-display" transform="translate(0, 6)">
-		<image id="battery-icon" href="images/battery-100.png" class="icon opacity-7" x="10" y="-2" />
-		<text id="battery-level" class="text--small text--bold opacity-7" text-anchor="start" text-length="4" x="52" y="21" />
+		<image id="battery-icon" href="images/battery-100.png" class="icon primary" x="10" y="-2" />
+		<text id="battery-level" class="text--small text--bold primary" text-anchor="start" text-length="4" x="52" y="21" />
 
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
@@ -18,7 +18,7 @@
 
 	<g id="heartrate-display" transform="translate(0, 6)">
 		<g id="heartrate-icon--pulse" transform="translate(100%-26,12)" display="none">
-			<image href="images/heart.png" class="icon" x="-16" y="-16" />
+			<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
 			<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
 			<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
 			<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
@@ -26,7 +26,7 @@
 		</g>
 
 		<g id="heartrate-icon--interval" transform="translate(100%-26,12)" display="none">
-			<image href="images/heart.png" class="icon" x="-16" y="-16" />
+			<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
 			<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
@@ -34,11 +34,11 @@
 		</g>
 
 		<g id="heartrate-icon--off" transform="translate(100%-42,-4)" display="none">
-			<image href="images/heart.png" class="icon" x="0" y="0" />
+			<image href="images/heart.png" class="icon primary" x="0" y="0" />
 		</g>
 
-		<text id="heartrate-rate" class="text--bold opacity-7" text-anchor="start" text-length="3" y="25" />
-		<text id="heartrate-resting" class="text--small text--bold opacity-6" text-anchor="end" text-length="5" y="21" />
+		<text id="heartrate-rate" class="text--normal text--bold primary" text-anchor="start" text-length="3" y="25" />
+		<text id="heartrate-resting" class="text--small text--bold secondary" text-anchor="end" text-length="5" y="21" />
 
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
@@ -52,28 +52,27 @@
 	</g>
 
 	<g id="time-display" transform="translate(0, 34%)">
-		<image id="time-hour0" href="images/0.png" class="digit opacity-7" x="1%" y="0" />
-		<image id="time-hour1" href="images/0.png" class="digit opacity-7" x="1%+66" y="0" />
+		<image id="time-hour0" href="images/0.png" class="digit primary" x="1%" y="0" />
+		<image id="time-hour1" href="images/0.png" class="digit primary" x="1%+66" y="0" />
 
-		<image id="time-separator" href="images/separator.png" class="digit opacity-3" x="50%-8" y="0">
+		<image id="time-separator" href="images/separator.png" class="digit dim" x="50%-8" y="0">
 			<animate attributeName="fill-opacity" from="0.45" to="0" dur="0.5s" begin="enable" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			<animate attributeName="fill-opacity" from="0" to="0.45" dur="0.5s" begin="enable+0.5" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 		</image>
 
-		<image id="time-minute0" href="images/0.png" class="digit opacity-7" x="55%" y="0" />
-		<image id="time-minute1" href="images/0.png" class="digit opacity-7" x="55%+66" y="0" />
+		<image id="time-minute0" href="images/0.png" class="digit primary" x="55%" y="0" />
+		<image id="time-minute1" href="images/0.png" class="digit primary" x="55%+66" y="0" />
 
 		<!-- Animate in -->
-		<animate attributeName="opacity" from="0.8" to="1" dur="0.4s" begin="load" easing="ease-in" />
+		<animate id="animate-aod-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="load" easing="ease-in" />
 
 		<!-- Animate out -->
-		<animate attributeName="opacity" from="1" to="0.8" dur="0.4s" begin="unload" easing="ease-in" />
+		<animate id="animate-aod-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="unload" easing="ease-in" />
 	</g>
 
-	<!-- <g id="date-display" transform="translate(0, 85%)" display="none"> -->
 	<g id="date-display" transform="translate(0, 95%)" display="none">
-		<text id="date-date" class="text--normal opacity-6" text-anchor="middle" text-length="16" x="50%" y="0" />
-		<text id="date-highlight" class="text--normal opacity-7" text-anchor="end" text-length="2" y="0" />
+		<text id="date-date" class="text--normal secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
+		<text id="date-highlight" class="text--normal primary" text-anchor="end" text-length="2" y="0" />
 
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
