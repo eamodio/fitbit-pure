@@ -2,10 +2,11 @@ import { me as app } from 'appbit';
 import clock from 'clock';
 import { display } from 'display';
 import document from 'document';
-import { TimeDisplay } from './time';
-import { HeartRateDisplay } from './heartRate';
-import { DateDisplay } from './date';
+import { Bars } from './bars';
 import { BatteryDisplay } from './battery';
+import { DateDisplay } from './date';
+import { HeartRateDisplay } from './heartRate';
+import { TimeDisplay } from './time';
 // import { Snow } from './snow';
 
 // Update the clock every minute
@@ -18,6 +19,7 @@ if (display.aodAvailable && app.permissions.granted('access_aod')) {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const displays = [
+	new Bars(getElementById<GroupElement>('top-bar'), getElementById<GroupElement>('bottom-bar')),
 	new TimeDisplay(
 		getElementById<GroupElement>('time-display'),
 		getElementById<ImageElement>('time-hour0'),

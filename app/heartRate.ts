@@ -102,10 +102,6 @@ export class HeartRateDisplay {
 		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
 	})
 	private onDisplayChanged(sensor: Display) {
-		if (sensor.aodAvailable && sensor.aodAllowed) {
-			requestAnimationFrame(() => this.$container.animate(sensor.aodActive ? 'unload' : 'load'));
-		}
-
 		this.updateState();
 	}
 

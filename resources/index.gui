@@ -1,44 +1,36 @@
 <svg>
 	<rect id="background" />
 
-	<g id="battery-display" transform="translate(0, 6)">
-		<image id="battery-icon" href="images/battery-100.png" class="icon primary" x="10" y="-2" />
-		<text id="battery-level" class="text--small text--bold primary" text-anchor="start" text-length="4" x="52" y="21" />
-
-		<!-- Animate in -->
-		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
-		<animateTransform attributeType="translate" from="0,-30" to="0,8" dur="0.3s" begin="load" easing="ease-in" />
-		<animateTransform attributeType="translate" from="0,8" to="0,6" dur="0.1s" begin="load+0.3" easing="ease-out" />
-
-		<!-- Animate out -->
-		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
-		<animateTransform attributeType="translate" from="0,6" to="0,8" dur="0.1s" begin="unload" easing="ease-out" />
-		<animateTransform attributeType="translate" from="0,8" to="0,-30" dur="0.3s" begin="unload+0.1" easing="ease-in" />
-	</g>
-
-	<g id="heartrate-display" transform="translate(0, 6)">
-		<g id="heartrate-icon--pulse" transform="translate(100%-26,12)" display="none">
-			<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
-			<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
-			<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
-			<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
-			<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
+	<g id="top-bar">
+		<g id="battery-display">
+			<image id="battery-icon" href="images/battery-100.png" class="icon primary" x="10" y="-2" />
+			<text id="battery-level" class="text--small text--bold primary" text-anchor="start" text-length="4" x="52" y="21" />
 		</g>
 
-		<g id="heartrate-icon--interval" transform="translate(100%-26,12)" display="none">
-			<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
-			<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-			<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
-			<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
-			<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-		</g>
+		<g id="heartrate-display">
+			<g id="heartrate-icon--pulse" transform="translate(100%-26,12)" display="none">
+				<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
+				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
+				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
+				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
+				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
+			</g>
 
-		<g id="heartrate-icon--off" transform="translate(100%-42,-4)" display="none">
-			<image href="images/heart.png" class="icon primary" x="0" y="0" />
-		</g>
+			<g id="heartrate-icon--interval" transform="translate(100%-26,12)" display="none">
+				<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
+				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
+				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
+				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+			</g>
 
-		<text id="heartrate-rate" class="text--normal text--bold primary" text-anchor="start" text-length="3" y="25" />
-		<text id="heartrate-resting" class="text--small text--bold secondary" text-anchor="end" text-length="5" y="21" />
+			<g id="heartrate-icon--off" transform="translate(100%-42,-4)" display="none">
+				<image href="images/heart.png" class="icon primary" x="0" y="0" />
+			</g>
+
+			<text id="heartrate-rate" class="text--normal text--bold primary" text-anchor="start" text-length="3" y="25" />
+			<text id="heartrate-resting" class="text--small text--bold secondary" text-anchor="end" text-length="5" y="21" />
+		</g>
 
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
@@ -70,18 +62,20 @@
 		<animate id="aod-animate-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="unload" easing="ease-in" final="freeze" />
 	</g>
 
-	<g id="date-display" transform="translate(0, 95%)" display="none">
-		<text id="date-date" class="text--normal secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
-		<text id="date-highlight" class="text--normal primary" text-anchor="end" text-length="2" y="0" />
+	<g id="bottom-bar" transform="translate(0, 96%)">
+		<g id="date-display">
+			<text id="date-date" class="text--normal secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
+			<text id="date-highlight" class="text--normal primary" text-anchor="end" text-length="2" y="0" />
+		</g>
 
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
-		<animateTransform attributeType="translate" from="0,100%+30" to="0,95%-2" dur="0.3s" begin="load" easing="ease-in" />
-		<animateTransform attributeType="translate" from="0,95%-2" to="0,95%" dur="0.1s" begin="load+0.3" easing="ease-out" />
+		<animateTransform attributeType="translate" from="0,100%+30" to="0,96%-2" dur="0.3s" begin="load" easing="ease-in" />
+		<animateTransform attributeType="translate" from="0,96%-2" to="0,96%" dur="0.1s" begin="load+0.3" easing="ease-out" />
 
 		<!-- Animate out -->
 		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
-		<animateTransform attributeType="translate" from="0,95%" to="0,95%-2" dur="0.1s" begin="unload" easing="ease-out" />
-		<animateTransform attributeType="translate" from="0,95%-2" to="0,100%+30" dur="0.3s" begin="unload+0.1" easing="ease-in" />
+		<animateTransform attributeType="translate" from="0,96%" to="0,96%-2" dur="0.1s" begin="unload" easing="ease-out" />
+		<animateTransform attributeType="translate" from="0,96%-2" to="0,100%+30" dur="0.3s" begin="unload+0.1" easing="ease-in" />
 	</g>
 </svg>

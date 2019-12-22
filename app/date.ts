@@ -1,5 +1,5 @@
 import clock, { TickEvent } from 'clock';
-import { display, Display } from 'display';
+import { display } from 'display';
 import { gettext } from 'i18n';
 import { locale } from 'user-settings';
 import { ConfigChanged, configuration } from './configuration';
@@ -26,10 +26,7 @@ export class DateDisplay {
 
 		if (configuration.get('showDate')) {
 			if (this._disposable == null) {
-				this._disposable = Disposable.from(
-					addEventListener(clock, 'tick', e => this.onTick(e)),
-					addEventListener(display, 'change', () => this.onDisplayChanged(display))
-				);
+				this._disposable = addEventListener(clock, 'tick', e => this.onTick(e));
 
 				this.$container.style.display = 'inline';
 
@@ -42,15 +39,6 @@ export class DateDisplay {
 			this._disposable = undefined;
 
 			this.$container.style.display = 'none';
-		}
-	}
-
-	@log('DateDisplay', {
-		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
-	})
-	private onDisplayChanged(sensor: Display) {
-		if (sensor.aodAvailable && sensor.aodAllowed) {
-			requestAnimationFrame(() => this.$container.animate(sensor.aodActive ? 'unload' : 'load'));
 		}
 	}
 

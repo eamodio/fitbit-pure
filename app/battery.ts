@@ -1,5 +1,5 @@
 import { battery, Battery } from 'power';
-import { display, Display } from 'display';
+import { display } from 'display';
 import { ConfigChanged, configuration } from './configuration';
 import { debounce, defer, log } from '../common/system';
 
@@ -12,7 +12,6 @@ export class BatteryDisplay {
 		private readonly $percentage: TextElement
 	) {
 		battery.addEventListener('change', () => this.onBatteryChanged(battery));
-		display.addEventListener('change', () => this.onDisplayChanged(display));
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
 		this.onConfigurationChanged();
@@ -41,15 +40,6 @@ export class BatteryDisplay {
 			this.$percentage.style.display = 'inline';
 		} else {
 			this.$percentage.style.display = 'none';
-		}
-	}
-
-	@log('BatteryDisplay', {
-		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
-	})
-	private onDisplayChanged(sensor: Display) {
-		if (sensor.aodAvailable && sensor.aodAllowed) {
-			requestAnimationFrame(() => this.$container.animate(sensor.aodActive ? 'unload' : 'load'));
 		}
 	}
 
