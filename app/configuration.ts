@@ -1,16 +1,7 @@
 import * as fs from 'fs';
 import { MessageEvent, peerSocket } from 'messaging';
-import { Config, defaultConfig } from '../common/config';
+import { Config, defaultConfig, emptyConfig } from '../common/config';
 import { debounce, Event, EventEmitter, log } from '../common/system';
-
-const empty: Config = {
-	animateHeartRate: null,
-	animateSeparator: null,
-	showBatteryPercentage: null,
-	showDate: null,
-	showLeadingZero: null,
-	showRestingHeartRate: null
-};
 
 export interface ConfigChanged {
 	key: keyof Config;
@@ -25,7 +16,7 @@ class Configuration {
 	private _config: Config;
 
 	constructor() {
-		this._config = this.load() ?? { ...empty };
+		this._config = this.load() ?? { ...emptyConfig };
 
 		peerSocket.addEventListener('message', e => this.onMessageReceived(e));
 	}
@@ -38,7 +29,7 @@ class Configuration {
 
 		// If the key is `null` assume a reset
 		if (e.data.key == null) {
-			this._config = { ...empty };
+			this._config = { ...emptyConfig };
 		} else {
 			this._config[e.data.key] = e.data.value;
 		}

@@ -23,6 +23,14 @@ export class TimeDisplay {
 		display.addEventListener('change', () => this.onDisplayChanged(display));
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
+		if (display.aodEnabled) {
+			const aodOpacity = configuration.get('aodOpacity');
+			// 0.6 is the default in the svg (index.gui)
+			if (aodOpacity !== 0.6) {
+				this.updateAlwaysOnOpacity(aodOpacity);
+			}
+		}
+
 		this.onDisplayChanged(display);
 	}
 
@@ -30,14 +38,20 @@ export class TimeDisplay {
 		0: e => `e.key=${e?.key}`
 	})
 	private onConfigurationChanged(e?: ConfigChanged) {
-		if (!display.on && e?.key != null && e.key !== 'animateSeparator' && e.key !== 'showLeadingZero') {
+		if (e?.key != null && e.key !== 'animateSeparator' && e.key !== 'showLeadingZero' && e.key !== 'aodOpacity') {
 			return;
 		}
 
 		if (e?.key == null || e?.key === 'animateSeparator') {
 			this.$separator.animate(!display.aodActive && configuration.get('animateSeparator') ? 'enable' : 'disable');
 
-			return;
+			if (e?.key === 'animateSeparator') return;
+		}
+
+		if (e?.key == null || e?.key === 'aodOpacity') {
+			this.updateAlwaysOnOpacity(configuration.get('aodOpacity'));
+
+			if (e?.key === 'aodOpacity') return;
 		}
 
 		this.render();
@@ -50,7 +64,7 @@ export class TimeDisplay {
 		this.render();
 
 		requestAnimationFrame(() => {
-			if (sensor.aodAvailable && sensor.aodAllowed && sensor.aodEnabled) {
+			if (sensor.aodEnabled) {
 				this.$container.animate(sensor.aodActive ? 'unload' : 'load');
 			}
 
@@ -99,6 +113,20 @@ export class TimeDisplay {
 		const minute = zeroPad(date.getMinutes());
 		this.$minute0.href = `images/${minute[0] ?? 0}.png`;
 		this.$minute1.href = `images/${minute[1] ?? 0}.png`;
+	}
+
+	private updateAlwaysOnOpacity(aodOpacity: number) {
+		let el: (Element & { from: number; to: number }) | null = this.$container.getElementById(
+			'aod-animate-in'
+		) as any;
+		if (el != null) {
+			el.from = aodOpacity;
+		}
+
+		el = this.$container.getElementById('aod-animate-out') as any;
+		if (el != null) {
+			el.to = aodOpacity;
+		}
 	}
 }
 

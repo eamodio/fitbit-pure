@@ -64,10 +64,10 @@
 		<image id="time-minute1" href="images/0.png" class="digit primary" x="55%+66" y="0" />
 
 		<!-- Animate in -->
-		<animate id="animate-aod-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="load" easing="ease-in" />
+		<animate id="aod-animate-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="load" easing="ease-in" />
 
 		<!-- Animate out -->
-		<animate id="animate-aod-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="unload" easing="ease-in" />
+		<animate id="aod-animate-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="unload" easing="ease-in" final="freeze" />
 	</g>
 
 	<g id="date-display" transform="translate(0, 95%)" display="none">

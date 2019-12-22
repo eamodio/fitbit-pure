@@ -1,6 +1,26 @@
+const isVersa2 = (props: SettingsComponentProps) => props.settings.modelName === 'Versa 2';
+const friendlyOpacity = (value: string | undefined) => `${Number(value ?? 1) * 100}%`;
+
 function PureSettings(props: SettingsComponentProps) {
 	return (
 		<Page>
+			{isVersa2(props) && (
+				<Section
+					title={
+						<Text bold align="center">
+							Always-on Display
+						</Text>
+					}
+				>
+					<Slider
+						label={`Brightness: ${friendlyOpacity(props.settings.aodOpacity)}`}
+						settingsKey="aodOpacity"
+						min="0.3"
+						max="1"
+						step="0.1"
+					/>
+				</Section>
+			)}
 			<Section
 				title={
 					<Text bold align="center">

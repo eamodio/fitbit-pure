@@ -1,6 +1,7 @@
 // import { me as companion } from 'companion';
 import { peerSocket } from 'messaging';
 import { settingsStorage } from 'settings';
+import { device } from 'peer';
 import { defaultConfig } from '../common/config';
 import { addEventListener, Disposable, log } from '../common/system';
 
@@ -49,6 +50,8 @@ export class Configuration {
 
 	private ensureDefaults() {
 		this._disposable?.dispose();
+
+		settingsStorage.setItem('modelName', device.modelName);
 
 		try {
 			for (const key in defaults) {
