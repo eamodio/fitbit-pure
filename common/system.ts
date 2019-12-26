@@ -34,7 +34,7 @@ export namespace Disposable {
 declare global {
 	interface EventTarget<EventMap = {}> {
 		// Needed get EventMap<T> to work below
-		readonly map?: EventMap;
+		readonly __eventMap?: EventMap;
 
 		addEventListener<EventName extends keyof EventMap>(
 			eventName: EventName,
