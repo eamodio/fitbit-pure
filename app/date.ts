@@ -8,6 +8,8 @@ import { addEventListener, defer, Disposable, log } from '../common/system';
 export class DateDisplay {
 	private _date: Date | undefined;
 	private _disposable: Disposable | undefined;
+	private _prevMonth: number | undefined;
+	private _prevDay: number | undefined;
 
 	constructor(
 		private readonly $container: GroupElement,
@@ -47,20 +49,30 @@ export class DateDisplay {
 	})
 	private onTick({ date }: TickEvent) {
 		this._date = date;
-		this.render();
+		this.renderCore();
 	}
 
 	@defer()
-	@log('DateDisplay')
 	render() {
+		this.renderCore(true);
+	}
+
+	@log('DateDisplay')
+	private renderCore(force: boolean = false) {
 		const date = this._date ?? new Date();
 
-		const month = date.getMonth();
-		const monthName = gettext(`month_short_${month}`);
-
 		const day = date.getDay();
-		const dayName = gettext(`day_short_${day}`);
+		if (!force && day === this._prevDay) return;
 
+		this._prevDay = day;
+
+		const month = date.getMonth();
+		if (!force && month === this._prevMonth) return;
+
+		this._prevMonth = month;
+
+		const monthName = gettext(`month_short_${month}`);
+		const dayName = gettext(`day_short_${day}`);
 		const dayMonthSeparator = gettext('day_month_separator');
 
 		let x: number;

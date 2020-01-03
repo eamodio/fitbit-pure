@@ -6,6 +6,7 @@ export interface Config {
 	showDate: boolean | null;
 	showLeadingZero: boolean | null;
 	showRestingHeartRate: boolean | null;
+	showSeconds: boolean | null;
 }
 
 export const defaultConfig: Config = {
@@ -15,7 +16,8 @@ export const defaultConfig: Config = {
 	showBatteryPercentage: true,
 	showDate: true,
 	showLeadingZero: true,
-	showRestingHeartRate: true
+	showRestingHeartRate: true,
+	showSeconds: false
 };
 
 export const emptyConfig: Config = {
@@ -25,5 +27,6 @@ export const emptyConfig: Config = {
 	showBatteryPercentage: null,
 	showDate: null,
 	showLeadingZero: null,
-	showRestingHeartRate: null
+	showRestingHeartRate: null,
+	showSeconds: null
 };

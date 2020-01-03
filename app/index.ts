@@ -1,5 +1,4 @@
 import { me as app } from 'appbit';
-import clock from 'clock';
 import { display } from 'display';
 import document from 'document';
 import { Bars } from './bars';
@@ -7,9 +6,6 @@ import { BatteryDisplay } from './battery';
 import { DateDisplay } from './date';
 import { HeartRateDisplay } from './heartRate';
 import { TimeDisplay } from './time';
-
-// Update the clock every minute
-clock.granularity = 'minutes';
 
 if (display.aodAvailable && app.permissions.granted('access_aod')) {
 	// Say we support AOD
@@ -25,7 +21,8 @@ const displays = [
 		getElementById<ImageElement>('time-hour1'),
 		getElementById<ImageElement>('time-separator'),
 		getElementById<ImageElement>('time-minute0'),
-		getElementById<ImageElement>('time-minute1')
+		getElementById<ImageElement>('time-minute1'),
+		getElementById<TextElement>('time-seconds')
 	),
 	new DateDisplay(
 		getElementById<GroupElement>('date-display'),

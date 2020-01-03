@@ -29,8 +29,9 @@ function PureSettings(props: SettingsComponentProps) {
 				}
 			>
 				<Toggle settingsKey="animateSeparator" label="Animate Time Separator" />
-				<Toggle settingsKey="showLeadingZero" label="Show Leading Zero" />
 				<Toggle settingsKey="showDate" label="Show Date" />
+				<Toggle settingsKey="showLeadingZero" label="Show Leading Zero" />
+				<Toggle settingsKey="showSeconds" label="Show Seconds" />
 			</Section>
 			<Section
 				title={

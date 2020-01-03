@@ -10,6 +10,8 @@ const dimReplacementClass = /\bdim\b/;
 
 export class TimeDisplay {
 	private _date: Date | undefined;
+	private _prevMinutes: number | undefined;
+	private _prevHours: number | undefined;
 
 	constructor(
 		private readonly $container: GroupElement,
@@ -17,7 +19,8 @@ export class TimeDisplay {
 		private readonly $hour1: ImageElement,
 		private readonly $separator: ImageElement,
 		private readonly $minute0: ImageElement,
-		private readonly $minute1: ImageElement
+		private readonly $minute1: ImageElement,
+		private readonly $seconds: TextElement
 	) {
 		clock.addEventListener('tick', e => this.onTick(e));
 		display.addEventListener('change', () => this.onDisplayChanged(display));
@@ -31,14 +34,20 @@ export class TimeDisplay {
 			}
 		}
 
-		this.onDisplayChanged(display);
+		this.onConfigurationChanged();
 	}
 
 	@log('TimeDisplay', {
 		0: e => `e.key=${e?.key}`
 	})
 	private onConfigurationChanged(e?: ConfigChanged) {
-		if (e?.key != null && e.key !== 'animateSeparator' && e.key !== 'showLeadingZero' && e.key !== 'aodOpacity') {
+		if (
+			e?.key != null &&
+			e.key !== 'animateSeparator' &&
+			e.key !== 'aodOpacity' &&
+			e.key !== 'showLeadingZero' &&
+			e.key !== 'showSeconds'
+		) {
 			return;
 		}
 
@@ -54,6 +63,18 @@ export class TimeDisplay {
 			if (e?.key === 'aodOpacity') return;
 		}
 
+		if (e?.key == null || e?.key === 'showSeconds') {
+			if (configuration.get('showSeconds')) {
+				this.$seconds.style.display = 'inline';
+				this.updateClock(true);
+			} else {
+				this.$seconds.style.display = 'none';
+				this.updateClock(false);
+			}
+
+			if (e?.key === 'showSeconds') return;
+		}
+
 		this.render();
 	}
 
@@ -61,6 +82,10 @@ export class TimeDisplay {
 		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
 	})
 	private onDisplayChanged(sensor: Display) {
+		if (sensor.aodEnabled && configuration.get('showSeconds')) {
+			this.updateClock(true);
+		}
+
 		this.render();
 
 		requestAnimationFrame(() => {
@@ -79,16 +104,37 @@ export class TimeDisplay {
 	})
 	private onTick({ date }: TickEvent) {
 		this._date = date;
-		this.render();
+		this.renderCore();
 	}
 
 	@defer()
-	@log('TimeDisplay')
 	render() {
+		this.renderCore(true);
+	}
+
+	@log('TimeDisplay')
+	private renderCore(force: boolean = false) {
 		const date = this._date ?? emptyDate;
 
-		const hour = zeroPad(preferences.clockDisplay === '12h' ? date.getHours() % 12 || 12 : date.getHours());
+		if (configuration.get('showSeconds') && !display.aodActive) {
+			this.$seconds.text = `${toMonospaceDigits(date.getSeconds(), true)}s`;
+		}
 
+		const minutes = date.getMinutes();
+		if (!force && minutes === this._prevMinutes) return;
+
+		this._prevMinutes = minutes;
+
+		const minute = zeroPad(minutes);
+		this.$minute0.href = `images/${minute[0] ?? 0}.png`;
+		this.$minute1.href = `images/${minute[1] ?? 0}.png`;
+
+		const hours = date.getHours();
+		if (!force && hours === this._prevHours) return;
+
+		this._prevHours = hours;
+
+		const hour = zeroPad(preferences.clockDisplay === '12h' ? hours % 12 || 12 : hours);
 		this.$hour0.href = `images/${hour[0] ?? 0}.png`;
 		if (hour[0] === '0') {
 			if (configuration.get('showLeadingZero')) {
@@ -109,10 +155,6 @@ export class TimeDisplay {
 			this.$hour0.style.visibility = 'visible';
 		}
 		this.$hour1.href = `images/${hour[1] ?? 0}.png`;
-
-		const minute = zeroPad(date.getMinutes());
-		this.$minute0.href = `images/${minute[0] ?? 0}.png`;
-		this.$minute1.href = `images/${minute[1] ?? 0}.png`;
 	}
 
 	private updateAlwaysOnOpacity(aodOpacity: number) {
@@ -128,8 +170,64 @@ export class TimeDisplay {
 			el.to = aodOpacity;
 		}
 	}
+
+	private updateClock(seconds: boolean) {
+		clock.granularity = seconds && !display.aodActive ? 'seconds' : 'minutes';
+	}
 }
 
 function zeroPad(num: number): string {
 	return `${num < 10 ? '0' : ''}${num}`;
+}
+
+export function toMonospaceDigits(num: number, pad = true): string {
+	let digits;
+	if (pad && num < 10) {
+		digits = c0 + toMonospaceDigit(num);
+	} else {
+		digits = '';
+		while (num > 0) {
+			digits = toMonospaceDigit(num % 10) + digits;
+			num = (num / 10) | 0;
+		}
+	}
+	return digits;
+}
+
+const c0 = String.fromCharCode(0x10);
+const c1 = String.fromCharCode(0x11);
+const c2 = String.fromCharCode(0x12);
+const c3 = String.fromCharCode(0x13);
+const c4 = String.fromCharCode(0x14);
+const c5 = String.fromCharCode(0x15);
+const c6 = String.fromCharCode(0x16);
+const c7 = String.fromCharCode(0x17);
+const c8 = String.fromCharCode(0x18);
+const c9 = String.fromCharCode(0x19);
+
+function toMonospaceDigit(digit: number) {
+	switch (digit) {
+		case 0:
+			return c0;
+		case 1:
+			return c1;
+		case 2:
+			return c2;
+		case 3:
+			return c3;
+		case 4:
+			return c4;
+		case 5:
+			return c5;
+		case 6:
+			return c6;
+		case 7:
+			return c7;
+		case 8:
+			return c8;
+		case 9:
+			return c9;
+		default:
+			return digit;
+	}
 }
