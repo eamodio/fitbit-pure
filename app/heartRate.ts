@@ -7,9 +7,9 @@ import { user } from 'user-profile';
 import { ConfigChanged, configuration } from './configuration';
 import { debounce, defer, log } from '../common/system';
 
-if (device.screen == null) {
-	(device as any).screen = { width: 348, height: 250 };
-}
+// if (device.screen == null) {
+// 	(device as any).screen = { width: 348, height: 250 };
+// }
 
 const iconWidth = 32;
 const screenWidth = device.screen.width;
@@ -23,7 +23,7 @@ export class HeartRateDisplay {
 	private _rate: number | undefined;
 
 	constructor(
-		private readonly $container: GroupElement,
+		private readonly $container: ContainerElement,
 		private readonly $icon: { off: GraphicsElement; interval: GraphicsElement; pulse: GraphicsElement },
 		private readonly $rate: TextElement,
 		private readonly $restingRate: TextElement
@@ -136,7 +136,7 @@ export class HeartRateDisplay {
 		const color = getHeartRateColor(rate);
 
 		const $icon = this.$icon[configuration.get('animateHeartRate')];
-		$icon.style.fill = color;
+		($icon.firstChild! as ImageElement).style.fill = color;
 		$icon.style.display = 'inline';
 
 		if (rate <= 0) {

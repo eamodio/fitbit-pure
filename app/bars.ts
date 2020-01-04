@@ -10,11 +10,12 @@ export class Bars {
 		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
 	})
 	private onDisplayChanged(sensor: Display) {
-		if (sensor.aodEnabled) {
-			requestAnimationFrame(() => {
-				this.$top.animate(sensor.aodActive ? 'unload' : 'load');
-				this.$bottom.animate(sensor.aodActive ? 'unload' : 'load');
-			});
-		}
+		if (!sensor.aodEnabled) return;
+
+		requestAnimationFrame(() => {
+			const animation = sensor.aodActive ? 'unload' : 'load';
+			this.$top.animate(animation);
+			this.$bottom.animate(animation);
+		});
 	}
 }

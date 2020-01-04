@@ -1,13 +1,15 @@
 <svg>
-	<rect id="background" />
+	<rect class="background" />
 
 	<g id="top-bar">
-		<g id="battery-display">
-			<image id="battery-icon" href="images/battery-100.png" class="icon primary" x="10" y="-2" />
-			<text id="battery-level" class="text--small text--bold primary" text-anchor="start" text-length="4" x="52" y="21" />
-		</g>
+		<section id="battery-display">
+			<line id="battery-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
+			<image id="battery-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
+			<text id="battery-level" class="text--sm text--bold primary" text-anchor="start" text-length="4" x="$+10" y="21" />
+			<text id="battery-until-charged" class="text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" />
+		</section>
 
-		<g id="heartrate-display">
+		<section id="heartrate-display">
 			<g id="heartrate-icon--pulse" transform="translate(100%-26,12)" display="none">
 				<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
@@ -28,9 +30,9 @@
 				<image href="images/heart.png" class="icon primary" x="0" y="0" />
 			</g>
 
-			<text id="heartrate-rate" class="text--normal text--bold primary" text-anchor="start" text-length="3" y="25" />
-			<text id="heartrate-resting" class="text--small text--bold secondary" text-anchor="end" text-length="5" y="21" />
-		</g>
+			<text id="heartrate-rate" class="text--lg text--bold primary" text-anchor="start" text-length="3" y="25" />
+			<text id="heartrate-resting" class="text--sm text--bold secondary" text-anchor="end" text-length="5" y="21" />
+		</section>
 
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
@@ -45,7 +47,7 @@
 
 	<g id="time-display" transform="translate(0, 34%)">
 		<image id="time-hour0" href="images/0.png" class="digit primary" x="1%" y="0" />
-		<image id="time-hour1" href="images/0.png" class="digit primary" x="1%+66" y="0" />
+		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
 
 		<image id="time-separator" href="images/separator.png" class="digit dim" x="50%-8" y="0">
 			<animate attributeName="fill-opacity" from="0.45" to="0" dur="0.5s" begin="enable" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
@@ -53,7 +55,7 @@
 		</image>
 
 		<image id="time-minute0" href="images/0.png" class="digit primary" x="55%" y="0" />
-		<image id="time-minute1" href="images/0.png" class="digit primary" x="55%+66" y="0" />
+		<image id="time-minute1" href="images/0.png" class="digit primary" x="$" y="0" />
 
 		<!-- Animate in -->
 		<animate id="aod-animate-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="load" easing="ease-in" />
@@ -64,8 +66,8 @@
 
 	<g id="bottom-bar" transform="translate(0, 96%)">
 		<g id="date-display">
-			<text id="date-date" class="text--normal secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
-			<text id="date-highlight" class="text--normal primary" text-anchor="end" text-length="2" y="0" />
+			<text id="date-date" class="text--lg secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
+			<text id="date-highlight" class="text--lg primary" text-anchor="end" text-length="2" y="0" />
 		</g>
 
 		<!-- Animate in -->

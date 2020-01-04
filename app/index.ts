@@ -7,13 +7,12 @@ import { BatteryDisplay } from './battery';
 import { DateDisplay } from './date';
 import { HeartRateDisplay } from './heartRate';
 import { TimeDisplay } from './time';
-// import { Snow } from './snow';
 
 // Update the clock every minute
 clock.granularity = 'minutes';
 
 if (display.aodAvailable && app.permissions.granted('access_aod')) {
-	// Says we support AOD
+	// Say we support AOD
 	display.aodAllowed = true;
 }
 
@@ -34,12 +33,14 @@ const displays = [
 		getElementById<TextElement>('date-highlight')
 	),
 	new BatteryDisplay(
-		getElementById<GroupElement>('battery-display'),
+		getElementById<ContainerElement>('battery-display'),
 		getElementById<ImageElement>('battery-icon'),
-		getElementById<TextElement>('battery-level')
+		getElementById<LineElement>('battery-indicator'),
+		getElementById<TextElement>('battery-level'),
+		getElementById<TextElement>('battery-until-charged')
 	),
 	new HeartRateDisplay(
-		getElementById<GroupElement>('heartrate-display'),
+		getElementById<ContainerElement>('heartrate-display'),
 		{
 			off: getElementById<GraphicsElement>('heartrate-icon--off'),
 			interval: getElementById<GraphicsElement>('heartrate-icon--interval'),
@@ -48,7 +49,6 @@ const displays = [
 		getElementById<TextElement>('heartrate-rate'),
 		getElementById<TextElement>('heartrate-resting')
 	)
-	// new Snow()
 ];
 
 function getElementById<T extends Element>(selector: string): T {
