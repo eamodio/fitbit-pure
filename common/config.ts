@@ -1,4 +1,5 @@
 export interface Config {
+	accentColor: string | null;
 	animateHeartRate: 'off' | 'interval' | 'pulse' | null;
 	animateSeparator: boolean | null;
 	aodOpacity: number | null;
@@ -13,6 +14,7 @@ export interface Config {
 }
 
 export const defaultConfig: Config = {
+	accentColor: 'fb-black',
 	animateHeartRate: 'pulse',
 	animateSeparator: true,
 	aodOpacity: 0.6,
@@ -26,6 +28,7 @@ export const defaultConfig: Config = {
 };
 
 export const emptyConfig: Config = {
+	accentColor: null,
 	animateHeartRate: null,
 	animateSeparator: null,
 	aodOpacity: null,

@@ -1,4 +1,4 @@
-<svg>
+<svg class="theme--pure">
 	<defs>
 		<symbol id="activity-display-symbol">
 			<arc id="activity-left-goal" x="0" y="-38" width="48" height="48" arc-width="2" start-angle="0" sweep-angle="360" fill-opacity="0.4" />
@@ -25,7 +25,7 @@
 		</symbol>
 	</defs>
 
-	<rect class="background" />
+	<image id="background" href="images/background.png" class="background" />
 
 	<g id="top-bar">
 		<section id="battery-display">
@@ -75,7 +75,7 @@
 		<image id="time-hour0" href="images/0.png" class="digit primary" x="1%" y="0" />
 		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
 
-		<image id="time-separator" href="images/separator.png" class="digit dim" x="50%-8" y="0">
+		<image id="time-separator" href="images/separator.png" class="digit dim" x="50%-6" y="0">
 			<animate attributeName="fill-opacity" from="0.45" to="0" dur="0.5s" begin="enable" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			<animate attributeName="fill-opacity" from="0" to="0.45" dur="0.5s" begin="enable+0.5" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 		</image>

@@ -6,6 +6,7 @@ import { Bars } from './bars';
 import { BatteryDisplay } from './battery';
 import { DateDisplay } from './date';
 import { HeartRateDisplay } from './heartRate';
+import { Theme } from './theme';
 import { TimeDisplay } from './time';
 
 if (display.aodAvailable && app.permissions.granted('access_aod')) {
@@ -82,7 +83,8 @@ const displays = [
 				$units: getElementById<TextElement>('activity2-right-units')
 			}
 		}
-	])
+	]),
+	new Theme(getElementById<ImageElement>('background'))
 ];
 
 function getElementById<T extends Element>(selector: string): T {

@@ -1,13 +1,11 @@
 .background {
 	width: 100%;
 	height: 100%;
-	fill: fb-black;
 }
 
 .digit {
 	height: 93;
 	width: 66;
-	fill: fb-white;
 }
 
 .icon {
@@ -41,27 +39,31 @@
 .text--lg {
 	font-family: SevilleSharp-Book;
 	font-size: 36;
-	fill: fb-white;
 }
 
 .text--md {
 	font-family: SevilleSharp-Book;
 	font-size: 32;
-	fill: fb-white;
 }
 
 .text--sm {
 	font-family: SevilleSharp-Book;
 	font-size: 22;
-	fill: fb-white;
 }
 
 .text--xs {
 	font-family: SevilleSharp-Book;
 	font-size: 18;
-	fill: fb-white;
 }
 
 .text--bold {
 	font-family: SevilleSharp-Regular;
+}
+
+.theme--pure text {
+	fill: fb-white;
+}
+
+.theme--pure .digit {
+	fill: fb-white;
 }
