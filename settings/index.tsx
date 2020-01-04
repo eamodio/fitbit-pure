@@ -21,6 +21,7 @@ function PureSettings(props: SettingsComponentProps) {
 					/>
 				</Section>
 			)}
+
 			<Section
 				title={
 					<Text bold align="center">
@@ -33,6 +34,7 @@ function PureSettings(props: SettingsComponentProps) {
 				<Toggle settingsKey="showLeadingZero" label="Show Leading Zero" />
 				<Toggle settingsKey="showSeconds" label="Show Seconds" />
 			</Section>
+
 			<Section
 				title={
 					<Text bold align="center">
@@ -42,6 +44,7 @@ function PureSettings(props: SettingsComponentProps) {
 			>
 				<Toggle settingsKey="showBatteryPercentage" label="Show Percentage" />
 			</Section>
+
 			<Section
 				title={
 					<Text bold align="center">
@@ -74,6 +77,17 @@ function PureSettings(props: SettingsComponentProps) {
 				/>
 				<Toggle settingsKey="showRestingHeartRate" label="Show Resting Heart Rate" />
 			</Section>
+
+			<Section
+				title={
+					<Text bold align="center">
+						Activity Display
+					</Text>
+				}
+			>
+				<Toggle settingsKey="showActivityUnits" label="Show Units" />
+			</Section>
+
 			<Button label="Reset All Settings" onClick={() => props.settingsStorage.clear()} />
 		</Page>
 	);

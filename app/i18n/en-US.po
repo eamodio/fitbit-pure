@@ -57,3 +57,18 @@ msgstr "Sat"
 
 msgid "day_month_separator"
 msgstr ","
+
+msgid "active_minutes_units"
+msgstr "mins"
+
+msgid "calories_units"
+msgstr "cals"
+
+msgid "distance_units_kilometers"
+msgstr "km"
+
+msgid "distance_units_miles"
+msgstr "mi"
+
+msgid "steps_units"
+msgstr "steps"

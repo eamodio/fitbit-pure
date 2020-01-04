@@ -42,6 +42,16 @@ class Configuration {
 		return (this._config[key] ?? defaultConfig[key]) as NonNullable<Config[T]>;
 	}
 
+	set<T extends keyof Config>(key: T, value: Config[T]): void {
+		if (this._config[key] === value) return;
+
+		this._config[key] = value;
+
+		// TODO: To get this to work for companion exposed settings, need to send a message to the companion
+		this.save();
+		this._onDidChange.fire({ key: key });
+	}
+
 	@log('Configuration')
 	private load(): Config | undefined {
 		try {

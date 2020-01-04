@@ -46,6 +46,7 @@
 		"generate-fonts:light": "npx fitfont-generate fonts/SourceSansPro-ExtraLight.ttf 140 \"0123456789:\"",
 		"generate-fonts:normal": "npx fitfont-generate fonts/SourceSansPro-SemiBold.ttf 120 \"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ @$:~%#.,-+?[]\"",
 		"generate-colors": "node scripts/colors.js",
+		"grayscale": "magick mogrify -colorspace gray",
 		"lint": "eslint src/**/*.ts --fix",
 		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\""
 	},

@@ -16,6 +16,12 @@
 	fill: fb-white;
 }
 
+.icon--sm {
+	height: 24;
+	width: 24;
+	fill: fb-white;
+}
+
 #time-separator.digit {
 	width: 16;
 }
@@ -35,6 +41,12 @@
 .text--lg {
 	font-family: SevilleSharp-Book;
 	font-size: 36;
+	fill: fb-white;
+}
+
+.text--md {
+	font-family: SevilleSharp-Book;
+	font-size: 32;
 	fill: fb-white;
 }
 
