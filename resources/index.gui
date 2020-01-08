@@ -8,7 +8,7 @@
 				<animate attributeName="sweep-angle" from="0" to="360" dur="0.4s" begin="select+0.5s" easing="ease-in" final="freeze" />
 				<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect" />
 			</arc>
-			<image id="activity-left-icon" class="icon--sm primary" x="$-37" y="-27" fill-opacity="0.8" />
+			<image id="activity-left-icon" class="icon--activity primary" x="$-42" y="-32" fill-opacity="0.8" />
 			<text id="activity-left-value" class="text--md primary" text-anchor="start" text-length="8" x="58" y="-4" />
 			<text id="activity-left-units" class="text--sm secondary" text-anchor="start" text-length="8" x="58" y="6" />
 
@@ -19,7 +19,7 @@
 				<animate attributeName="sweep-angle" from="0" to="360" dur="0.4s" begin="select+0.5s" easing="ease-in" final="freeze" />
 				<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect" />
 			</arc>
-			<image id="activity-right-icon" class="icon--sm primary" x="100%-36" y="-27" fill-opacity="0.8" />
+			<image id="activity-right-icon" class="icon--activity primary" x="100%-42" y="-32" fill-opacity="0.8" />
 			<text id="activity-right-value" class="text--md primary" text-anchor="end" text-length="8" y="-4" />
 			<text id="activity-right-units" class="text--sm secondary" text-anchor="end" text-length="8" y="6" />
 		</symbol>
