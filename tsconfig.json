@@ -1,11 +1,14 @@
 {
 	"extends": "./node_modules/@fitbit/sdk/sdk-tsconfig.json",
 	"compilerOptions": {
+		"alwaysStrict": true,
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
+		"importHelpers": false,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
-		"strict": true
+		"strict": true,
+		"strictNullChecks": true
 	},
 	"exclude": ["scripts/*"]
 }

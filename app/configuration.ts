@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import { MessageEvent, peerSocket } from 'messaging';
-import { Config, defaultConfig, emptyConfig } from '../common/config';
+import { Config, defaultConfig } from '../common/config';
 import { debounce, Event, EventEmitter, log } from '../common/system';
+
+export { Colors } from '../common/config';
 
 export interface ConfigChanged {
 	key: keyof Config;
@@ -9,14 +11,14 @@ export interface ConfigChanged {
 
 class Configuration {
 	private readonly _onDidChange = new EventEmitter<ConfigChanged>();
-	get onDidChange(): Event<any> {
+	get onDidChange(): Event<ConfigChanged> {
 		return this._onDidChange.event;
 	}
 
 	private _config: Config;
 
 	constructor() {
-		this._config = this.load() ?? { ...emptyConfig };
+		this._config = this.load() ?? { ...defaultConfig };
 
 		peerSocket.addEventListener('message', e => this.onMessageReceived(e));
 	}
@@ -29,7 +31,7 @@ class Configuration {
 
 		// If the key is `null` assume a reset
 		if (e.data.key == null) {
-			this._config = { ...emptyConfig };
+			this._config = { ...defaultConfig };
 		} else {
 			this._config[e.data.key] = e.data.value;
 		}
@@ -47,9 +49,13 @@ class Configuration {
 
 		this._config[key] = value;
 
-		// TODO: To get this to work for companion exposed settings, need to send a message to the companion
 		this.save();
 		this._onDidChange.fire({ key: key });
+
+		if (key !== 'currentActivityView') {
+			// Send the modified setting to the companion
+			this.send(key, value);
+		}
 	}
 
 	@log('Configuration')
@@ -73,6 +79,20 @@ class Configuration {
 		} catch (ex) {
 			console.log(`Configuration.save: failed; ex=${ex}`);
 		}
+	}
+
+	@log('Configuration', { 0: key => `key=${key}`, 1: value => `value=${value}` })
+	private send<T extends keyof Config>(key: T, value: Config[T]) {
+		if (peerSocket.readyState !== peerSocket.OPEN) {
+			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);
+
+			return;
+		}
+
+		peerSocket.send({
+			key: key,
+			value: value != null ? JSON.stringify(value) : value
+		});
 	}
 }
 

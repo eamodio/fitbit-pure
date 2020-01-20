@@ -7,11 +7,9 @@ export class BatteryDisplay {
 	private _level: number | undefined;
 
 	constructor(
-		private readonly $container: ContainerElement,
-		private readonly $icon: ImageElement,
+		// private readonly $icon: ImageElement,
 		private readonly $indicator: LineElement,
-		private readonly $percentage: TextElement,
-		private readonly $untilCharged: TextElement
+		private readonly $percentage: TextElement // private readonly $untilCharged: TextElement
 	) {
 		battery.addEventListener('change', () => this.onBatteryChanged(battery));
 		configuration.onDidChange(this.onConfigurationChanged, this);
@@ -56,10 +54,11 @@ export class BatteryDisplay {
 		if (battery.charging) {
 			this.$indicator.style.fill = 'fb-black';
 			// this.$untilCharged.text = battery.timeUntilFull == null ? '' : `${battery.timeUntilFull} left`;
-			this.$untilCharged.text = '';
+			// this.$untilCharged.text = '';
 		} else {
-			this.$untilCharged.text = '';
+			// this.$untilCharged.text = '';
 
+			// eslint-disable-next-line no-lonely-if
 			if (level <= 16) {
 				this.$indicator.style.fill = 'fb-black';
 			} else if (level <= 30) {

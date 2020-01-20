@@ -1,63 +1,44 @@
 <svg class="theme--pure">
-	<defs>
-		<symbol id="activity-display-symbol">
-			<arc id="activity-left-goal" x="0" y="-38" width="48" height="48" arc-width="2" start-angle="0" sweep-angle="360" fill-opacity="0.5" />
-			<arc id="activity-left-progress" x="0" y="-38" width="48" height="48" arc-width="3" start-angle="0" sweep-angle="0">
-				<animate attributeName="sweep-angle" dur="0.1s" begin="select+1.1s" easing="ease-in" />
-				<animate attributeName="sweep-angle" from="360" dur="0.2s" begin="select+0.9s" easing="ease-out" final="freeze" />
-				<animate attributeName="sweep-angle" from="0" to="360" dur="0.4s" begin="select+0.5s" easing="ease-in" final="freeze" />
-				<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect" />
-			</arc>
-			<image id="activity-left-icon" class="icon--activity primary" x="$-47" y="-37" fill-opacity="0.8" />
-			<text id="activity-left-value" class="text--md primary" text-anchor="start" text-length="8" x="58" y="-4" />
-			<text id="activity-left-units" class="text--sm secondary" text-anchor="start" text-length="8" x="58" y="6" />
+	<image id="editing" href="images/editing.png" class="icon--editing" x="0" y="0" display="none" />
+	<image id="background" href="images/background.png" class="background theme-color--accent-background">
+		<!-- Animate in -->
+		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
 
-			<arc id="activity-right-goal" x="100%-48" y="-38" width="48" height="48" arc-width="2" start-angle="0" sweep-angle="360" fill-opacity="0.5" />
-			<arc id="activity-right-progress" x="100%-48" y="-38" width="48" height="48" arc-width="3" start-angle="0" sweep-angle="0">
-				<animate attributeName="sweep-angle" dur="0.1s" begin="select+1.1s" easing="ease-in" />
-				<animate attributeName="sweep-angle" from="360" dur="0.2s" begin="select+0.9s" easing="ease-out" final="freeze" />
-				<animate attributeName="sweep-angle" from="0" to="360" dur="0.4s" begin="select+0.5s" easing="ease-in" final="freeze" />
-				<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect" />
-			</arc>
-			<image id="activity-right-icon" class="icon--activity primary" x="100%-47" y="-37" fill-opacity="0.8" />
-			<text id="activity-right-value" class="text--md primary" text-anchor="end" text-length="8" y="-4" />
-			<text id="activity-right-units" class="text--sm secondary" text-anchor="end" text-length="8" y="6" />
-		</symbol>
-	</defs>
-
-	<image id="background" href="images/background.png" class="background" />
+		<!-- Animate out -->
+		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
+	</image>
 
 	<g id="top-bar">
 		<section id="battery-display">
 			<line id="battery-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
 			<image id="battery-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
-			<text id="battery-level" class="text--sm text--bold primary" text-anchor="start" text-length="4" x="$+10" y="21" />
-			<text id="battery-until-charged" class="text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" />
+			<text id="battery-level" class="text--bold text--sm primary" text-anchor="start" text-length="4" x="$+10" y="21" />
+			<text id="battery-until-charged" class="text text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" />
 		</section>
 
 		<section id="heartrate-display">
-			<g id="heartrate-icon--pulse" transform="translate(100%-26,12)" display="none">
-				<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
+			<g id="heartrate-icon--pulse" class="heartrate-icon" transform="translate(100%-26,12)" display="none">
+				<image href="images/heart.png" class="icon primary theme-color--accent-foreground" x="-16" y="-16" />
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
 				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
 				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
 				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
 			</g>
 
-			<g id="heartrate-icon--interval" transform="translate(100%-26,12)" display="none">
-				<image href="images/heart.png" class="icon primary" x="-16" y="-16" />
+			<g id="heartrate-icon--interval" class="heartrate-icon" transform="translate(100%-26,12)" display="none">
+				<image href="images/heart.png" class="icon primary theme-color--accent-foreground" x="-16" y="-16" />
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
 				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
 				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			</g>
 
-			<g id="heartrate-icon--off" transform="translate(100%-42,-4)" display="none">
-				<image href="images/heart.png" class="icon primary" x="0" y="0" />
+			<g id="heartrate-icon--off" class="heartrate-icon" transform="translate(100%-42,-4)" display="none">
+				<image href="images/heart.png" class="icon primary theme-color--accent-foreground" x="0" y="0" />
 			</g>
 
-			<text id="heartrate-rate" class="text--lg text--bold primary" text-anchor="start" text-length="3" y="25" />
-			<text id="heartrate-resting" class="text--sm text--bold secondary" text-anchor="end" text-length="5" y="21" />
+			<text id="heartrate-rate" class="text--bold text--lg primary" text-anchor="start" text-length="3" y="25" />
+			<text id="heartrate-resting" class="text--bold text--sm secondary" text-anchor="end" text-length="5" y="21" />
 		</section>
 
 		<!-- Animate in -->
@@ -72,19 +53,31 @@
 	</g>
 
 	<g id="time-display" transform="translate(0, 34%)">
-		<image id="time-hour0" href="images/0.png" class="digit primary" x="1%" y="0" />
+		<image id="time-hour0" href="images/0.png" class="digit primary" x="1%" y="0">
+			<!-- Animate in -->
+			<animate id="aod-animate-in" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
+
+			<!-- Animate out -->
+			<animate id="aod-animate-out" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
+		</image>
 		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
 
-		<image id="time-separator" href="images/separator.png" class="digit dim" x="50%-6" y="0">
-			<animate attributeName="fill-opacity" from="0.45" to="0" dur="0.5s" begin="enable" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-			<animate attributeName="fill-opacity" from="0" to="0.45" dur="0.5s" begin="enable+0.5" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+		<image id="time-separator" href="images/separator.png" class="digit digit--separator theme-color--accent-foreground" x="50%-6" y="0">
+			<animate attributeName="fill-opacity" from="0.5" to="0" dur="0.5s" begin="enable" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+			<animate attributeName="fill-opacity" from="0" to="0.5" dur="0.5s" begin="enable+0.5" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+
+			<!-- Animate in -->
+			<animate id="aod-animate-in" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
+
+			<!-- Animate out -->
+			<animate id="aod-animate-out" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
 		</image>
 
 		<image id="time-minute0" href="images/0.png" class="digit primary" x="55%" y="0" />
 		<image id="time-minute1" href="images/0.png" class="digit primary" x="$" y="0" />
 
 		<g>
-			<text id="time-seconds" class="text--sm primary" text-anchor="middle" text-length="4" x="$-30" y="120" />
+			<text id="time-seconds" class="text text--sm primary" text-anchor="middle" text-length="4" x="$-30" y="120" />
 
 			<!-- Animate in -->
 			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
@@ -100,13 +93,13 @@
 		<animate id="aod-animate-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="unload" easing="ease-in" final="freeze" />
 	</g>
 
-	<svg height="80" y="170">
+	<section height="80" y="170">
 		<g id="bottom-bar">
 			<use id="cycleview" href="#cycleview">
 				<use href="#cycleview-item">
 					<g id="date-display" transform="translate(0,50%)">
-						<text id="date-date" class="text--lg secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
-						<text id="date-highlight" class="text--lg primary" text-anchor="end" text-length="2" y="0" />
+						<text id="date-date" class="text text--lg secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
+						<text id="date-highlight" class="text text--lg primary theme-color--accent-foreground" text-anchor="end" text-length="2" y="0" />
 					</g>
 				</use>
 				<use href="#cycleview-item">
@@ -153,7 +146,7 @@
 			<animateTransform attributeType="translate" from="0,96%" to="0,96%-2" dur="0.1s" begin="unload" easing="ease-out" />
 			<animateTransform attributeType="translate" from="0,96%-2" to="0,100%+30" dur="0.3s" begin="unload+0.1" easing="ease-in" />
 		</g>
-	</svg>
+	</section>
 
 	<rect id="trigger" x="0" y="0" height="100%" width="100%" layer="100" pointer-events="visible" fill="none" />
 </svg>

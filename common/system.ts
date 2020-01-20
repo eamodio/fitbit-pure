@@ -20,9 +20,7 @@ export namespace Disposable {
 				}
 
 				for (const d of disposables) {
-					if (typeof d?.dispose === 'function') {
-						d.dispose();
-					}
+					d?.dispose();
 				}
 
 				disposed = true;

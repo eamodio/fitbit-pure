@@ -19,6 +19,8 @@ export class Configuration {
 	constructor() {
 		this.ensureDefaults();
 
+		peerSocket.addEventListener('message', e => this.onMessageReceived(e));
+
 		// peerSocket.addEventListener('open', () => console.log('Configuration.onPeerSocketOpen'));
 		// peerSocket.addEventListener('close', () => console.log('Configuration.onPeerSocketClose'));
 		// peerSocket.addEventListener('error', e =>
@@ -33,6 +35,19 @@ export class Configuration {
 		// 		this.send(key, settingsStorage.getItem(key));
 		// 	}
 		// }
+	}
+
+	@log('Configuration', {
+		0: e => `key=${e.data.key}, value=${e.data.value}`
+	})
+	private onMessageReceived(e: MessageEvent) {
+		if (e.data.key == null || settingsStorage.getItem(e.data.key) === e.data.value) return;
+
+		this._disposable?.dispose();
+
+		settingsStorage.setItem(e.data.key, e.data.value);
+
+		this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
 	}
 
 	@log('Configuration', {

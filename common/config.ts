@@ -1,5 +1,31 @@
+export type Colors =
+	| 'fb-black'
+	| 'fb-dark-gray'
+	| 'fb-light-gray'
+	| 'fb-white'
+	| 'fb-lavender'
+	| 'fb-slate'
+	| 'fb-blue'
+	| 'fb-cyan'
+	| 'fb-aqua'
+	| 'fb-cerulean'
+	| 'fb-indigo'
+	| 'fb-purple'
+	| 'fb-violet'
+	| 'fb-plum'
+	| 'fb-magenta'
+	| 'fb-pink'
+	| 'fb-red'
+	| 'fb-orange'
+	| 'fb-peach'
+	| 'fb-yellow'
+	| 'fb-lime'
+	| 'fb-mint'
+	| 'fb-green';
+
 export interface Config {
-	accentColor: string | null;
+	accentBackgroundColor: Colors | null;
+	accentForegroundColor: Colors | null;
 	animateHeartRate: 'off' | 'interval' | 'pulse' | null;
 	animateSeparator: boolean | null;
 	aodOpacity: number | null;
@@ -14,7 +40,8 @@ export interface Config {
 }
 
 export const defaultConfig: Config = {
-	accentColor: 'fb-black',
+	accentBackgroundColor: 'fb-black',
+	accentForegroundColor: 'fb-white',
 	animateHeartRate: 'pulse',
 	animateSeparator: true,
 	aodOpacity: 0.6,
@@ -25,18 +52,4 @@ export const defaultConfig: Config = {
 	showRestingHeartRate: true,
 	showSeconds: false,
 	currentActivityView: 0
-};
-
-export const emptyConfig: Config = {
-	accentColor: null,
-	animateHeartRate: null,
-	animateSeparator: null,
-	aodOpacity: null,
-	showActivityUnits: null,
-	showBatteryPercentage: null,
-	showDate: null,
-	showLeadingZero: null,
-	showRestingHeartRate: null,
-	showSeconds: null,
-	currentActivityView: null
 };
