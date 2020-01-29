@@ -1,3 +1,16 @@
+/* Fitbit Component Styles */
+
+.combo-button-background {
+	fill-opacity: 0.4;
+}
+
+.tumblerview-item {
+	font-family: SevilleSharp-Book;
+	font-size: 110;
+}
+
+/* My Styles */
+
 .background {
 	width: 100%;
 	height: 100%;
@@ -59,12 +72,20 @@
 	font-family: SevilleSharp-Bold;
 }
 
+.text--xl {
+	font-size: 42;
+}
+
 .text--lg {
 	font-size: 36;
 }
 
 .text--md {
 	font-size: 32;
+}
+
+.text--sm-plus {
+	font-size: 25;
 }
 
 .text--sm {
@@ -76,6 +97,10 @@
 } */
 
 .theme--pure text {
+	fill: fb-white;
+}
+
+.theme--pure textarea {
 	fill: fb-white;
 }
 

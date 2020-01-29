@@ -59,7 +59,20 @@ export class ActivityDisplay {
 		0: e => `e.key=${e?.key}`
 	})
 	private onConfigurationChanged(e?: ConfigChanged) {
-		if (e?.key != null && e.key !== 'showActivityUnits' /*&& e.key !== 'showDate'*/) return;
+		if (e?.key != null && e.key !== 'donated' && e.key !== 'showActivityUnits' /*&& e.key !== 'showDate'*/) return;
+
+		if (e?.key == null || e?.key === 'donated') {
+			const visibility = this.appManager.donated ? 'visible' : 'hidden';
+			for (const { $container } of this.activityGroups) {
+				$container.style.visibility = visibility;
+			}
+
+			if (e != null) {
+				requestAnimationFrame(() => this.setView(this.appManager.donated ? 0 : this.maxViews));
+			}
+
+			if (e?.key === 'donated') return;
+		}
 
 		// if (e?.key == null || e?.key === 'showDate') {
 		// 	if (!configuration.get('showDate') && this.getView() === 0) {
@@ -270,6 +283,10 @@ export class ActivityDisplay {
 		// 	index = 1;
 		// }
 
+		if (index !== 0 && index !== this.maxViews && !this.appManager.donated) {
+			index = this.maxViews;
+		}
+
 		if (index === this.getView()) return index;
 
 		if (vibrationPattern != null) {
@@ -287,7 +304,7 @@ export class ActivityDisplay {
 	}
 
 	private get maxViews() {
-		return this.activityGroups.length;
+		return this.appManager.donated ? this.activityGroups.length : this.activityGroups.length + 1;
 	}
 }
 

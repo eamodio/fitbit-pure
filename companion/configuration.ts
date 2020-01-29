@@ -76,6 +76,8 @@ export class Configuration {
 			}
 		} catch {}
 
+		this.send('donated', 'false');
+
 		this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
 	}
 

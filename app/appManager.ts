@@ -3,6 +3,7 @@ import document from 'document';
 import { vibration } from 'haptics';
 import { addEventListener, Disposable, Event, EventEmitter, log } from '../common/system';
 import { Colors, ConfigChanged, configuration } from './configuration';
+import { DonatePopup } from './popup';
 
 export class AppManager {
 	private readonly _onDidChangeDisplay = new EventEmitter<Display>();
@@ -20,6 +21,7 @@ export class AppManager {
 		return this._onDidChangeEditMode.event;
 	}
 
+	private _donateDisposable: Disposable | undefined;
 	private _mouseClickCancelTimer: number | undefined;
 	private _mouseDownDisposable: Disposable | undefined;
 	private _mouseDownTimer: number | undefined;
@@ -35,6 +37,14 @@ export class AppManager {
 		this.onConfigurationChanged();
 	}
 
+	get donated(): boolean {
+		return configuration.get('donated');
+	}
+
+	set donated(value: boolean) {
+		configuration.set('donated', value);
+	}
+
 	private _editing = false;
 	get editing(): boolean {
 		return this._editing;
@@ -42,6 +52,12 @@ export class AppManager {
 
 	set editing(value: boolean) {
 		if (this._editing === value) return;
+
+		if (value && !this.donated) {
+			this.showDonatePopup();
+
+			return;
+		}
 
 		this._editing = value;
 
@@ -60,6 +76,13 @@ export class AppManager {
 		requestAnimationFrame(() => this.onConfigurationChanged());
 	}
 
+	showDonatePopup() {
+		requestAnimationFrame(() => {
+			const popup = new DonatePopup(this);
+			popup.show();
+		});
+	}
+
 	@log('AppManager', {
 		0: e => `e.key=${e?.key}`
 	})
@@ -68,7 +91,8 @@ export class AppManager {
 			e?.key != null &&
 			e?.key !== 'accentBackgroundColor' &&
 			e?.key !== 'accentForegroundColor' &&
-			e?.key !== 'allowEditing'
+			e?.key !== 'allowEditing' &&
+			e.key !== 'donated'
 		) {
 			return;
 		}
@@ -79,6 +103,26 @@ export class AppManager {
 			}
 
 			if (e?.key === 'allowEditing') return;
+		}
+
+		if (e?.key == null || e?.key === 'donated') {
+			const $donateButton = document.getElementById<SquareButtonElement>('donate-button')!;
+
+			if (this.donated) {
+				$donateButton.style.visibility = 'hidden';
+
+				if (this._donateDisposable != null) {
+					this._donateDisposable.dispose();
+					this._donateDisposable = undefined;
+				}
+			} else {
+				$donateButton.style.visibility = 'visible';
+
+				this._donateDisposable?.dispose();
+				this._donateDisposable = addEventListener($donateButton, 'click', () => this.onDonateClicked());
+			}
+
+			if (e?.key === 'donated') return;
 		}
 
 		let color = configuration.get('accentBackgroundColor');
@@ -126,6 +170,11 @@ export class AppManager {
 		}
 
 		this._onDidChangeDisplay.fire(sensor);
+	}
+
+	@log('AppManager')
+	private onDonateClicked() {
+		this.showDonatePopup();
 	}
 
 	@log('AppManager', false)

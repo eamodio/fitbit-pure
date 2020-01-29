@@ -137,7 +137,7 @@
 					</g>
 				</use>
 				<use href="#cycleview-item">
-					<g id="activity1-display" transform="translate(0,50%)">
+					<g id="activity1-display" transform="translate(0,50%)" visibility="hidden">
 						<use href="#activity-display-symbol">
 							<set href="activity-left-goal" attributeName="id" to="activity1-left-goal" />
 							<set href="activity-left-progress" attributeName="id" to="activity1-left-progress" />
@@ -153,7 +153,7 @@
 					</g>
 				</use>
 				<use href="#cycleview-item">
-					<g id="activity2-display" transform="translate(0,50%)">
+					<g id="activity2-display" transform="translate(0,50%)" visibility="hidden">
 						<use href="#activity-display-symbol">
 							<set href="activity-left-goal" attributeName="id" to="activity2-left-goal" />
 							<set href="activity-left-progress" attributeName="id" to="activity2-left-progress" />
@@ -167,6 +167,12 @@
 							<set href="activity-right-units" attributeName="id" to="activity2-right-units" />
 						</use>
 					</g>
+				</use>
+				<use href="#cycleview-item">
+					<use id="donate-button" href="#square-button-icon" fill="fb-green" y="-5" height="60" layer="200" visibility="hidden">
+						<set href="#text" attributeName="text-buffer" to="Donate" />
+						<set href="#image" attributeName="href" to="images/heart.png" />
+					</use>
 				</use>
 			</use>
 
@@ -183,4 +189,6 @@
 	</section>
 
 	<rect id="trigger" x="0" y="0" height="100%" width="100%" layer="100" pointer-events="visible" fill="none" />
+
+	<use id="donate-popup" href="#donate-popup" layer="200" pointer-events="visible" display="none" overflow="hidden" />
 </svg>

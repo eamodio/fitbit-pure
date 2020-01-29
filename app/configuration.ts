@@ -31,7 +31,10 @@ class Configuration {
 
 		// If the key is `null` assume a reset
 		if (e.data.key == null) {
-			this._config = { ...defaultConfig };
+			this._config = {
+				...defaultConfig,
+				donated: this._config.donated
+			};
 		} else {
 			this._config[e.data.key] = e.data.value;
 		}

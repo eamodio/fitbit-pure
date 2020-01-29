@@ -30,6 +30,7 @@ export interface Config {
 	animateHeartRate: 'off' | 'interval' | 'pulse' | null;
 	animateSeparator: boolean | null;
 	aodOpacity: number | null;
+	donated: boolean | null;
 	showActivityUnits: boolean | null;
 	showBatteryPercentage: boolean | null;
 	showDate: boolean | null;
@@ -47,6 +48,7 @@ export const defaultConfig: Config = {
 	animateHeartRate: 'pulse',
 	animateSeparator: true,
 	aodOpacity: 0.6,
+	donated: false,
 	showActivityUnits: false,
 	showBatteryPercentage: true,
 	showDate: true,

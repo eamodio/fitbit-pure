@@ -1,6 +1,6 @@
-# Pure Fitbit Clock
+# Fitbit Pure Clock Face
 
-### A clean and simple clock for Fitbit Versa devices
+#### A beautifully designed, highly customizable, clean, and simple clock face for Fitbit Versa devices.
 
 ![](screenshot_watch.png)
 

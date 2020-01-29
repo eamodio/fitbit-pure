@@ -1,9 +1,12 @@
 <svg class="theme--pure">
-  <defs>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="import" href="/mnt/sysassets/widgets_common.gui" />
-    <link rel="import" href="/mnt/sysassets/widgets/baseview_widget.gui" />
-    <link rel="import" href="/mnt/sysassets/widgets/cycleview_widget.gui" />
+	<defs>
+		<link rel="stylesheet" href="styles.css" />
+		<link rel="import" href="/mnt/sysassets/widgets_common.gui" />
+		<link rel="import" href="/mnt/sysassets/widgets/baseview_widget.gui" />
+		<link rel="import" href="/mnt/sysassets/widgets/cycleview_widget.gui" />
+		<link rel="import" href="/mnt/sysassets/widgets/square_button_widget.gui" />
+		<link rel="import" href="/mnt/sysassets/widgets/tumblerview_widget.gui" />
+		<link rel="import" href="/mnt/sysassets/widgets/combo_button_widget.gui" />
 
 		<symbol id="activity-display-symbol">
 			<g transform="translate(24,-14)">
@@ -56,5 +59,67 @@
 			<text id="activity-right-value" class="text text--md primary" text-anchor="end" text-length="8" y="-4" />
 			<text id="activity-right-units" class="text text--sm secondary" text-anchor="end" text-length="8" y="6" />
 		</symbol>
-  </defs>
+
+		<symbol id="donate-popup">
+			<svg height="100%" overflow="hidden">
+				<defs>
+					<symbol id="tumblerview-digit">
+						<use id="donate-code-digit" href="#tumblerview">
+							<use id="donate-code-item-0" href="#tumbler-item"><text id="content">0</text></use>
+							<use id="donate-code-item-1" href="#tumbler-item"><text id="content">1</text></use>
+							<use id="donate-code-item-2" href="#tumbler-item"><text id="content">2</text></use>
+							<use id="donate-code-item-3" href="#tumbler-item"><text id="content">3</text></use>
+							<use id="donate-code-item-4" href="#tumbler-item"><text id="content">4</text></use>
+							<use id="donate-code-item-5" href="#tumbler-item"><text id="content">5</text></use>
+							<use id="donate-code-item-6" href="#tumbler-item"><text id="content">6</text></use>
+							<use id="donate-code-item-7" href="#tumbler-item"><text id="content">7</text></use>
+							<use id="donate-code-item-8" href="#tumbler-item"><text id="content">8</text></use>
+							<use id="donate-code-item-9" href="#tumbler-item"><text id="content">9</text></use>
+							<use id="donate-code-item-a" href="#tumbler-item"><text id="content">A</text></use>
+							<use id="donate-code-item-b" href="#tumbler-item"><text id="content">B</text></use>
+						</use>
+					</symbol>
+				</defs>
+
+				<rect x="0" y="0" height="100%" width="100%" fill="fb-black" />
+
+				<g class="donate-step" >
+					<text class="text text--bold text--md" x="50%" y="32" text-anchor="middle" text-buffer="Get PRO Features!" />
+					<text class="text text--sm-plus" x="50%" y="$-4" text-anchor="middle" text-buffer="Please donate at" />
+					<text class="text--extra-bold text--xl" x="50%" y="$+11" text-anchor="middle" text-buffer="pure.amod.io" />
+					<textarea class="text text--sm-plus" x="0" y="$-32" width="100%-10" height="140" text-anchor="middle">Your donation gives you access to PRO features — activity stats, theming, &amp; on-device quick toggles.</textarea>
+					<text class="text text--md" x="25" y="$+25" text-anchor="start" text-buffer="&#x2764; Thank you!" />
+				</g>
+
+				<g class="donate-step" display="none">
+					<svg height="210" overflow="hidden">
+						<rect x="0" y="0" height="210" width="100%" fill="fb-dark-gray" fill-opacity="0.6"/>
+
+						<use href="#tumblerview-digit" x="25" y="30">
+							<set href="donate-code-digit" attributeName="id" to="donate-code-digit-1" />
+						</use>
+						<use href="#tumblerview-digit" x="120" y="30">
+							<set href="donate-code-digit" attributeName="id" to="donate-code-digit-2" />
+						</use>
+						<use href="#tumblerview-digit" x="215" y="30">
+							<set href="donate-code-digit" attributeName="id" to="donate-code-digit-3" />
+						</use>
+					</svg>
+
+					<text class="text text--sm-plus" x="10" y="240" text-anchor="start" text-buffer="Enter donation code" />
+					<text class="text--extra-bold text--lg" x="13" y="$+10" text-anchor="start" text-buffer="pure.amod.io" />
+				</g>
+
+				<use id="donate-button" href="#combo-button-lower-right" fill="fb-green">
+					<set href="combo-button-icon" attributeName="href" to="images/next.png"/>
+					<set href="combo-button-icon-press" attributeName="href" to="images/next-pressed.png"/>
+					<set href="combo-button-stroke" attributeName="display" to="inline"/>
+					<set href="combo-button-fill" attributeName="display" to="inline"/>
+
+					<animate attributeName="fill" to="fb-red" dur="0s" begin="enable" />
+					<animate attributeName="fill" to="fb-green" dur="0.2s" begin="enable+0.5s" easing="ease-out" />
+				</use>
+			</svg>
+		</symbol>
+	</defs>
 </svg>
