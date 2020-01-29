@@ -71,23 +71,19 @@ export class AppManager {
 		for (const $el of $els) {
 			$el.style.fill = color;
 
-			let trigger = false;
-
 			let $animate = $el.getElementById<AnimateElement>('aod-animate-in');
 			if ($animate != null) {
 				$animate.from = 'fb-white';
 				$animate.to = color;
-				trigger = true;
 			}
 
 			$animate = $el.getElementById<AnimateElement>('aod-animate-out');
 			if ($animate != null) {
 				$animate.from = color;
 				$animate.to = 'fb-white';
-				trigger = true;
 			}
 
-			if (trigger && display.aodEnabled) {
+			if (e?.key == null && display.aodEnabled) {
 				$el.animate(display.aodActive ? 'unload' : 'load');
 			}
 		}

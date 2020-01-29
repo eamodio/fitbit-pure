@@ -164,9 +164,11 @@ export class TimeDisplay {
 					this.appManager.refresh();
 				}
 
-				this.$timeContainer.groupTransform!.translate.x = 0;
-				this.$hour0.style.visibility = 'visible';
-			} else {
+				if (this.$hour0.style.visibility !== 'visible') {
+					this.$timeContainer.groupTransform!.translate.x = 0;
+					this.$hour0.style.visibility = 'visible';
+				}
+			} else if (this.$hour0.style.visibility !== 'hidden') {
 				this.$hour0.style.visibility = 'hidden';
 				this.$timeContainer.groupTransform!.translate.x = -33;
 			}
@@ -174,10 +176,26 @@ export class TimeDisplay {
 			if (leadingZeroClassRegex.test(this.$hour0.class)) {
 				this.$hour0.class = this.$hour0.class.replace(leadingZeroClassRegex, '');
 				this.appManager.refresh();
+
+				this.$hour0.style.fill = 'fb-white';
+
+				let $animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in');
+				if ($animate != null) {
+					$animate.from = 'fb-white';
+					$animate.to = 'fb-white';
+				}
+
+				$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out');
+				if ($animate != null) {
+					$animate.from = 'fb-white';
+					$animate.to = 'fb-white';
+				}
 			}
 
-			this.$timeContainer.groupTransform!.translate.x = 0;
-			this.$hour0.style.visibility = 'visible';
+			if (this.$hour0.style.visibility !== 'visible') {
+				this.$timeContainer.groupTransform!.translate.x = 0;
+				this.$hour0.style.visibility = 'visible';
+			}
 		}
 		this.$hour1.href = `images/${hour[1] ?? 0}.png`;
 
@@ -238,7 +256,7 @@ export class TimeDisplay {
 				break;
 		}
 
-		this.$dateHighlight.x = x;
+		this.$dateHighlight.x = x + 1;
 		this.$dateHighlight.text = `${date.getDate()}`;
 	}
 
