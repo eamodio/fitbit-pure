@@ -8,29 +8,62 @@
 		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
 	</image>
 
+	<g id="editable-spots" display="none">
+		<!-- Battery -->
+		<circle cx="72" cy="20" r="40" fill="fb-blue" fill-opacity="0.4" />
+		<circle cx="72" cy="20" r="25" fill="fb-blue" fill-opacity="0.5" />
+
+		<!-- Resting heart rate -->
+		<circle cx="197" cy="20" r="40" fill="fb-blue" fill-opacity="0.4" />
+		<circle cx="197" cy="20" r="25" fill="fb-blue" fill-opacity="0.5" />
+
+		<!-- Leading Zero -->
+		<circle cx="20" cy="150" r="40" fill="fb-blue" fill-opacity="0.4" />
+		<circle cx="20" cy="150" r="25" fill="fb-blue" fill-opacity="0.5" />
+
+		<!-- Seconds -->
+		<circle cx="280" cy="150" r="40" fill="fb-blue" fill-opacity="0.4" />
+		<circle cx="280" cy="150" r="25" fill="fb-blue" fill-opacity="0.5" />
+
+		<!-- Theme -->
+		<circle cx="152" cy="148" r="40" fill="fb-blue" fill-opacity="0.5" />
+		<circle cx="152" cy="148" r="25" fill="fb-blue" fill-opacity="0.9" />
+
+		<!-- Units -->
+		<circle cx="67" cy="280" r="40" fill="fb-blue" fill-opacity="0.4" />
+		<circle cx="67" cy="280" r="25" fill="fb-blue" fill-opacity="0.5" />
+
+		<!-- Units -->
+		<circle cx="233" cy="280" r="40" fill="fb-blue" fill-opacity="0.4" />
+		<circle cx="233" cy="280" r="25" fill="fb-blue" fill-opacity="0.5" />
+
+		<animate attributeName="opacity" to="1" dur="0.2s" begin="enable" easing="ease-in" />
+		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="enable+1.7s" easing="ease-in" />
+	</g>
+
 	<g id="top-bar">
 		<section id="battery-display">
 			<line id="battery-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
 			<image id="battery-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
 			<text id="battery-level" class="text--bold text--sm primary" text-anchor="start" text-length="4" x="$+10" y="21" />
-			<text id="battery-until-charged" class="text text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" />
+			<!-- <text id="battery-until-charged" class="text text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" /> -->
 		</section>
 
 		<section id="heartrate-display">
 			<g id="heartrate-icon--pulse" class="heartrate-icon" transform="translate(100%-26,12)" display="none">
 				<image href="images/heart.png" class="icon primary theme-color--accent-foreground" x="-16" y="-16" />
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
-				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
-				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
-				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
+				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1s" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
+				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3s" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
+				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4s" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
 			</g>
 
 			<g id="heartrate-icon--interval" class="heartrate-icon" transform="translate(100%-26,12)" display="none">
 				<image href="images/heart.png" class="icon primary theme-color--accent-foreground" x="-16" y="-16" />
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
-				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3" end="disable" dur="0.1s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
-				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1s" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
+				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3s" end="disable" dur="0.1s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
+				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4s" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			</g>
 
 			<g id="heartrate-icon--off" class="heartrate-icon" transform="translate(100%-42,-4)" display="none">
@@ -44,12 +77,12 @@
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
 		<animateTransform attributeType="translate" from="0,-30" to="0,8" dur="0.3s" begin="load" easing="ease-in" />
-		<animateTransform attributeType="translate" from="0,8" to="0,6" dur="0.1s" begin="load+0.3" easing="ease-out" />
+		<animateTransform attributeType="translate" from="0,8" to="0,6" dur="0.1s" begin="load+0.3s" easing="ease-out" />
 
 		<!-- Animate out -->
 		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
 		<animateTransform attributeType="translate" from="0,6" to="0,8" dur="0.1s" begin="unload" easing="ease-out" />
-		<animateTransform attributeType="translate" from="0,8" to="0,-30" dur="0.3s" begin="unload+0.1" easing="ease-in" />
+		<animateTransform attributeType="translate" from="0,8" to="0,-30" dur="0.3s" begin="unload+0.1s" easing="ease-in" />
 	</g>
 
 	<g id="time-display" transform="translate(0, 34%)">
@@ -64,7 +97,7 @@
 
 		<image id="time-separator" href="images/separator.png" class="digit digit--separator theme-color--accent-foreground" x="50%-6" y="0">
 			<animate attributeName="fill-opacity" from="0.5" to="0" dur="0.5s" begin="enable" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-			<animate attributeName="fill-opacity" from="0" to="0.5" dur="0.5s" begin="enable+0.5" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+			<animate attributeName="fill-opacity" from="0" to="0.5" dur="0.5s" begin="enable+0.5s" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 
 			<!-- Animate in -->
 			<animate id="aod-animate-in" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
@@ -139,12 +172,12 @@
 			<!-- Animate in -->
 			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
 			<animateTransform attributeType="translate" from="0,100%+30" to="0,96%-2" dur="0.3s" begin="load" easing="ease-in" />
-			<animateTransform attributeType="translate" from="0,96%-2" to="0,96%" dur="0.1s" begin="load+0.3" easing="ease-out" />
+			<animateTransform attributeType="translate" from="0,96%-2" to="0,96%" dur="0.1s" begin="load+0.3s" easing="ease-out" />
 
 			<!-- Animate out -->
 			<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
 			<animateTransform attributeType="translate" from="0,96%" to="0,96%-2" dur="0.1s" begin="unload" easing="ease-out" />
-			<animateTransform attributeType="translate" from="0,96%-2" to="0,100%+30" dur="0.3s" begin="unload+0.1" easing="ease-in" />
+			<animateTransform attributeType="translate" from="0,96%-2" to="0,100%+30" dur="0.3s" begin="unload+0.1s" easing="ease-in" />
 		</g>
 	</section>
 

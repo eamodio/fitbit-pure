@@ -41,9 +41,18 @@ export class AppManager {
 	}
 
 	set editing(value: boolean) {
+		if (this._editing === value) return;
+
 		this._editing = value;
 
 		document.getElementById<ImageElement>('editing')!.style.display = value ? 'inline' : 'none';
+
+		const $spot = document.getElementById<GroupElement>('editable-spots')!;
+		$spot.style.display = value ? 'inline' : 'none';
+		if (value) {
+			requestAnimationFrame(() => $spot.animate('enable'));
+		}
+
 		this._onDidChangeEditMode.fire(value);
 	}
 
@@ -55,8 +64,21 @@ export class AppManager {
 		0: e => `e.key=${e?.key}`
 	})
 	private onConfigurationChanged(e?: ConfigChanged) {
-		if (e?.key != null && e?.key !== 'accentBackgroundColor' && e?.key !== 'accentForegroundColor') {
+		if (
+			e?.key != null &&
+			e?.key !== 'accentBackgroundColor' &&
+			e?.key !== 'accentForegroundColor' &&
+			e?.key !== 'allowEditing'
+		) {
 			return;
+		}
+
+		if (e?.key == null || e?.key === 'allowEditing') {
+			if (!configuration.get('allowEditing')) {
+				this.editing = false;
+			}
+
+			if (e?.key === 'allowEditing') return;
 		}
 
 		let color = configuration.get('accentBackgroundColor');
@@ -121,27 +143,19 @@ export class AppManager {
 			return;
 		}
 
-		if (e.screenX < 100 && e.screenY < 100) {
+		if (e.screenX < 110 && e.screenY < 55) {
 			vibration.start('bump');
 			configuration.set('showBatteryPercentage', !configuration.get('showBatteryPercentage'));
-		}
-
-		if (e.screenX > 200 && e.screenY < 100) {
+		} else if (e.screenX > 165 && e.screenY < 55) {
 			vibration.start('bump');
 			configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
-		}
-
-		if (e.screenX < 75 && e.screenY > 100 && e.screenY < 200) {
+		} else if (e.screenX < 75 && e.screenY > 100 && e.screenY < 200) {
 			vibration.start('bump');
 			configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
-		}
-
-		if (e.screenX > 225 && e.screenY > 100 && e.screenY < 200) {
+		} else if (e.screenX > 225 && e.screenY > 100 && e.screenY < 200) {
 			vibration.start('bump');
 			configuration.set('showSeconds', !configuration.get('showSeconds'));
-		}
-
-		if (e.screenX > 75 && e.screenX < 225 && e.screenY > 100 && e.screenY < 200) {
+		} else if (e.screenX > 75 && e.screenX < 225 && e.screenY > 75 && e.screenY < 225) {
 			vibration.start('bump');
 			let index = getColorIndex(configuration.get('accentBackgroundColor')) + 1;
 			if (index > 21) {
@@ -151,18 +165,16 @@ export class AppManager {
 			const color = getIndexColor(index);
 			configuration.set('accentBackgroundColor', color);
 			configuration.set('accentForegroundColor', color === 'fb-black' ? 'fb-white' : color);
-		}
-
-		if (e.screenY > 200) {
-			if (configuration.get('currentActivityView') === 0 || (e.screenX > 100 && e.screenX < 200)) {
+		} else if (e.screenY > 225) {
+			if (configuration.get('currentActivityView') === 0 || (e.screenX > 125 && e.screenX < 175)) {
 				this._onDidChangeView.fire();
-
-				return;
+			} else {
+				vibration.start('bump');
+				configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
 			}
-
-			vibration.start('bump');
-			configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
 		}
+
+		document.getElementById<GroupElement>('editable-spots')!.animate('enable');
 	}
 
 	@log('AppManager', false)
@@ -173,6 +185,8 @@ export class AppManager {
 			clearTimeout(this._mouseClickCancelTimer);
 			this._mouseClickCancelTimer = undefined;
 		}
+
+		if (!configuration.get('allowEditing')) return;
 
 		// When there is a swipe right or left on the clock face, no mouseup will occur
 		// I've found that the parent element gets a "reload" event when this happens

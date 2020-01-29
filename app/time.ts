@@ -256,7 +256,7 @@ export class TimeDisplay {
 				break;
 		}
 
-		this.$dateHighlight.x = x + 1;
+		this.$dateHighlight.x = x; // + 1;
 		this.$dateHighlight.text = `${date.getDate()}`;
 	}
 

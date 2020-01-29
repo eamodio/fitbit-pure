@@ -6,7 +6,7 @@ import { gettext } from 'i18n';
 import { goals, today } from 'user-activity';
 import { units } from 'user-settings';
 import { AppManager } from './appManager';
-import { addEventListener, defer, Disposable, log } from '../common/system';
+import { defer, log } from '../common/system';
 import { Colors, ConfigChanged, configuration } from './configuration';
 
 const arcWidth = 48;

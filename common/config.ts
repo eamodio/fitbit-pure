@@ -26,6 +26,7 @@ export type Colors =
 export interface Config {
 	accentBackgroundColor: Colors | null;
 	accentForegroundColor: Colors | null;
+	allowEditing: boolean | null;
 	animateHeartRate: 'off' | 'interval' | 'pulse' | null;
 	animateSeparator: boolean | null;
 	aodOpacity: number | null;
@@ -42,6 +43,7 @@ export interface Config {
 export const defaultConfig: Config = {
 	accentBackgroundColor: 'fb-black',
 	accentForegroundColor: 'fb-white',
+	allowEditing: true,
 	animateHeartRate: 'pulse',
 	animateSeparator: true,
 	aodOpacity: 0.6,
