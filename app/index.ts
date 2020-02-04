@@ -34,7 +34,8 @@ new TimeDisplay(
 	document.getElementById<TextElement>('time-seconds')!,
 	document.getElementById<GroupElement>('date-display')!,
 	document.getElementById<TextElement>('date-date')!,
-	document.getElementById<TextElement>('date-highlight')!
+	document.getElementById<TextElement>('date-highlight')!,
+	document.getElementById<RectElement>('date-highlight-bg')!
 );
 
 new BatteryDisplay(

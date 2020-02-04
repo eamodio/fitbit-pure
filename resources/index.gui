@@ -132,6 +132,7 @@
 				<use href="#cycleview-item">
 					<g id="date-display" transform="translate(0,50%)">
 						<text id="date-date" class="text text--lg secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
+						<rect id="date-highlight-bg" x="0" y="0" height="0" width="0" fill="fb-black"/>
 						<text id="date-highlight" class="text text--lg primary theme-color--accent-foreground" text-anchor="end" text-length="2" y="0" />
 					</g>
 				</use>

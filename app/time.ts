@@ -28,7 +28,8 @@ export class TimeDisplay {
 		private readonly $seconds: TextElement,
 		private readonly $dateContainer: GroupElement,
 		private readonly $date: TextElement,
-		private readonly $dateHighlight: TextElement
+		private readonly $dateHighlight: TextElement,
+		private readonly $dateHighlightBg: RectElement
 	) {
 		clock.addEventListener('tick', e => this.onTick(e));
 
@@ -256,8 +257,14 @@ export class TimeDisplay {
 				break;
 		}
 
-		this.$dateHighlight.x = x; // + 1;
+		this.$dateHighlight.x = x;
 		this.$dateHighlight.text = `${date.getDate()}`;
+
+		const bbox = this.$dateHighlight.getBBox();
+		this.$dateHighlightBg.x = bbox.x;
+		this.$dateHighlightBg.y = -bbox.height;
+		this.$dateHighlightBg.height = bbox.height;
+		this.$dateHighlightBg.width = bbox.width;
 	}
 
 	private updateAlwaysOnOpacity(aodOpacity: number) {
