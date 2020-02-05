@@ -53,24 +53,28 @@
 	</g>
 
 	<g id="time-display" transform="translate(0, 34%)">
-		<image id="time-hour0" href="images/0.png" class="digit primary" x="1%" y="0">
+		<image id="time-hour0" href="images/0.png" class="digit" x="1%" y="0" fill-opacity="1">
 			<!-- Animate in -->
-			<animate id="aod-animate-in" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
+			<animate id="aod-animate-in-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
+			<animate id="aod-animate-in-fill-opacity" attributeName="fill-opacity" from="1" to="1" dur="0.4s" begin="load" easing="ease-in" />
 
 			<!-- Animate out -->
-			<animate id="aod-animate-out" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out-fill-opacity" attributeName="fill-opacity" from="1" to="1" dur="0.4s" begin="unload" easing="ease-in" />
 		</image>
 		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
 
-		<image id="time-separator" href="images/separator.png" class="digit digit--separator theme-color--accent-foreground" x="50%-6" y="0">
+		<image id="time-separator" href="images/separator.png" class="digit theme-color--accent-foreground" x="50%-6" y="0" fill-opacity="0.5">
 			<animate attributeName="fill-opacity" from="0.5" to="0" dur="0.5s" begin="enable" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			<animate attributeName="fill-opacity" from="0" to="0.5" dur="0.5s" begin="enable+0.5s" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 
 			<!-- Animate in -->
-			<animate id="aod-animate-in" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
+			<animate id="aod-animate-in-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
+			<animate id="aod-animate-in-fill-opacity" attributeName="fill-opacity" from="1" to="1" dur="0.4s" begin="load" easing="ease-in" />
 
 			<!-- Animate out -->
-			<animate id="aod-animate-out" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out-fill-opacity" attributeName="fill-opacity" from="1" to="1" dur="0.4s" begin="unload" easing="ease-in" />
 		</image>
 
 		<image id="time-minute0" href="images/0.png" class="digit primary" x="55%" y="0" />

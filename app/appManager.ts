@@ -30,6 +30,31 @@ const colors: Colors[] = [
 	'fb-green'
 ];
 
+const opacities = new Float32Array([
+	0.35, // fb-black
+	0.35, // fb-light-gray
+	0.35, // fb-white
+	0.4, // fb-lavender
+	0.55, // fb-slate
+	0.55, // fb-blue
+	0.4, // fb-cyan
+	0.35, // fb-aqua
+	0.5, // fb-cerulean
+	0.65, // fb-indigo
+	0.5, // fb-purple
+	0.45, // fb-violet
+	0.55, // fb-plum
+	0.4, // fb-magenta
+	0.4, // fb-pink
+	0.4, // fb-red
+	0.4, // fb-orange
+	0.35, // fb-peach
+	0.35, // fb-yellow
+	0.35, // fb-lime
+	0.35, // fb-mint
+	0.5 // fb-green
+]);
+
 export class AppManager {
 	private readonly _onDidChangeDisplay = new EventEmitter<Display>();
 	get onDidChangeDisplay(): Event<Display> {
@@ -150,38 +175,68 @@ export class AppManager {
 			if (e?.key === 'donated') return;
 		}
 
-		let color = configuration.get('accentBackgroundColor');
-		let $els = document.getElementsByClassName<StyledElement>('theme-color--accent-background');
+		if (e?.key == null || e?.key === 'accentBackgroundColor') {
+			const color = configuration.get('accentBackgroundColor');
+			const $els = document.getElementsByClassName<StyledElement>('theme-color--accent-background');
 
-		let i = $els.length;
-		while (i--) {
-			const $el = $els[i];
-			$el.style.visibility = color === 'fb-black' ? 'hidden' : 'visible';
-			$el.style.fill = color;
+			let i = $els.length;
+			while (i--) {
+				const $el = $els[i];
+				$el.style.visibility = color === 'fb-black' ? 'hidden' : 'visible';
+				$el.style.fill = color;
+			}
 		}
 
-		color = configuration.get('accentForegroundColor');
-		$els = document.getElementsByClassName<StyledElement>('theme-color--accent-foreground');
+		if (e?.key == null || e?.key === 'accentForegroundColor') {
+			const color = configuration.get('accentForegroundColor');
+			const $els = document.getElementsByClassName<StyledElement>('theme-color--accent-foreground');
 
-		i = $els.length;
-		while (i--) {
-			const $el = $els[i];
-			$el.style.fill = color;
+			const index = colors.indexOf(color);
+			const opacity = Number(opacities[index === -1 ? 0 : index].toFixed(2));
+			const separatorOpacity = opacity + 0.2;
 
-			let $animate = $el.getElementById<AnimateElement>('aod-animate-in');
-			if ($animate != null) {
-				$animate.from = 'fb-white';
-				$animate.to = color;
-			}
+			// console.log(`color=${color}, index=${index}, opacity=${opacity}`);
 
-			$animate = $el.getElementById<AnimateElement>('aod-animate-out');
-			if ($animate != null) {
-				$animate.from = color;
-				$animate.to = 'fb-white';
-			}
+			let i = $els.length;
+			while (i--) {
+				const $el = $els[i];
+				$el.style.fill = color;
 
-			if (e?.key == null && display.aodEnabled) {
-				$el.animate(display.aodActive ? 'unload' : 'load');
+				if ($el.id === 'time-separator') {
+					$el.style.fillOpacity = separatorOpacity;
+					($el.children[0] as AnimateElement).from = separatorOpacity;
+					($el.children[1] as AnimateElement).to = separatorOpacity;
+				} else if ($el.id === 'time-hour0') {
+					$el.style.fillOpacity = opacity;
+				}
+
+				let $animate = $el.getElementById<AnimateElement>('aod-animate-in-fill');
+				if ($animate != null) {
+					$animate.from = 'fb-white';
+					$animate.to = color;
+				}
+
+				$animate = $el.getElementById<AnimateElement>('aod-animate-in-fill-opacity');
+				if ($animate != null) {
+					$animate.from = 0.35;
+					$animate.to = opacity;
+				}
+
+				$animate = $el.getElementById<AnimateElement>('aod-animate-out-fill');
+				if ($animate != null) {
+					$animate.from = color;
+					$animate.to = 'fb-white';
+				}
+
+				$animate = $el.getElementById<AnimateElement>('aod-animate-out-fill-opacity');
+				if ($animate != null) {
+					$animate.from = opacity;
+					$animate.to = 0.35;
+				}
+
+				if (!this.editing) {
+					$el.animate(display.aodEnabled && display.aodActive ? 'unload' : 'load');
+				}
 			}
 		}
 	}

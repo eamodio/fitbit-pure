@@ -31,10 +31,6 @@
 	width: 66;
 }
 
-.digit--separator {
-	fill-opacity: 0.5;
-}
-
 .icon {
 	height: 32;
 	width: 32;
@@ -57,10 +53,6 @@
 
 .secondary {
 	fill-opacity: 0.7;
-}
-
-.dimmed {
-	fill-opacity: 0.35;
 }
 
 .text {

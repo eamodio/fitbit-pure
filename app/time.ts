@@ -8,7 +8,7 @@ import { ConfigChanged, configuration } from './configuration';
 import { defer, log } from '../common/system';
 
 const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
-const leadingZeroClassRegex = /\btheme-color--accent-foreground\b\s\bdimmed\b/;
+const leadingZeroClassRegex = /\btheme-color--accent-foreground\b/;
 
 enum Previous {
 	Minutes = 0,
@@ -162,7 +162,8 @@ export class TimeDisplay {
 		if (hour[0] === '0') {
 			if (configuration.get('showLeadingZero')) {
 				if (!leadingZeroClassRegex.test(this.$hour0.class)) {
-					this.$hour0.class += ' theme-color--accent-foreground dimmed';
+					this.$hour0.class += ' theme-color--accent-foreground';
+
 					this.appManager.refresh();
 				}
 
@@ -177,9 +178,8 @@ export class TimeDisplay {
 		} else {
 			if (leadingZeroClassRegex.test(this.$hour0.class)) {
 				this.$hour0.class = this.$hour0.class.replace(leadingZeroClassRegex, '');
-				this.appManager.refresh();
-
 				this.$hour0.style.fill = 'fb-white';
+				this.$hour0.style.fillOpacity = 1;
 
 				let $animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in');
 				if ($animate != null) {
@@ -192,6 +192,8 @@ export class TimeDisplay {
 					$animate.from = 'fb-white';
 					$animate.to = 'fb-white';
 				}
+			} else {
+				console.log('no dim');
 			}
 
 			if (this.$hour0.style.visibility !== 'visible') {
@@ -266,6 +268,8 @@ export class TimeDisplay {
 
 		const bbox = $dateHighlight.getBBox();
 
+		// Required because there seems to be an off-by-1 pixel calc with certain characters
+		// So instead of relying on exact overlay, paint a black rect below the highlight
 		const $dateHighlightBg = document.getElementById<RectElement>('date-highlight-bg')!;
 		$dateHighlightBg.x = bbox.x;
 		$dateHighlightBg.y = -bbox.height;
