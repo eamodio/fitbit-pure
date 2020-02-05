@@ -270,7 +270,15 @@ function PureSettings(props: SettingsComponentProps) {
 				</Section>
 			)}
 
-			<Button label="Reset All Settings" onClick={() => props.settingsStorage.clear()} />
+			<Button
+				label="Reset All Settings"
+				onClick={() => {
+					props.settingsStorage.clear();
+					if (donated) {
+						props.settingsStorage.setItem('donated', 'true');
+					}
+				}}
+			/>
 
 			{debug && <Toggle settingsKey="donated" label="Donated" />}
 		</Page>
