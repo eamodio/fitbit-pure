@@ -10,26 +10,24 @@ import { defer, log } from '../common/system';
 const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
 const leadingZeroClassRegex = /\btheme-color--accent-foreground\b\s\bdimmed\b/;
 
+enum Previous {
+	Minutes = 0,
+	Hours = 1,
+	Day = 2,
+	Month = 3
+}
+
 export class TimeDisplay {
 	private _date: Date | undefined;
-	private _prevMinutes: number | undefined;
-	private _prevHours: number | undefined;
-	private _prevDay: number | undefined;
-	private _prevMonth: number | undefined;
+	private _previous: Int8Array = new Int8Array(4);
 
 	constructor(
 		private readonly appManager: AppManager,
-		private readonly $timeContainer: GroupElement,
 		private readonly $hour0: ImageElement,
 		private readonly $hour1: ImageElement,
-		private readonly $separator: ImageElement,
 		private readonly $minute0: ImageElement,
 		private readonly $minute1: ImageElement,
-		private readonly $seconds: TextElement,
-		private readonly $dateContainer: GroupElement,
-		private readonly $date: TextElement,
-		private readonly $dateHighlight: TextElement,
-		private readonly $dateHighlightBg: RectElement
+		private readonly $seconds: TextElement
 	) {
 		clock.addEventListener('tick', e => this.onTick(e));
 
@@ -64,7 +62,9 @@ export class TimeDisplay {
 		}
 
 		if (e?.key == null || e?.key === 'animateSeparator') {
-			this.$separator.animate(!display.aodActive && configuration.get('animateSeparator') ? 'enable' : 'disable');
+			document
+				.getElementById<ImageElement>('time-separator')!
+				.animate(!display.aodActive && configuration.get('animateSeparator') ? 'enable' : 'disable');
 
 			if (e?.key === 'animateSeparator') return;
 		}
@@ -76,7 +76,9 @@ export class TimeDisplay {
 		}
 
 		if (e?.key == null || e?.key === 'showDate') {
-			this.$dateContainer.style.display = configuration.get('showDate') ? 'inline' : 'none';
+			document.getElementById<GroupElement>('date-display')!.style.display = configuration.get('showDate')
+				? 'inline'
+				: 'none';
 		}
 
 		if (e?.key == null || e?.key === 'showSeconds') {
@@ -94,9 +96,6 @@ export class TimeDisplay {
 		this.render();
 	}
 
-	@log('TimeDisplay', {
-		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
-	})
 	private onDisplayChanged(sensor: Display) {
 		if (sensor.aodEnabled && configuration.get('showSeconds')) {
 			this.updateClock(true);
@@ -106,12 +105,14 @@ export class TimeDisplay {
 
 		requestAnimationFrame(() => {
 			if (sensor.aodEnabled) {
-				this.$timeContainer.animate(sensor.aodActive ? 'unload' : 'load');
+				document.getElementById<GroupElement>('time-display')!.animate(sensor.aodActive ? 'unload' : 'load');
 				document.getElementById<ImageElement>('background')!.animate(sensor.aodActive ? 'unload' : 'load');
 			}
 
 			if (configuration.get('animateSeparator')) {
-				this.$separator.animate(sensor.on && !sensor.aodActive ? 'enable' : 'disable');
+				document
+					.getElementById<ImageElement>('time-separator')!
+					.animate(sensor.on && !sensor.aodActive ? 'enable' : 'disable');
 			}
 		});
 	}
@@ -121,9 +122,9 @@ export class TimeDisplay {
 		this.render();
 	}
 
-	@log('TimeDisplay', {
-		0: e => `date=${e.date}`
-	})
+	// @log('TimeDisplay', {
+	// 	0: e => `date=${e.date}`
+	// })
 	private onTick({ date }: TickEvent) {
 		this._date = date;
 		this.renderCore();
@@ -134,7 +135,7 @@ export class TimeDisplay {
 		this.renderCore(true);
 	}
 
-	@log('TimeDisplay')
+	// @log('TimeDisplay')
 	private renderCore(force: boolean = false) {
 		const date = this._date ?? emptyDate;
 
@@ -143,18 +144,18 @@ export class TimeDisplay {
 		}
 
 		const minutes = this.appManager.editing ? 0 : date.getMinutes();
-		if (!force && minutes === this._prevMinutes) return;
+		if (!force && minutes === this._previous[Previous.Minutes]) return;
 
-		this._prevMinutes = minutes;
+		this._previous[Previous.Minutes] = minutes;
 
 		const minute = zeroPad(minutes);
 		this.$minute0.href = `images/${minute[0] ?? 0}.png`;
 		this.$minute1.href = `images/${minute[1] ?? 0}.png`;
 
 		const hours = this.appManager.editing ? 0 : date.getHours();
-		if (!force && hours === this._prevHours) return;
+		if (!force && hours === this._previous[Previous.Hours]) return;
 
-		this._prevHours = hours;
+		this._previous[Previous.Hours] = hours;
 
 		const hour = zeroPad(!this.appManager.editing && preferences.clockDisplay === '12h' ? hours % 12 || 12 : hours);
 		this.$hour0.href = `images/${hour[0] ?? 0}.png`;
@@ -166,12 +167,12 @@ export class TimeDisplay {
 				}
 
 				if (this.$hour0.style.visibility !== 'visible') {
-					this.$timeContainer.groupTransform!.translate.x = 0;
+					document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = 0;
 					this.$hour0.style.visibility = 'visible';
 				}
 			} else if (this.$hour0.style.visibility !== 'hidden') {
 				this.$hour0.style.visibility = 'hidden';
-				this.$timeContainer.groupTransform!.translate.x = -33;
+				document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = -33;
 			}
 		} else {
 			if (leadingZeroClassRegex.test(this.$hour0.class)) {
@@ -194,21 +195,21 @@ export class TimeDisplay {
 			}
 
 			if (this.$hour0.style.visibility !== 'visible') {
-				this.$timeContainer.groupTransform!.translate.x = 0;
+				document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = 0;
 				this.$hour0.style.visibility = 'visible';
 			}
 		}
 		this.$hour1.href = `images/${hour[1] ?? 0}.png`;
 
 		const day = date.getDay();
-		if (!force && day === this._prevDay) return;
+		if (!force && day === this._previous[Previous.Day]) return;
 
-		this._prevDay = day;
+		this._previous[Previous.Day] = day;
 
 		const month = date.getMonth();
-		if (!force && month === this._prevMonth) return;
+		if (!force && month === this._previous[Previous.Month]) return;
 
-		this._prevMonth = month;
+		this._previous[Previous.Month] = month;
 
 		if (!configuration.get('showDate')) return;
 
@@ -216,28 +217,30 @@ export class TimeDisplay {
 		const dayName = gettext(`day_short_${day}`);
 		const dayMonthSeparator = gettext('day_month_separator');
 
+		const $date = document.getElementById<TextElement>('date-date')!;
+
 		let x: number;
 		switch (locale.language) {
 			case 'zh-cn':
 				// 2月7日周二 = Month_Date_Weekday
-				this.$date.text = `${monthName}${dayMonthSeparator}${date.getDate()}`;
-				x = this.$date.getBBox().width;
-				this.$date.text += `${dayName}`;
-				x += this.$date.getBBox().left;
+				$date.text = `${monthName}${dayMonthSeparator}${date.getDate()}`;
+				x = $date.getBBox().width;
+				$date.text += `${dayName}`;
+				x += $date.getBBox().left;
 				break;
 			case 'ja-jp':
 				// 8月3日（木）= Month_Date (Weekday)
-				this.$date.text = `${monthName}${dayMonthSeparator}${date.getDate()}`;
-				x = this.$date.getBBox().width;
-				this.$date.text += ` (${dayName})`;
-				x += this.$date.getBBox().left;
+				$date.text = `${monthName}${dayMonthSeparator}${date.getDate()}`;
+				x = $date.getBBox().width;
+				$date.text += ` (${dayName})`;
+				x += $date.getBBox().left;
 				break;
 			case 'ko-kr':
 				// 2/7 (목) = Month/date (day)
-				this.$date.text = `${date.getMonth() + 1}${dayMonthSeparator}${date.getDate()}`;
-				x = this.$date.getBBox().width;
-				this.$date.text += ` (${dayName})`;
-				x += this.$date.getBBox().left;
+				$date.text = `${date.getMonth() + 1}${dayMonthSeparator}${date.getDate()}`;
+				x = $date.getBBox().width;
+				$date.text += ` (${dayName})`;
+				x += $date.getBBox().left;
 				break;
 			case 'en-us':
 			case 'en-ca':
@@ -245,35 +248,40 @@ export class TimeDisplay {
 			case 'es-pr':
 			case 'en-se':
 				// Thu, Feb 7
-				this.$date.text = `${dayName}${dayMonthSeparator} ${monthName} ${date.getDate()}`;
-				x = this.$date.getBBox().right;
+				$date.text = `${dayName}${dayMonthSeparator} ${monthName} ${date.getDate()}`;
+				x = $date.getBBox().right;
 				break;
 			default:
 				// Thu, 7 Feb
-				this.$date.text = `${dayName}${dayMonthSeparator} ${date.getDate()}`;
-				x = this.$date.getBBox().width;
-				this.$date.text += ` ${monthName}`;
-				x += this.$date.getBBox().left;
+				$date.text = `${dayName}${dayMonthSeparator} ${date.getDate()}`;
+				x = $date.getBBox().width;
+				$date.text += ` ${monthName}`;
+				x += $date.getBBox().left;
 				break;
 		}
 
-		this.$dateHighlight.x = x;
-		this.$dateHighlight.text = `${date.getDate()}`;
+		const $dateHighlight = document.getElementById<TextElement>('date-highlight')!;
+		$dateHighlight.x = x;
+		$dateHighlight.text = date.getDate().toString();
 
-		const bbox = this.$dateHighlight.getBBox();
-		this.$dateHighlightBg.x = bbox.x;
-		this.$dateHighlightBg.y = -bbox.height;
-		this.$dateHighlightBg.height = bbox.height;
-		this.$dateHighlightBg.width = bbox.width;
+		const bbox = $dateHighlight.getBBox();
+
+		const $dateHighlightBg = document.getElementById<RectElement>('date-highlight-bg')!;
+		$dateHighlightBg.x = bbox.x;
+		$dateHighlightBg.y = -bbox.height;
+		$dateHighlightBg.height = bbox.height;
+		$dateHighlightBg.width = bbox.width;
 	}
 
 	private updateAlwaysOnOpacity(aodOpacity: number) {
-		let $animate = this.$timeContainer.getElementById<AnimateElement>('aod-animate-in');
+		const $timeContainer = document.getElementById<GroupElement>('time-display')!;
+
+		let $animate = $timeContainer.getElementById<AnimateElement>('aod-animate-in');
 		if ($animate != null) {
 			$animate.from = aodOpacity;
 		}
 
-		$animate = this.$timeContainer.getElementById<AnimateElement>('aod-animate-out');
+		$animate = $timeContainer.getElementById<AnimateElement>('aod-animate-out');
 		if ($animate != null) {
 			$animate.to = aodOpacity;
 		}

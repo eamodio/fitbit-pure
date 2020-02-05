@@ -47,6 +47,7 @@ class Configuration {
 		return (this._config[key] ?? defaultConfig[key]) as NonNullable<Config[T]>;
 	}
 
+	@log('Configuration')
 	set<T extends keyof Config>(key: T, value: Config[T]): void {
 		if (this._config[key] === value) return;
 
@@ -84,7 +85,7 @@ class Configuration {
 		}
 	}
 
-	@log('Configuration', { 0: key => `key=${key}`, 1: value => `value=${value}` })
+	@log('Configuration')
 	private send<T extends keyof Config>(key: T, value: Config[T]) {
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);

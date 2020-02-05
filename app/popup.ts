@@ -62,9 +62,6 @@ export class DonatePopup implements Disposable {
 		}
 	}
 
-	@log('DonatePopup', {
-		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
-	})
 	private onDisplayChanged(sensor: Display) {
 		if (!sensor.on || sensor.aodActive) {
 			this.close();

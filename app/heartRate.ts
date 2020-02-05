@@ -26,11 +26,7 @@ export class HeartRateDisplay {
 	private _isOnBody: boolean | undefined;
 	private _rate: number | undefined;
 
-	constructor(
-		private readonly appManager: AppManager,
-		private readonly $rate: TextElement,
-		private readonly $restingRate: TextElement
-	) {
+	constructor(private readonly appManager: AppManager) {
 		this._hasUserProfileAccess = app.permissions.granted('access_user_profile');
 
 		if (HeartRateSensor == null || !app.permissions.granted('access_heart_rate')) {
@@ -83,7 +79,12 @@ export class HeartRateDisplay {
 
 		if (e?.key == null || e.key === 'animateHeartRate') {
 			if (e?.key === 'animateHeartRate') {
-				for (const $el of document.getElementsByClassName<GraphicsElement>('heartrate-icon')) {
+				const $els = document.getElementsByClassName<GraphicsElement>('heartrate-icon');
+
+				let i = $els.length;
+				while (i--) {
+					const $el = $els[i];
+
 					$el.animate('disable');
 					$el.style.display = 'none';
 				}
@@ -97,11 +98,11 @@ export class HeartRateDisplay {
 		}
 
 		if (e?.key == null || e.key === 'showRestingHeartRate') {
-			if (configuration.get('showRestingHeartRate')) {
-				this.$restingRate.style.display = 'inline';
-			} else {
-				this.$restingRate.style.display = 'none';
-			}
+			document.getElementById<TextElement>('heartrate-resting')!.style.display = configuration.get(
+				'showRestingHeartRate'
+			)
+				? 'inline'
+				: 'none';
 		}
 
 		if (display.on && !display.aodActive) {
@@ -109,14 +110,11 @@ export class HeartRateDisplay {
 		}
 	}
 
-	@log('HeartRateDisplay', {
-		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
-	})
 	private onDisplayChanged(sensor: Display) {
 		this.updateState();
 	}
 
-	@log('TimeDisplay')
+	@log('HeartRateDisplay')
 	private onEditModeChanged(editing: boolean) {
 		this.render();
 	}
@@ -133,7 +131,7 @@ export class HeartRateDisplay {
 	}
 
 	@defer()
-	@log('HeartRateDisplay')
+	// @log('HeartRateDisplay')
 	private render() {
 		let rate = this.appManager.editing ? 0 : this._rate;
 		if (rate == null) {
@@ -141,15 +139,18 @@ export class HeartRateDisplay {
 			rate = timestamp > 0 ? this.heartRateSensor?.heartRate ?? 0 : 0;
 		}
 
-		this.$rate.text = `${rate > 0 ? rate : '--'}`;
-		this.$restingRate.text = `${
+		const $rate = document.getElementById<TextElement>('heartrate-rate')!;
+		$rate.text = `${rate > 0 ? rate : '--'}`;
+
+		const $restingRate = document.getElementById<TextElement>('heartrate-resting')!;
+		$restingRate.text = `${
 			this._hasUserProfileAccess ? (this.appManager.editing ? '00' : user.restingHeartRate) ?? '' : ''
 		}`;
 
 		// const iconWidth = this.$icon.getBBox().width;
-		const x = screenWidth - iconWidth - this.$rate.getBBox().width - 20;
-		this.$rate.x = x;
-		this.$restingRate.x = x - 10;
+		const x = screenWidth - iconWidth - $rate.getBBox().width - 20;
+		$rate.x = x;
+		$restingRate.x = x - 10;
 
 		this.$icon.style.display = 'inline';
 

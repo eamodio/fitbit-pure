@@ -5,6 +5,31 @@ import { addEventListener, Disposable, Event, EventEmitter, log } from '../commo
 import { Colors, ConfigChanged, configuration } from './configuration';
 import { DonatePopup } from './popup';
 
+const colors: Colors[] = [
+	'fb-black',
+	'fb-light-gray',
+	'fb-white',
+	'fb-lavender',
+	'fb-slate',
+	'fb-blue',
+	'fb-cyan',
+	'fb-aqua',
+	'fb-cerulean',
+	'fb-indigo',
+	'fb-purple',
+	'fb-violet',
+	'fb-plum',
+	'fb-magenta',
+	'fb-pink',
+	'fb-red',
+	'fb-orange',
+	'fb-peach',
+	'fb-yellow',
+	'fb-lime',
+	'fb-mint',
+	'fb-green'
+];
+
 export class AppManager {
 	private readonly _onDidChangeDisplay = new EventEmitter<Display>();
 	get onDidChangeDisplay(): Event<Display> {
@@ -127,14 +152,20 @@ export class AppManager {
 
 		let color = configuration.get('accentBackgroundColor');
 		let $els = document.getElementsByClassName<StyledElement>('theme-color--accent-background');
-		for (const $el of $els) {
+
+		let i = $els.length;
+		while (i--) {
+			const $el = $els[i];
 			$el.style.visibility = color === 'fb-black' ? 'hidden' : 'visible';
 			$el.style.fill = color;
 		}
 
 		color = configuration.get('accentForegroundColor');
 		$els = document.getElementsByClassName<StyledElement>('theme-color--accent-foreground');
-		for (const $el of $els) {
+
+		i = $els.length;
+		while (i--) {
+			const $el = $els[i];
 			$el.style.fill = color;
 
 			let $animate = $el.getElementById<AnimateElement>('aod-animate-in');
@@ -200,12 +231,18 @@ export class AppManager {
 			configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
 		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY >= 24 && e.screenY <= 104) {
 			vibration.start('bump');
-			let index = getColorIndex(configuration.get('accentBackgroundColor')) + 1;
-			if (index > 21) {
+
+			let color = configuration.get('accentBackgroundColor');
+			// if (color === 'fb-dark-gray') {
+			// 	color = 'fb-black';
+			// }
+
+			let index = colors.indexOf(color) + 1;
+			if (index >= colors.length) {
 				index = 0;
 			}
 
-			const color = getIndexColor(index);
+			color = colors[index];
 			configuration.set('accentBackgroundColor', color);
 			configuration.set('accentForegroundColor', color === 'fb-black' ? 'fb-white' : color);
 		} else if (e.screenX <= 64 && e.screenY >= 108 && e.screenY <= 188) {
@@ -272,105 +309,5 @@ export class AppManager {
 		}
 
 		this._mouseDownDisposable?.dispose();
-	}
-}
-
-function getColorIndex(color: Colors): number {
-	switch (color) {
-		case 'fb-light-gray':
-			return 1;
-		case 'fb-white':
-			return 2;
-		case 'fb-lavender':
-			return 3;
-		case 'fb-slate':
-			return 4;
-		case 'fb-blue':
-			return 5;
-		case 'fb-cyan':
-			return 6;
-		case 'fb-aqua':
-			return 7;
-		case 'fb-cerulean':
-			return 8;
-		case 'fb-indigo':
-			return 9;
-		case 'fb-purple':
-			return 10;
-		case 'fb-violet':
-			return 11;
-		case 'fb-plum':
-			return 12;
-		case 'fb-magenta':
-			return 13;
-		case 'fb-pink':
-			return 14;
-		case 'fb-red':
-			return 15;
-		case 'fb-orange':
-			return 16;
-		case 'fb-peach':
-			return 17;
-		case 'fb-yellow':
-			return 18;
-		case 'fb-lime':
-			return 19;
-		case 'fb-mint':
-			return 20;
-		case 'fb-green':
-			return 21;
-		case 'fb-black':
-		case 'fb-dark-gray':
-		default:
-			return 0;
-	}
-}
-
-function getIndexColor(index: number): Colors {
-	switch (index) {
-		case 1:
-			return 'fb-light-gray';
-		case 2:
-			return 'fb-white';
-		case 3:
-			return 'fb-lavender';
-		case 4:
-			return 'fb-slate';
-		case 5:
-			return 'fb-blue';
-		case 6:
-			return 'fb-cyan';
-		case 7:
-			return 'fb-aqua';
-		case 8:
-			return 'fb-cerulean';
-		case 9:
-			return 'fb-indigo';
-		case 10:
-			return 'fb-purple';
-		case 11:
-			return 'fb-violet';
-		case 12:
-			return 'fb-plum';
-		case 13:
-			return 'fb-magenta';
-		case 14:
-			return 'fb-pink';
-		case 15:
-			return 'fb-red';
-		case 16:
-			return 'fb-orange';
-		case 17:
-			return 'fb-peach';
-		case 18:
-			return 'fb-yellow';
-		case 19:
-			return 'fb-lime';
-		case 20:
-			return 'fb-mint';
-		case 21:
-			return 'fb-green';
-		default:
-			return 'fb-black';
 	}
 }

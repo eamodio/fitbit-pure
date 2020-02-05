@@ -104,6 +104,22 @@
 					</g>
 				</use>
 				<use href="#cycleview-item">
+					<g id="activity0-display" transform="translate(0,50%)" visibility="hidden">
+						<use href="#activity-display-symbol">
+							<set href="activity-left-goal" attributeName="id" to="activity0-left-goal" />
+							<set href="activity-left-progress" attributeName="id" to="activity0-left-progress" />
+							<set href="activity-left-icon" attributeName="id" to="activity0-left-icon" />
+							<set href="activity-left-value" attributeName="id" to="activity0-left-value" />
+							<set href="activity-left-units" attributeName="id" to="activity0-left-units" />
+							<set href="activity-right-goal" attributeName="id" to="activity0-right-goal" />
+							<set href="activity-right-progress" attributeName="id" to="activity0-right-progress" />
+							<set href="activity-right-icon" attributeName="id" to="activity0-right-icon" />
+							<set href="activity-right-value" attributeName="id" to="activity0-right-value" />
+							<set href="activity-right-units" attributeName="id" to="activity0-right-units" />
+						</use>
+					</g>
+				</use>
+				<use href="#cycleview-item">
 					<g id="activity1-display" transform="translate(0,50%)" visibility="hidden">
 						<use href="#activity-display-symbol">
 							<set href="activity-left-goal" attributeName="id" to="activity1-left-goal" />
@@ -116,22 +132,6 @@
 							<set href="activity-right-icon" attributeName="id" to="activity1-right-icon" />
 							<set href="activity-right-value" attributeName="id" to="activity1-right-value" />
 							<set href="activity-right-units" attributeName="id" to="activity1-right-units" />
-						</use>
-					</g>
-				</use>
-				<use href="#cycleview-item">
-					<g id="activity2-display" transform="translate(0,50%)" visibility="hidden">
-						<use href="#activity-display-symbol">
-							<set href="activity-left-goal" attributeName="id" to="activity2-left-goal" />
-							<set href="activity-left-progress" attributeName="id" to="activity2-left-progress" />
-							<set href="activity-left-icon" attributeName="id" to="activity2-left-icon" />
-							<set href="activity-left-value" attributeName="id" to="activity2-left-value" />
-							<set href="activity-left-units" attributeName="id" to="activity2-left-units" />
-							<set href="activity-right-goal" attributeName="id" to="activity2-right-goal" />
-							<set href="activity-right-progress" attributeName="id" to="activity2-right-progress" />
-							<set href="activity-right-icon" attributeName="id" to="activity2-right-icon" />
-							<set href="activity-right-value" attributeName="id" to="activity2-right-value" />
-							<set href="activity-right-units" attributeName="id" to="activity2-right-units" />
 						</use>
 					</g>
 				</use>

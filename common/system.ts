@@ -19,8 +19,9 @@ export namespace Disposable {
 					return;
 				}
 
-				for (const d of disposables) {
-					d?.dispose();
+				let i = disposables.length;
+				while (i--) {
+					disposables[i]?.dispose();
 				}
 
 				disposed = true;

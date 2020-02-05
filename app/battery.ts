@@ -1,4 +1,5 @@
 import { battery, Battery } from 'power';
+import document from 'document';
 import { display } from 'display';
 import { ConfigChanged, configuration } from './configuration';
 import { debounce, defer, log } from '../common/system';
@@ -6,11 +7,7 @@ import { debounce, defer, log } from '../common/system';
 export class BatteryDisplay {
 	private _level: number | undefined;
 
-	constructor(
-		// private readonly $icon: ImageElement,
-		private readonly $indicator: LineElement,
-		private readonly $percentage: TextElement // private readonly $untilCharged: TextElement
-	) {
+	constructor() {
 		battery.addEventListener('change', () => this.onBatteryChanged(battery));
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
@@ -36,43 +33,38 @@ export class BatteryDisplay {
 	private onConfigurationChanged(e?: ConfigChanged) {
 		if (e?.key != null && e.key !== 'showBatteryPercentage') return;
 
-		if (configuration.get('showBatteryPercentage')) {
-			this.$percentage.style.display = 'inline';
-		} else {
-			this.$percentage.style.display = 'none';
-		}
+		document.getElementById<TextElement>('battery-level')!.style.display = configuration.get(
+			'showBatteryPercentage'
+		)
+			? 'inline'
+			: 'none';
 	}
 
 	@defer()
-	@log('BatteryDisplay')
-	render() {
-		const level = this._level ?? battery.chargeLevel ?? 0;
+	// @log('BatteryDisplay')
+	private render() {
+		const level = this._level ?? Math.floor(battery.chargeLevel) ?? 0;
 
-		this.$percentage.text = `${level > 0 ? level : '--'}%`;
-		this.$indicator.x2 = this.$indicator.x1 + Math.round(level * 0.23);
+		document.getElementById<TextElement>('battery-level')!.text = `${level > 0 ? level : '--'}%`;
+
+		const $indicator = document.getElementById<LineElement>('battery-indicator')!;
+		$indicator.x2 = $indicator.x1 + Math.round(level * 0.23);
 
 		if (battery.charging) {
-			this.$indicator.style.fill = 'fb-black';
-			// this.$untilCharged.text = battery.timeUntilFull == null ? '' : `${battery.timeUntilFull} left`;
-			// this.$untilCharged.text = '';
+			$indicator.style.fill = 'fb-black';
+			// document.getElementById<TextElement>('battery-until-charged')!.text =
+			// 	battery.timeUntilFull == null ? '' : `${battery.timeUntilFull} left`;
 		} else {
-			// this.$untilCharged.text = '';
+			// document.getElementById<TextElement>('battery-until-charged')!.text = '';
 
 			// eslint-disable-next-line no-lonely-if
 			if (level <= 16) {
-				this.$indicator.style.fill = 'fb-black';
+				$indicator.style.fill = 'fb-black';
 			} else if (level <= 30) {
-				this.$indicator.style.fill = 'fb-peach';
+				$indicator.style.fill = 'fb-peach';
 			} else {
-				this.$indicator.style.fill = 'fb-white';
+				$indicator.style.fill = 'fb-white';
 			}
 		}
-
-		// TODO: Deal with the battery overlay when the battery is lower than or equal to 16%
-		// if (level <= 16) {
-		// 	this.$icon.style.display = 'none';
-		// } else {
-		// 	this.$icon.style.display = 'inline';
-		// }
 	}
 }

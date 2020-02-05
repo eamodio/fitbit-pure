@@ -1,5 +1,6 @@
 import { me as app } from 'appbit';
 import { me as device } from 'device';
+import document from 'document';
 import { Display } from 'display';
 import { vibration, VibrationPatternName } from 'haptics';
 import { gettext } from 'i18n';
@@ -7,37 +8,36 @@ import { goals, today } from 'user-activity';
 import { units } from 'user-settings';
 import { AppManager } from './appManager';
 import { defer, log } from '../common/system';
-import { Colors, ConfigChanged, configuration } from './configuration';
+import { ConfigChanged, configuration } from './configuration';
 
 const arcWidth = 48;
 const screenWidth = device.screen.width;
 const meterToMile = 0.000621371192;
 
+const activityToColor = {
+	steps: 'fb-cyan',
+	calories: 'fb-orange',
+	distance: 'fb-purple',
+	activeMinutes: 'fb-mint'
+};
+
 type Activities = 'activeMinutes' | 'calories' | 'distance' | 'steps';
 
 interface Activity {
-	name: Activities;
-	rtl: boolean;
-	$goal: ArcElement;
-	$progress: ArcElement;
-	$icon: ImageElement;
-	$value: TextElement;
-	$units: TextElement;
-
-	goalReached?: boolean;
+	names: [Activities, Activities];
+	goalReached: [boolean, boolean];
 }
 
-interface ActivityGroup {
-	$container: GroupElement;
-	left: Activity;
-	right: Activity;
+enum Side {
+	Left = 0,
+	Right = 1
 }
 
 export class ActivityDisplay {
 	constructor(
 		private readonly appManager: AppManager,
-		private readonly $view: GroupElement,
-		private readonly activityGroups: ActivityGroup[]
+		private readonly activities: Activity[],
+		private readonly $view: GroupElement
 	) {
 		if (!app.permissions.granted('access_activity')) return;
 
@@ -63,8 +63,10 @@ export class ActivityDisplay {
 
 		if (e?.key == null || e?.key === 'donated') {
 			const visibility = this.appManager.donated ? 'visible' : 'hidden';
-			for (const { $container } of this.activityGroups) {
-				$container.style.visibility = visibility;
+
+			let i = this.activities.length;
+			while (i--) {
+				document.getElementById<GroupElement>(`activity${i}-display`)!.style.visibility = visibility;
 			}
 
 			if (e != null) {
@@ -83,30 +85,24 @@ export class ActivityDisplay {
 		// }
 
 		if (e?.key == null || e?.key === 'showActivityUnits') {
-			if (configuration.get('showActivityUnits')) {
-				for (const { left, right } of this.activityGroups) {
-					left.$units.style.display = 'inline';
-					right.$units.style.display = 'inline';
-				}
-			} else {
-				for (const { left, right } of this.activityGroups) {
-					left.$units.style.display = 'none';
-					right.$units.style.display = 'none';
-				}
+			const display = configuration.get('showActivityUnits') ? 'inline' : 'none';
+
+			let i = this.activities.length;
+			while (i--) {
+				document.getElementById<TextElement>(`activity${i}-left-units`)!.style.display = display;
+				document.getElementById<TextElement>(`activity${i}-right-units`)!.style.display = display;
 			}
 		}
 
 		this.render();
 	}
 
-	@log('ActivityDisplay', {
-		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
-	})
 	private onDisplayChanged(sensor: Display) {
 		if (sensor.on && !sensor.aodActive) {
-			for (const { left, right } of this.activityGroups) {
-				left.$progress.sweepAngle = 0;
-				right.$progress.sweepAngle = 0;
+			let i = this.activities.length;
+			while (i--) {
+				document.getElementById<ArcElement>(`activity${i}-left-progress`)!.sweepAngle = 0;
+				document.getElementById<ArcElement>(`activity${i}-right-progress`)!.sweepAngle = 0;
 			}
 
 			if (this.getView() === 0) return;
@@ -155,57 +151,62 @@ export class ActivityDisplay {
 		const index = this.getView();
 
 		// Force an unselect to reset the animation when an activity is hidden
-		for (const group of this.activityGroups) {
-			group.$container.animate('unselect');
+		let i = this.activities.length;
+		while (i--) {
+			document.getElementById<GroupElement>(`activity${i}-display`)!.animate('unselect');
 		}
 
 		this.setView(index + 1, 'bump');
 	}
 
 	@defer()
-	@log('ActivityDisplay')
+	// @log('ActivityDisplay')
 	private render() {
-		const index = this.getView();
-		if (index === 0) return;
+		const index = this.getView() - 1;
+		if (index === -1) return;
 
-		const group = this.activityGroups[index - 1];
-		if (group == null) return;
+		const activity = this.activities[index];
+		if (activity == null) return;
 
-		this.renderActivity(group.left);
-		this.renderActivity(group.right);
+		this.renderActivity(activity, Side.Left, `activity${index}-left`);
+		this.renderActivity(activity, Side.Right, `activity${index}-right`);
 
-		if (group.left.goalReached || group.right.goalReached) {
+		if (activity.goalReached[Side.Left] || activity.goalReached[Side.Right]) {
 			requestAnimationFrame(() => {
-				if (group.left.goalReached) {
-					group.left.$goal.parent?.animate('enable');
+				if (activity.goalReached[Side.Left]) {
+					document.getElementById<ArcElement>(`activity${index}-left-goal`)!.parent?.animate('enable');
 				}
 
-				if (group.right.goalReached) {
-					group.right.$goal.parent?.animate('enable');
+				if (activity.goalReached[Side.Right]) {
+					document.getElementById<ArcElement>(`activity${index}-right-goal`)!.parent?.animate('enable');
 				}
 			});
 		}
 
-		group.$container.animate('select');
+		document.getElementById<GroupElement>(`activity${index}-display`)!.animate('select');
 	}
 
-	private renderActivity(activity: Activity) {
-		const { name, rtl, $goal, $progress, $icon, $value, $units } = activity;
+	private renderActivity(activity: Activity, side: Side, prefix: string) {
+		const name = activity.names[side];
 
 		const value = this.appManager.editing ? 0 : today.adjusted[name];
 		const goal = goals[name];
 
-		const color = getActivityColor(name);
+		const color = activityToColor[name];
 
-		$goal.style.fill = goal != null ? color : 'fb-black';
+		document.getElementById<ArcElement>(`${prefix}-goal`)!.style.fill = goal != null ? color : 'fb-black';
 
+		const $progress = document.getElementById<ArcElement>(`${prefix}-progress`)!;
 		$progress.style.fill = color;
 		$progress.sweepAngle = 0;
 
+		const $icon = document.getElementById<ImageElement>(`${prefix}-icon`)!;
 		$icon.href = `images/${name}.png`;
 		$icon.style.fill = color;
 
-		activity.goalReached = goal != null && value != null && value >= goal;
+		activity.goalReached[side] = goal != null && value != null && value >= goal;
+
+		const $value = document.getElementById<TextElement>(`${prefix}-value`)!;
 
 		let unitsLabel: string | undefined;
 		if (value != null) {
@@ -240,6 +241,8 @@ export class ActivityDisplay {
 			$value.text = '--';
 		}
 
+		const $units = document.getElementById<TextElement>(`${prefix}-units`)!;
+
 		if (configuration.get('showActivityUnits')) {
 			$units.text = unitsLabel != null ? gettext(unitsLabel) : '';
 			$value.y = $units.text.length > 0 ? -12 : -4;
@@ -247,7 +250,7 @@ export class ActivityDisplay {
 			$value.y = -4;
 		}
 
-		if (rtl) {
+		if (side === Side.Right) {
 			const x = screenWidth - arcWidth - 10;
 			$value.x = x;
 			$units.x = x;
@@ -304,21 +307,6 @@ export class ActivityDisplay {
 	}
 
 	private get maxViews() {
-		return this.appManager.donated ? this.activityGroups.length : this.activityGroups.length + 1;
-	}
-}
-
-function getActivityColor(activity: Activities): Colors {
-	switch (activity) {
-		case 'steps':
-			return 'fb-cyan';
-		case 'calories':
-			return 'fb-orange';
-		case 'distance':
-			return 'fb-purple';
-		case 'activeMinutes':
-			return 'fb-mint';
-		default:
-			return 'fb-white';
+		return this.appManager.donated ? this.activities.length : this.activities.length + 1;
 	}
 }
