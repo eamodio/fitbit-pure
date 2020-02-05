@@ -11,9 +11,19 @@
 
 /* My Styles */
 
-.background {
+.bg {
 	width: 100%;
 	height: 100%;
+}
+
+.bg--editing {
+	fill: fb-white;
+	fill-opacity: 0.3;
+}
+
+.bg--editing-overlay {
+	fill: fb-blue;
+	fill-opacity: 0.55;
 }
 
 .digit {
@@ -35,13 +45,6 @@
 	height: 48;
 	width: 47;
 	fill: fb-white;
-}
-
-.icon--editing {
-	height: 300;
-	width: 300;
-	fill: fb-white;
-	fill-opacity: 0.3;
 }
 
 #time-separator.digit {

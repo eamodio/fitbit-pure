@@ -1,45 +1,12 @@
 <svg class="theme--pure">
-	<image id="editing" href="images/editing.png" class="icon--editing" x="0" y="0" display="none" />
-	<image id="background" href="images/background.png" class="background theme-color--accent-background">
+	<image id="editing" href="images/editing.png" class="bg bg--editing" x="0" y="0" display="none" />
+	<image id="background" href="images/background.png" class="bg theme-color--accent-background">
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
 
 		<!-- Animate out -->
 		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
 	</image>
-
-	<g id="editable-spots" display="none">
-		<!-- Battery -->
-		<circle cx="72" cy="20" r="40" fill="fb-blue" fill-opacity="0.4" />
-		<circle cx="72" cy="20" r="25" fill="fb-blue" fill-opacity="0.5" />
-
-		<!-- Resting heart rate -->
-		<circle cx="197" cy="20" r="40" fill="fb-blue" fill-opacity="0.4" />
-		<circle cx="197" cy="20" r="25" fill="fb-blue" fill-opacity="0.5" />
-
-		<!-- Leading Zero -->
-		<circle cx="20" cy="150" r="40" fill="fb-blue" fill-opacity="0.4" />
-		<circle cx="20" cy="150" r="25" fill="fb-blue" fill-opacity="0.5" />
-
-		<!-- Seconds -->
-		<circle cx="280" cy="150" r="40" fill="fb-blue" fill-opacity="0.4" />
-		<circle cx="280" cy="150" r="25" fill="fb-blue" fill-opacity="0.5" />
-
-		<!-- Theme -->
-		<circle cx="152" cy="148" r="40" fill="fb-blue" fill-opacity="0.5" />
-		<circle cx="152" cy="148" r="25" fill="fb-blue" fill-opacity="0.9" />
-
-		<!-- Units -->
-		<circle cx="67" cy="280" r="40" fill="fb-blue" fill-opacity="0.4" />
-		<circle cx="67" cy="280" r="25" fill="fb-blue" fill-opacity="0.5" />
-
-		<!-- Units -->
-		<circle cx="233" cy="280" r="40" fill="fb-blue" fill-opacity="0.4" />
-		<circle cx="233" cy="280" r="25" fill="fb-blue" fill-opacity="0.5" />
-
-		<animate attributeName="opacity" to="1" dur="0.2s" begin="enable" easing="ease-in" />
-		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="enable+1.7s" easing="ease-in" />
-	</g>
 
 	<g id="top-bar">
 		<section id="battery-display">
@@ -187,6 +154,11 @@
 			<animateTransform attributeType="translate" from="0,96%-2" to="0,100%+30" dur="0.3s" begin="unload+0.1s" easing="ease-in" />
 		</g>
 	</section>
+
+	<image id="editable-overlay" href="images/editing-overlay.png" class="bg bg--editing-overlay" x="0" y="0" display="none">
+		<animate attributeName="opacity" to="1" dur="0.3s" begin="enable" easing="ease-out" />
+		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="enable+1.7s" easing="ease-in" />
+	</image>
 
 	<rect id="trigger" x="0" y="0" height="100%" width="100%" layer="100" pointer-events="visible" fill="none" />
 

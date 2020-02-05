@@ -63,10 +63,10 @@ export class AppManager {
 
 		document.getElementById<ImageElement>('editing')!.style.display = value ? 'inline' : 'none';
 
-		const $spot = document.getElementById<GroupElement>('editable-spots')!;
-		$spot.style.display = value ? 'inline' : 'none';
+		const $overlay = document.getElementById<GroupElement>('editable-overlay')!;
+		$overlay.style.display = value ? 'inline' : 'none';
 		if (value) {
-			requestAnimationFrame(() => $spot.animate('enable'));
+			requestAnimationFrame(() => $overlay.animate('enable'));
 		}
 
 		this._onDidChangeEditMode.fire(value);
@@ -192,19 +192,13 @@ export class AppManager {
 			return;
 		}
 
-		if (e.screenX < 110 && e.screenY < 55) {
+		if (e.screenX <= 64 && e.screenY <= 64) {
 			vibration.start('bump');
 			configuration.set('showBatteryPercentage', !configuration.get('showBatteryPercentage'));
-		} else if (e.screenX > 165 && e.screenY < 55) {
+		} else if (e.screenX >= 236 && e.screenY <= 64) {
 			vibration.start('bump');
 			configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
-		} else if (e.screenX < 75 && e.screenY > 100 && e.screenY < 200) {
-			vibration.start('bump');
-			configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
-		} else if (e.screenX > 225 && e.screenY > 100 && e.screenY < 200) {
-			vibration.start('bump');
-			configuration.set('showSeconds', !configuration.get('showSeconds'));
-		} else if (e.screenX > 75 && e.screenX < 225 && e.screenY > 75 && e.screenY < 225) {
+		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY >= 24 && e.screenY <= 104) {
 			vibration.start('bump');
 			let index = getColorIndex(configuration.get('accentBackgroundColor')) + 1;
 			if (index > 21) {
@@ -214,8 +208,17 @@ export class AppManager {
 			const color = getIndexColor(index);
 			configuration.set('accentBackgroundColor', color);
 			configuration.set('accentForegroundColor', color === 'fb-black' ? 'fb-white' : color);
-		} else if (e.screenY > 225) {
-			if (configuration.get('currentActivityView') === 0 || (e.screenX > 125 && e.screenX < 175)) {
+		} else if (e.screenX <= 64 && e.screenY >= 108 && e.screenY <= 188) {
+			vibration.start('bump');
+			configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
+		} else if (e.screenX >= 236 && e.screenY >= 108 && e.screenY <= 188) {
+			vibration.start('bump');
+			configuration.set('showSeconds', !configuration.get('showSeconds'));
+		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY >= 148 && e.screenY <= 228) {
+			vibration.start('bump');
+			configuration.set('animateSeparator', !configuration.get('animateSeparator'));
+		} else if (e.screenY >= 236) {
+			if (configuration.get('currentActivityView') === 0 || (e.screenX >= 70 && e.screenX <= 230)) {
 				this._onDidChangeView.fire();
 			} else {
 				vibration.start('bump');
@@ -223,7 +226,7 @@ export class AppManager {
 			}
 		}
 
-		document.getElementById<GroupElement>('editable-spots')!.animate('enable');
+		document.getElementById<GroupElement>('editable-overlay')!.animate('enable');
 	}
 
 	@log('AppManager', false)
