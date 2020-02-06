@@ -183,24 +183,24 @@ export class TimeDisplay {
 
 				if (display.aodAvailable) {
 					let $animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in-fill');
-				if ($animate != null) {
-					$animate.to = 'fb-white';
-				}
+					if ($animate != null) {
+						$animate.to = 'fb-white';
+					}
 
 					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in-fill-opacity');
-				if ($animate != null) {
+					if ($animate != null) {
 						$animate.to = 1;
 					}
 
 					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out-fill');
 					if ($animate != null) {
-					$animate.from = 'fb-white';
-				}
+						$animate.from = 'fb-white';
+					}
 
 					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out-fill-opacity');
 					if ($animate != null) {
 						$animate.to = 1;
-			}
+					}
 				}
 			}
 
@@ -227,27 +227,29 @@ export class TimeDisplay {
 		const dayName = gettext(`day_short_${day}`);
 		const dayMonthSeparator = gettext('day_month_separator');
 
+		const dayOfMonth = date.getDate().toString();
+
 		const $date = document.getElementById<TextElement>('date-date')!;
 
 		let x: number;
 		switch (locale.language) {
 			case 'zh-cn':
 				// 2月7日周二 = Month_Date_Weekday
-				$date.text = `${monthName}${dayMonthSeparator}${date.getDate()}`;
+				$date.text = `${monthName}${dayMonthSeparator}${dayOfMonth}`;
 				x = $date.getBBox().width;
 				$date.text += `${dayName}`;
 				x += $date.getBBox().left;
 				break;
 			case 'ja-jp':
 				// 8月3日（木）= Month_Date (Weekday)
-				$date.text = `${monthName}${dayMonthSeparator}${date.getDate()}`;
+				$date.text = `${monthName}${dayMonthSeparator}${dayOfMonth}`;
 				x = $date.getBBox().width;
 				$date.text += ` (${dayName})`;
 				x += $date.getBBox().left;
 				break;
 			case 'ko-kr':
 				// 2/7 (목) = Month/date (day)
-				$date.text = `${date.getMonth() + 1}${dayMonthSeparator}${date.getDate()}`;
+				$date.text = `${date.getMonth() + 1}${dayMonthSeparator}${dayOfMonth}`;
 				x = $date.getBBox().width;
 				$date.text += ` (${dayName})`;
 				x += $date.getBBox().left;
@@ -258,31 +260,33 @@ export class TimeDisplay {
 			case 'es-pr':
 			case 'en-se':
 				// Thu, Feb 7
-				$date.text = `${dayName}${dayMonthSeparator} ${monthName} ${date.getDate()}`;
+				$date.text = `${dayName}${dayMonthSeparator} ${monthName} ${dayOfMonth}`;
 				x = $date.getBBox().right;
 				break;
 			default:
 				// Thu, 7 Feb
-				$date.text = `${dayName}${dayMonthSeparator} ${date.getDate()}`;
+				$date.text = `${dayName}${dayMonthSeparator} ${dayOfMonth}`;
 				x = $date.getBBox().width;
 				$date.text += ` ${monthName}`;
 				x += $date.getBBox().left;
 				break;
 		}
 
+		document.getElementById<TextElement>('date-day')!.text = dayOfMonth;
+
 		const $dateHighlight = document.getElementById<TextElement>('date-highlight')!;
 		$dateHighlight.x = x;
-		$dateHighlight.text = date.getDate().toString();
+		$dateHighlight.text = dayOfMonth;
 
-		const bbox = $dateHighlight.getBBox();
+		const rect = $dateHighlight.getBBox();
 
 		// Required because there seems to be an off-by-1 pixel calc with certain characters
 		// So instead of relying on exact overlay, paint a black rect below the highlight
 		const $dateHighlightBg = document.getElementById<RectElement>('date-highlight-bg')!;
-		$dateHighlightBg.x = bbox.x;
-		$dateHighlightBg.y = -bbox.height;
-		$dateHighlightBg.height = bbox.height;
-		$dateHighlightBg.width = bbox.width;
+		$dateHighlightBg.x = rect.x;
+		$dateHighlightBg.y = -rect.height;
+		$dateHighlightBg.height = rect.height;
+		$dateHighlightBg.width = rect.width;
 	}
 
 	private updateAlwaysOnOpacity(aodOpacity: number) {

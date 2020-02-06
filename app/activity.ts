@@ -138,17 +138,22 @@ export class ActivityDisplay {
 	// }
 
 	@log('ActivityDisplay')
-	private onViewChanged(index: number) {
+	private onViewChanged(index: number, initializing: boolean = false) {
 		configuration.set('currentActivityView', index);
 
-		if (index === 0) return;
+		const $day = document.getElementById<GroupElement>('date-day-display')!;
+		if (initializing || (index === 0 && $day.style.opacity !== 0) || (index !== 0 && $day.style.opacity === 0)) {
+			$day.animate(index === 0 ? 'unload' : 'load');
+		}
+
+		if (initializing || index === 0) return;
 
 		this.render();
 	}
 
 	@log('ActivityDisplay')
 	private onViewClicked() {
-		const index = this.getView();
+		const index = this.getView() + 1;
 
 		// Force an unselect to reset the animation when an activity is hidden
 		let i = this.activities.length;
@@ -156,7 +161,7 @@ export class ActivityDisplay {
 			document.getElementById<GroupElement>(`activity${i}-display`)!.animate('unselect');
 		}
 
-		this.setView(index + 1, 'bump');
+		this.setView(index, 'bump');
 	}
 
 	@defer()
@@ -277,7 +282,7 @@ export class ActivityDisplay {
 		return Number(this.$view.value ?? 0);
 	}
 
-	private setView(index: number, vibrationPattern?: VibrationPatternName, skipChanged: boolean = false) {
+	private setView(index: number, vibrationPattern?: VibrationPatternName, initializing: boolean = false) {
 		if (index < 0 || index > this.maxViews) {
 			index = 0;
 		}
@@ -290,7 +295,13 @@ export class ActivityDisplay {
 			index = this.maxViews;
 		}
 
-		if (index === this.getView()) return index;
+		if (index === this.getView()) {
+			if (initializing) {
+				this.onViewChanged(index, true);
+			}
+
+			return index;
+		}
 
 		if (vibrationPattern != null) {
 			vibration.start(vibrationPattern);
@@ -298,10 +309,8 @@ export class ActivityDisplay {
 
 		this.$view.value = index;
 
-		if (!skipChanged) {
-			// Force an update, since we can't trust the cycleview to always do it
-			this.onViewChanged(index);
-		}
+		// Force an update, since we can't trust the cycleview to always do it
+		this.onViewChanged(index, initializing);
 
 		return index;
 	}

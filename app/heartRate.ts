@@ -73,7 +73,12 @@ export class HeartRateDisplay {
 		0: e => `e.key=${e?.key}`
 	})
 	private onConfigurationChanged(e?: ConfigChanged) {
-		if (e?.key != null && e.key !== 'animateHeartRate' && e.key !== 'showRestingHeartRate') {
+		if (
+			e?.key != null &&
+			e.key !== 'animateHeartRate' &&
+			e.key !== 'currentActivityView' &&
+			e.key !== 'showRestingHeartRate'
+		) {
 			return;
 		}
 
@@ -103,6 +108,18 @@ export class HeartRateDisplay {
 			)
 				? 'inline'
 				: 'none';
+		}
+
+		if (e?.key === 'currentActivityView') {
+			const $restingRate = document.getElementById<TextElement>('heartrate-resting')!;
+
+			const view = configuration.get('currentActivityView');
+			if (
+				(view === 0 && $restingRate.textAnchor !== 'end') ||
+				(view !== 0 && $restingRate.textAnchor !== 'middle')
+			) {
+				$restingRate.parent!.animate('select');
+			}
 		}
 
 		if (display.on && !display.aodActive) {
@@ -148,9 +165,20 @@ export class HeartRateDisplay {
 		}`;
 
 		// const iconWidth = this.$icon.getBBox().width;
-		const x = screenWidth - iconWidth - $rate.getBBox().width - 20;
+		const rect = $rate.getBBox();
+
+		const x = screenWidth - iconWidth - rect.width - 20;
 		$rate.x = x;
-		$restingRate.x = x - 10;
+
+		if (configuration.get('currentActivityView') === 0) {
+			$restingRate.textAnchor = 'end';
+			$restingRate.x = x - 10;
+			$restingRate.y = 21;
+		} else {
+			$restingRate.textAnchor = 'middle';
+			$restingRate.x = x + rect.width / 2;
+			$restingRate.y = rect.bottom + 8;
+		}
 
 		this.$icon.style.display = 'inline';
 
