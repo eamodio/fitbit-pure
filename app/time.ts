@@ -181,19 +181,27 @@ export class TimeDisplay {
 				this.$hour0.style.fill = 'fb-white';
 				this.$hour0.style.fillOpacity = 1;
 
-				let $animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in');
+				if (display.aodAvailable) {
+					let $animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in-fill');
 				if ($animate != null) {
-					$animate.from = 'fb-white';
 					$animate.to = 'fb-white';
 				}
 
-				$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out');
+					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in-fill-opacity');
 				if ($animate != null) {
+						$animate.to = 1;
+					}
+
+					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out-fill');
+					if ($animate != null) {
 					$animate.from = 'fb-white';
-					$animate.to = 'fb-white';
 				}
-			} else {
-				console.log('no dim');
+
+					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out-fill-opacity');
+					if ($animate != null) {
+						$animate.to = 1;
+			}
+				}
 			}
 
 			if (this.$hour0.style.visibility !== 'visible') {

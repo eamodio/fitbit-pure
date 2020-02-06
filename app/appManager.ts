@@ -210,32 +210,26 @@ export class AppManager {
 					$el.style.fillOpacity = opacity;
 				}
 
-				let $animate = $el.getElementById<AnimateElement>('aod-animate-in-fill');
-				if ($animate != null) {
-					$animate.from = 'fb-white';
-					$animate.to = color;
-				}
+				if (display.aodAvailable) {
+					let $animate = $el.getElementById<AnimateElement>('aod-animate-in-fill');
+					if ($animate != null) {
+						$animate.to = color;
+					}
 
-				$animate = $el.getElementById<AnimateElement>('aod-animate-in-fill-opacity');
-				if ($animate != null) {
-					$animate.from = 0.35;
-					$animate.to = opacity;
-				}
+					$animate = $el.getElementById<AnimateElement>('aod-animate-in-fill-opacity');
+					if ($animate != null) {
+						$animate.to = opacity;
+					}
 
-				$animate = $el.getElementById<AnimateElement>('aod-animate-out-fill');
-				if ($animate != null) {
-					$animate.from = color;
-					$animate.to = 'fb-white';
-				}
+					$animate = $el.getElementById<AnimateElement>('aod-animate-out-fill');
+					if ($animate != null) {
+						$animate.from = color;
+					}
 
-				$animate = $el.getElementById<AnimateElement>('aod-animate-out-fill-opacity');
-				if ($animate != null) {
-					$animate.from = opacity;
-					$animate.to = 0.35;
-				}
-
-				if (!this.editing) {
-					$el.animate(display.aodEnabled && display.aodActive ? 'unload' : 'load');
+					$animate = $el.getElementById<AnimateElement>('aod-animate-out-fill-opacity');
+					if ($animate != null) {
+						$animate.to = 0.35;
+					}
 				}
 			}
 		}
@@ -332,12 +326,10 @@ export class AppManager {
 
 		if (!configuration.get('allowEditing')) return;
 
-		// When there is a swipe right or left on the clock face, no mouseup will occur
-		// I've found that the parent element gets a "reload" event when this happens
+		// When there is a swipe (up/down/left/right) on the clock face, no mouseup is fired,
+		// but the parent element seems to get a "reload" event when this happens (but only on the device)
 		// So when we get a "reload" cancel any pending timer
-		this._mouseDownDisposable = addEventListener(this.$trigger.parent!, 'reload', e => {
-			this.clearEditingTimer();
-		});
+		this._mouseDownDisposable = addEventListener(this.$trigger.parent!, 'reload', e => this.clearEditingTimer());
 
 		this._mouseDownTimer = setTimeout(() => {
 			this._mouseDownTimer = undefined;

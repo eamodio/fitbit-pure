@@ -56,11 +56,11 @@
 		<image id="time-hour0" href="images/0.png" class="digit" x="1%" y="0" fill-opacity="1">
 			<!-- Animate in -->
 			<animate id="aod-animate-in-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
-			<animate id="aod-animate-in-fill-opacity" attributeName="fill-opacity" from="1" to="1" dur="0.4s" begin="load" easing="ease-in" />
+			<animate id="aod-animate-in-fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="load" easing="ease-in" />
 
 			<!-- Animate out -->
-			<animate id="aod-animate-out-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
-			<animate id="aod-animate-out-fill-opacity" attributeName="fill-opacity" from="1" to="1" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out-fill" attributeName="fill" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out-fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="unload" easing="ease-in" />
 		</image>
 		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
 
@@ -70,11 +70,11 @@
 
 			<!-- Animate in -->
 			<animate id="aod-animate-in-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
-			<animate id="aod-animate-in-fill-opacity" attributeName="fill-opacity" from="1" to="1" dur="0.4s" begin="load" easing="ease-in" />
+			<animate id="aod-animate-in-fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="load" easing="ease-in" />
 
 			<!-- Animate out -->
 			<animate id="aod-animate-out-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
-			<animate id="aod-animate-out-fill-opacity" attributeName="fill-opacity" from="1" to="1" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out-fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="unload" easing="ease-in" />
 		</image>
 
 		<image id="time-minute0" href="images/0.png" class="digit primary" x="55%" y="0" />
