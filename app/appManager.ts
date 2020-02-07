@@ -212,24 +212,19 @@ export class AppManager {
 				}
 
 				if (display.aodAvailable) {
-					let $animate = $el.getElementById<AnimateElement>('aod-animate-in-fill');
+					let $animate = $el.getElementById<AnimateElement>('aod-animate-in--fill');
 					if ($animate != null) {
 						$animate.to = color;
 					}
 
-					$animate = $el.getElementById<AnimateElement>('aod-animate-in-fill-opacity');
+					$animate = $el.getElementById<AnimateElement>('aod-animate-in--fill-opacity');
 					if ($animate != null) {
 						$animate.to = opacity;
 					}
 
-					$animate = $el.getElementById<AnimateElement>('aod-animate-out-fill');
+					$animate = $el.getElementById<AnimateElement>('aod-animate-out--fill');
 					if ($animate != null) {
 						$animate.from = color;
-					}
-
-					$animate = $el.getElementById<AnimateElement>('aod-animate-out-fill-opacity');
-					if ($animate != null) {
-						$animate.to = 0.35;
 					}
 				}
 			}

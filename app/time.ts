@@ -65,7 +65,7 @@ export class TimeDisplay {
 		if (e?.key == null || e?.key === 'animateSeparator') {
 			document
 				.getElementById<ImageElement>('time-separator')!
-				.animate(!display.aodActive && configuration.get('animateSeparator') ? 'enable' : 'disable');
+				.animate(!display.aodActive && configuration.get('animateSeparator') ? 'select' : 'unselect');
 
 			if (e?.key === 'animateSeparator') return;
 		}
@@ -106,14 +106,14 @@ export class TimeDisplay {
 
 		requestAnimationFrame(() => {
 			if (sensor.aodEnabled) {
-				document.getElementById<GroupElement>('time-display')!.animate(sensor.aodActive ? 'unload' : 'load');
-				document.getElementById<ImageElement>('background')!.animate(sensor.aodActive ? 'unload' : 'load');
+				document.getElementById<GroupElement>('time-display')!.animate(sensor.aodActive ? 'disable' : 'enable');
+				document.getElementById<ImageElement>('background')!.animate(sensor.aodActive ? 'disable' : 'enable');
 			}
 
 			if (configuration.get('animateSeparator')) {
 				document
 					.getElementById<ImageElement>('time-separator')!
-					.animate(sensor.on && !sensor.aodActive ? 'enable' : 'disable');
+					.animate(sensor.on && !sensor.aodActive ? 'select' : 'unselect');
 			}
 		});
 	}
@@ -183,24 +183,19 @@ export class TimeDisplay {
 				this.$hour0.style.fillOpacity = 1;
 
 				if (display.aodAvailable) {
-					let $animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in-fill');
+					let $animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in--fill');
 					if ($animate != null) {
 						$animate.to = 'fb-white';
 					}
 
-					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in-fill-opacity');
+					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in--fill-opacity');
 					if ($animate != null) {
 						$animate.to = 1;
 					}
 
-					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out-fill');
+					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out--fill');
 					if ($animate != null) {
 						$animate.from = 'fb-white';
-					}
-
-					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out-fill-opacity');
-					if ($animate != null) {
-						$animate.to = 1;
 					}
 				}
 			}

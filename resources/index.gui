@@ -2,10 +2,10 @@
 	<image id="editing" href="images/editing.png" class="bg bg--editing" x="0" y="0" display="none" />
 	<image id="background" href="images/background.png" class="bg theme-color--accent-background">
 		<!-- Animate in -->
-		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
+		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
 		<!-- Animate out -->
-		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
+		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 	</image>
 
 	<g id="top-bar">
@@ -20,7 +20,7 @@
 			<text id="date-day" class="text text--lg primary theme-color--accent-foreground" text-anchor="middle" text-length="2" x="50%-6" y="25" />
 			<text id="date-day-ordinal" class="text text--sm secondary" text-anchor="start" text-length="2" x="$" y="25" />
 
-			<animate attributeName="opacity" from="1" to="0" dur="1s" begin="disable" easing="ease-in" />
+			<animate attributeName="opacity" from="1" to="0" dur="1s" begin="disable" end="select;unselect" easing="ease-in" />
 
 			<!-- Animate in -->
 			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="select" end="unselect" easing="ease-in" />
@@ -71,28 +71,28 @@
 	</g>
 
 	<g id="time-display" transform="translate(0, 34%)">
-		<image id="time-hour0" href="images/0.png" class="digit" x="1%" y="0" fill-opacity="1">
+		<image id="time-hour0" href="images/0.png" class="digit" x="1%" y="0">
 			<!-- Animate in -->
-			<animate id="aod-animate-in-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
-			<animate id="aod-animate-in-fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="load" easing="ease-in" />
+			<animate id="aod-animate-in--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+			<animate id="aod-animate-in--fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in"/>
 
 			<!-- Animate out -->
-			<animate id="aod-animate-out-fill" attributeName="fill" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
-			<animate id="aod-animate-out-fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
+			<animate attributeName="fill-opacity" to="0.35" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 		</image>
 		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
 
 		<image id="time-separator" href="images/separator.png" class="digit theme-color--accent-foreground" x="50%-6" y="0" fill-opacity="0.5">
-			<animate attributeName="fill-opacity" from="0.5" to="0" dur="0.5s" begin="enable" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-			<animate attributeName="fill-opacity" from="0" to="0.5" dur="0.5s" begin="enable+0.5s" end="disable" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+			<animate attributeName="fill-opacity" from="0.5" to="0" dur="0.5s" begin="select" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+			<animate attributeName="fill-opacity" from="0" to="0.5" dur="0.5s" begin="select+0.5s" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 
 			<!-- Animate in -->
-			<animate id="aod-animate-in-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="load" easing="ease-in" />
-			<animate id="aod-animate-in-fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="load" easing="ease-in" />
+			<animate id="aod-animate-in--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+			<animate id="aod-animate-in--fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
 			<!-- Animate out -->
-			<animate id="aod-animate-out-fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="unload" easing="ease-in" />
-			<animate id="aod-animate-out-fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate id="aod-animate-out--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
+			<animate attributeName="fill-opacity" to="0.35" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 		</image>
 
 		<image id="time-minute0" href="images/0.png" class="digit primary" x="55%" y="0" />
@@ -102,17 +102,17 @@
 			<text id="time-seconds" class="text text--sm primary" text-anchor="middle" text-length="4" x="$-30" y="120" />
 
 			<!-- Animate in -->
-			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
+			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
 			<!-- Animate out -->
-			<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 		</g>
 
 		<!-- Animate in -->
-		<animate id="aod-animate-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="load" easing="ease-in" />
+		<animate id="aod-animate-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
 		<!-- Animate out -->
-		<animate id="aod-animate-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="unload" easing="ease-in" final="freeze" />
+		<animate id="aod-animate-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="disable" end="enable" easing="ease-in" final="freeze" />
 	</g>
 
 	<section height="80" y="170">
