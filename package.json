@@ -61,7 +61,7 @@
 		"eslint-cli": "1.1.1",
 		"eslint-config-prettier": "6.10.0",
 		"eslint-plugin-import": "2.20.1",
-		"fitbit-sdk-types": "4.3.2",
+		"fitbit-sdk-types": "4.3.3",
 		"fitfont": "1.3.1",
 		"prettier": "1.19.1"
 	}
