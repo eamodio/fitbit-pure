@@ -2,13 +2,13 @@
 	"name": "fitbit-pure",
 	"displayName": "Pure Fitbit Clock",
 	"description": "A beautifully designed, highly customizable, clean, and simple clock face for Fitbit Versa devices",
-	"version": "0.0.4",
+	"version": "1.0.0",
 	"author": {
 		"name": "Eric Amodio",
 		"email": "eamodio@gmail.com"
 	},
 	"license": "SEE LICENSE IN LICENSE",
-	"homepage": "https://github.com/eamodio/fitbit-pure#readme",
+	"homepage": "https://pure.amod.io",
 	"bugs": {
 		"url": "https://github.com/eamodio/fitbit-pure/issues"
 	},

@@ -9,7 +9,7 @@ const friendlyColor = (color: string | undefined) => {
 };
 const friendlyOpacity = (value: string | undefined) => `${Number(value ?? 1) * 100}%`;
 
-const debug = true;
+const debug = false;
 
 function PureSettings(props: SettingsComponentProps) {
 	const donated = props.settings.donated === 'true';
