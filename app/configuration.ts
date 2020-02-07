@@ -5,13 +5,13 @@ import { debounce, Event, EventEmitter, log } from '../common/system';
 
 export { Colors } from '../common/config';
 
-export interface ConfigChanged {
+export interface ConfigChangeEvent {
 	key: keyof Config;
 }
 
 class Configuration {
-	private readonly _onDidChange = new EventEmitter<ConfigChanged>();
-	get onDidChange(): Event<ConfigChanged> {
+	private readonly _onDidChange = new EventEmitter<ConfigChangeEvent>();
+	get onDidChange(): Event<ConfigChangeEvent> {
 		return this._onDidChange.event;
 	}
 

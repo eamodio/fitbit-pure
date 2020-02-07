@@ -34,6 +34,7 @@ export interface Config {
 	showActivityUnits: boolean | null;
 	showBatteryPercentage: boolean | null;
 	showDate: boolean | null;
+	showDayOnDateHide: boolean | null;
 	showLeadingZero: boolean | null;
 	showRestingHeartRate: boolean | null;
 	showSeconds: boolean | null;
@@ -49,9 +50,10 @@ export const defaultConfig: Config = {
 	animateSeparator: true,
 	aodOpacity: 0.6,
 	donated: false,
-	showActivityUnits: false,
+	showActivityUnits: true,
 	showBatteryPercentage: true,
 	showDate: true,
+	showDayOnDateHide: true,
 	showLeadingZero: true,
 	showRestingHeartRate: true,
 	showSeconds: false,

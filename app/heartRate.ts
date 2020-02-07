@@ -5,9 +5,10 @@ import document from 'document';
 import { BodyPresenceSensor } from 'body-presence';
 import { HeartRateSensor } from 'heart-rate';
 import { user } from 'user-profile';
+import { ActivityViewChangeEvent, ActivityViews } from './activity';
 import { AppManager } from './appManager';
-import { ConfigChanged, configuration } from './configuration';
-import { debounce, defer, log } from '../common/system';
+import { ConfigChangeEvent, configuration } from './configuration';
+import { debounce, defer, Event, log } from '../common/system';
 
 // if (device.screen == null) {
 // 	(device as any).screen = { width: 348, height: 250 };
@@ -26,7 +27,7 @@ export class HeartRateDisplay {
 	private _isOnBody: boolean | undefined;
 	private _rate: number | undefined;
 
-	constructor(private readonly appManager: AppManager) {
+	constructor(private readonly appManager: AppManager, onDidChangeActivityView: Event<ActivityViewChangeEvent>) {
 		this._hasUserProfileAccess = app.permissions.granted('access_user_profile');
 
 		if (HeartRateSensor == null || !app.permissions.granted('access_heart_rate')) {
@@ -43,6 +44,7 @@ export class HeartRateDisplay {
 
 		appManager.onDidChangeDisplay(this.onDisplayChanged, this);
 		appManager.onDidChangeEditMode(this.onEditModeChanged, this);
+		onDidChangeActivityView(this.onActivityViewChanged, this);
 
 		if (BodyPresenceSensor && app.permissions.granted('access_activity')) {
 			const sensor = new BodyPresenceSensor();
@@ -60,6 +62,18 @@ export class HeartRateDisplay {
 		this.updateState();
 	}
 
+	private onActivityViewChanged(e: ActivityViewChangeEvent) {
+		if (
+			configuration.get('showDayOnDateHide') &&
+			((e.previous === ActivityViews.Date && e.view !== ActivityViews.Date) ||
+				(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
+		) {
+			document.getElementById<TextElement>('heartrate-resting')!.parent!.animate('select');
+
+			this.render();
+		}
+	}
+
 	@debounce(250)
 	@log('HeartRateDisplay', {
 		0: sensor => `present=${sensor.present}`
@@ -72,11 +86,11 @@ export class HeartRateDisplay {
 	@log('HeartRateDisplay', {
 		0: e => `e.key=${e?.key}`
 	})
-	private onConfigurationChanged(e?: ConfigChanged) {
+	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
 			e.key !== 'animateHeartRate' &&
-			e.key !== 'currentActivityView' &&
+			e.key !== 'showDayOnDateHide' &&
 			e.key !== 'showRestingHeartRate'
 		) {
 			return;
@@ -108,18 +122,6 @@ export class HeartRateDisplay {
 			)
 				? 'inline'
 				: 'none';
-		}
-
-		if (e?.key === 'currentActivityView') {
-			const $restingRate = document.getElementById<TextElement>('heartrate-resting')!;
-
-			const view = configuration.get('currentActivityView');
-			if (
-				(view === 0 && $restingRate.textAnchor !== 'end') ||
-				(view !== 0 && $restingRate.textAnchor !== 'middle')
-			) {
-				$restingRate.parent!.animate('select');
-			}
 		}
 
 		if (display.on && !display.aodActive) {
@@ -170,14 +172,14 @@ export class HeartRateDisplay {
 		const x = screenWidth - iconWidth - rect.width - 20;
 		$rate.x = x;
 
-		if (configuration.get('currentActivityView') === 0) {
-			$restingRate.textAnchor = 'end';
-			$restingRate.x = x - 10;
-			$restingRate.y = 21;
-		} else {
+		if (configuration.get('showDayOnDateHide') && configuration.get('currentActivityView') !== ActivityViews.Date) {
 			$restingRate.textAnchor = 'middle';
 			$restingRate.x = x + rect.width / 2;
 			$restingRate.y = rect.bottom + 8;
+		} else {
+			$restingRate.textAnchor = 'end';
+			$restingRate.x = x - 10;
+			$restingRate.y = 21;
 		}
 
 		this.$icon.style.display = 'inline';

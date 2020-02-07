@@ -1,7 +1,7 @@
 import { battery, Battery } from 'power';
 import document from 'document';
 import { display } from 'display';
-import { ConfigChanged, configuration } from './configuration';
+import { ConfigChangeEvent, configuration } from './configuration';
 import { debounce, defer, log } from '../common/system';
 
 export class BatteryDisplay {
@@ -30,7 +30,7 @@ export class BatteryDisplay {
 	@log('BatteryDisplay', {
 		0: e => `e.key=${e?.key}`
 	})
-	private onConfigurationChanged(e?: ConfigChanged) {
+	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (e?.key != null && e.key !== 'showBatteryPercentage') return;
 
 		document.getElementById<TextElement>('battery-level')!.style.display = configuration.get(

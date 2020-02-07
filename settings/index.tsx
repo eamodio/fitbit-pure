@@ -205,6 +205,7 @@ function PureSettings(props: SettingsComponentProps) {
 			<Section title={<TextImageRow label={<Text align="center">Date &amp; Time Display</Text>} />}>
 				<Toggle settingsKey="animateSeparator" label="Animate Time Separator" />
 				<Toggle settingsKey="showDate" label="Show Date" />
+				<Toggle settingsKey="showDayOnDateHide" label="Show Day (when Activity Stats are visible)" />
 				<Toggle settingsKey="showLeadingZero" label="Show Leading Zero" />
 				<Toggle settingsKey="showSeconds" label="Show Seconds" />
 			</Section>

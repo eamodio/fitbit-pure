@@ -4,7 +4,7 @@ import { gettext } from 'i18n';
 import { locale, preferences } from 'user-settings';
 import document from 'document';
 import { AppManager } from './appManager';
-import { ConfigChanged, configuration } from './configuration';
+import { ConfigChangeEvent, configuration } from './configuration';
 import { defer, log } from '../common/system';
 
 const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
@@ -49,12 +49,13 @@ export class TimeDisplay {
 	@log('TimeDisplay', {
 		0: e => `e.key=${e?.key}`
 	})
-	private onConfigurationChanged(e?: ConfigChanged) {
+	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
 			e.key !== 'animateSeparator' &&
 			e.key !== 'aodOpacity' &&
 			e.key !== 'showDate' &&
+			e.key !== 'showDayOnDateHide' &&
 			e.key !== 'showLeadingZero' &&
 			e.key !== 'showSeconds'
 		) {
@@ -221,13 +222,19 @@ export class TimeDisplay {
 
 		this._previous[Previous.Month] = month;
 
+		const dayOfMonth = date.getDate();
+		const dayOfMonthOrdinal = getOrdinal(dayOfMonth);
+
+		if (configuration.get('showDayOnDateHide')) {
+			document.getElementById<TextElement>('date-day')!.text = dayOfMonth.toString();
+			document.getElementById<TextElement>('date-day-ordinal')!.text = dayOfMonthOrdinal;
+		}
+
 		if (!configuration.get('showDate')) return;
 
 		const monthName = gettext(`month_short_${month}`);
 		const dayName = gettext(`day_short_${day}`);
 		const dayMonthSeparator = gettext('day_month_separator');
-
-		const dayOfMonth = date.getDate().toString();
 
 		const $date = document.getElementById<TextElement>('date-date')!;
 
@@ -272,11 +279,9 @@ export class TimeDisplay {
 				break;
 		}
 
-		document.getElementById<TextElement>('date-day')!.text = dayOfMonth;
-
 		const $dateHighlight = document.getElementById<TextElement>('date-highlight')!;
 		$dateHighlight.x = x;
-		$dateHighlight.text = dayOfMonth;
+		$dateHighlight.text = dayOfMonth.toString();
 
 		const rect = $dateHighlight.getBBox();
 
@@ -306,6 +311,18 @@ export class TimeDisplay {
 	private updateClock(seconds: boolean) {
 		clock.granularity = seconds && !display.aodActive ? 'seconds' : 'minutes';
 	}
+}
+
+const ordinals = [
+	gettext('day_ordinal_0'),
+	gettext('day_ordinal_1'),
+	gettext('day_ordinal_2'),
+	gettext('day_ordinal_3')
+];
+
+function getOrdinal(num: number): string {
+	const index = num % 100;
+	return ordinals[(index - 20) % 10] || ordinals[index] || ordinals[0];
 }
 
 const chars = String.fromCharCode(0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19);

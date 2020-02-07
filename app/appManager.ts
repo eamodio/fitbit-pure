@@ -2,8 +2,9 @@ import { display, Display } from 'display';
 import document from 'document';
 import { vibration } from 'haptics';
 import { addEventListener, Disposable, Event, EventEmitter, log } from '../common/system';
-import { Colors, ConfigChanged, configuration } from './configuration';
+import { Colors, ConfigChangeEvent, configuration } from './configuration';
 import { DonatePopup } from './popup';
+import { ActivityViews } from './activity';
 
 const colors: Colors[] = [
 	'fb-black',
@@ -61,14 +62,14 @@ export class AppManager {
 		return this._onDidChangeDisplay.event;
 	}
 
-	private readonly _onDidChangeView = new EventEmitter<void>();
-	get onDidChangeView(): Event<void> {
-		return this._onDidChangeView.event;
-	}
-
 	private readonly _onDidChangeEditMode = new EventEmitter<boolean>();
 	get onDidChangeEditMode(): Event<boolean> {
 		return this._onDidChangeEditMode.event;
+	}
+
+	private readonly _onDidClick = new EventEmitter<void>();
+	get onDidClick(): Event<void> {
+		return this._onDidClick.event;
 	}
 
 	private _donateDisposable: Disposable | undefined;
@@ -136,7 +137,7 @@ export class AppManager {
 	@log('AppManager', {
 		0: e => `e.key=${e?.key}`
 	})
-	private onConfigurationChanged(e?: ConfigChanged) {
+	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
 			e?.key !== 'accentBackgroundColor' &&
@@ -267,7 +268,7 @@ export class AppManager {
 		}
 
 		if (!this.editing) {
-			this._onDidChangeView.fire();
+			this._onDidClick.fire();
 
 			return;
 		}
@@ -275,10 +276,23 @@ export class AppManager {
 		if (e.screenX <= 64 && e.screenY <= 64) {
 			vibration.start('bump');
 			configuration.set('showBatteryPercentage', !configuration.get('showBatteryPercentage'));
+		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY <= 64) {
+			vibration.start('bump');
+			configuration.set('showDayOnDateHide', !configuration.get('showDayOnDateHide'));
+
+			if (
+				configuration.get('showDayOnDateHide') &&
+				configuration.get('currentActivityView') === ActivityViews.Date
+			) {
+				document.getElementById<TextElement>('date-day')!.parent!.animate('disable');
+			}
 		} else if (e.screenX >= 236 && e.screenY <= 64) {
 			vibration.start('bump');
 			configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
-		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY >= 24 && e.screenY <= 104) {
+		} else if (e.screenX <= 64 && e.screenY >= 108 && e.screenY <= 188) {
+			vibration.start('bump');
+			configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
+		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY >= 108 && e.screenY <= 188) {
 			vibration.start('bump');
 
 			let color = configuration.get('accentBackgroundColor');
@@ -294,21 +308,19 @@ export class AppManager {
 			color = colors[index];
 			configuration.set('accentBackgroundColor', color);
 			configuration.set('accentForegroundColor', color === 'fb-black' ? 'fb-white' : color);
-		} else if (e.screenX <= 64 && e.screenY >= 108 && e.screenY <= 188) {
-			vibration.start('bump');
-			configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
 		} else if (e.screenX >= 236 && e.screenY >= 108 && e.screenY <= 188) {
 			vibration.start('bump');
 			configuration.set('showSeconds', !configuration.get('showSeconds'));
-		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY >= 148 && e.screenY <= 228) {
-			vibration.start('bump');
-			configuration.set('animateSeparator', !configuration.get('animateSeparator'));
 		} else if (e.screenY >= 236) {
-			if (configuration.get('currentActivityView') === 0 || (e.screenX >= 70 && e.screenX <= 230)) {
-				this._onDidChangeView.fire();
-			} else {
+			if (e.screenX >= 112 && e.screenX <= 192) {
 				vibration.start('bump');
-				configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
+				if (configuration.get('currentActivityView') === ActivityViews.Date) {
+					configuration.set('showDate', !configuration.get('showDate'));
+				} else {
+					configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
+				}
+			} else {
+				this._onDidClick.fire();
 			}
 		}
 

@@ -7,8 +7,8 @@ import { gettext } from 'i18n';
 import { goals, today } from 'user-activity';
 import { units } from 'user-settings';
 import { AppManager } from './appManager';
-import { defer, log } from '../common/system';
-import { ConfigChanged, configuration } from './configuration';
+import { defer, Event, EventEmitter, log } from '../common/system';
+import { ConfigChangeEvent, configuration } from './configuration';
 
 const arcWidth = 48;
 const screenWidth = device.screen.width;
@@ -33,7 +33,24 @@ enum Side {
 	Right = 1
 }
 
+export enum ActivityViews {
+	Date = 0,
+	Activity1 = 1,
+	Activity2 = 2,
+	Donate = 3
+}
+
+export interface ActivityViewChangeEvent {
+	previous: ActivityViews;
+	view: ActivityViews;
+}
+
 export class ActivityDisplay {
+	private readonly _onDidChangeActivityView = new EventEmitter<ActivityViewChangeEvent>();
+	get onDidChangeActivityView(): Event<ActivityViewChangeEvent> {
+		return this._onDidChangeActivityView.event;
+	}
+
 	constructor(
 		private readonly appManager: AppManager,
 		private readonly activities: Activity[],
@@ -45,7 +62,7 @@ export class ActivityDisplay {
 		// this.$view.addEventListener('select', () => this.onViewChanged(this.getView()));
 		this.appManager.onDidChangeDisplay(this.onDisplayChanged, this);
 		this.appManager.onDidChangeEditMode(e => this.onEditModeChanged(e));
-		this.appManager.onDidChangeView(() => this.onViewClicked());
+		this.appManager.onDidClick(() => this.onViewClicked());
 
 		// goals.addEventListener('reachgoal', () => this.onGoalReached(goals));
 
@@ -58,8 +75,10 @@ export class ActivityDisplay {
 	@log('ActivityDisplay', {
 		0: e => `e.key=${e?.key}`
 	})
-	private onConfigurationChanged(e?: ConfigChanged) {
-		if (e?.key != null && e.key !== 'donated' && e.key !== 'showActivityUnits' /*&& e.key !== 'showDate'*/) return;
+	private onConfigurationChanged(e?: ConfigChangeEvent) {
+		if (e?.key != null && e.key !== 'donated' && e.key !== 'showActivityUnits' && e.key !== 'showDayOnDateHide') {
+			return;
+		}
 
 		if (e?.key == null || e?.key === 'donated') {
 			const visibility = this.appManager.donated ? 'visible' : 'hidden';
@@ -70,19 +89,23 @@ export class ActivityDisplay {
 			}
 
 			if (e != null) {
-				requestAnimationFrame(() => this.setView(this.appManager.donated ? 0 : this.maxViews));
+				requestAnimationFrame(() => this.setView(this.appManager.donated ? ActivityViews.Date : this.maxViews));
 			}
 
 			if (e?.key === 'donated') return;
 		}
 
-		// if (e?.key == null || e?.key === 'showDate') {
-		// 	if (!configuration.get('showDate') && this.getView() === 0) {
-		// 		this.setView(0);
-		// 	}
+		if (e?.key == null || e?.key === 'showDayOnDateHide') {
+			document
+				.getElementById<GroupElement>('date-day')!
+				.parent!.animate(
+					configuration.get('showDayOnDateHide') && this.getView() !== ActivityViews.Date
+						? 'select'
+						: 'unselect'
+				);
 
-		// 	if (e?.key === 'showDate') return;
-		// }
+			if (e?.key === 'showDayOnDateHide') return;
+		}
 
 		if (e?.key == null || e?.key === 'showActivityUnits') {
 			const display = configuration.get('showActivityUnits') ? 'inline' : 'none';
@@ -105,7 +128,7 @@ export class ActivityDisplay {
 				document.getElementById<ArcElement>(`activity${i}-right-progress`)!.sweepAngle = 0;
 			}
 
-			if (this.getView() === 0) return;
+			if (this.getView() === ActivityViews.Date) return;
 
 			this.render();
 		}
@@ -114,7 +137,7 @@ export class ActivityDisplay {
 	@log('ActivityDisplay')
 	private onEditModeChanged(editing: boolean) {
 		if (editing) {
-			this.setView(0);
+			this.setView(ActivityViews.Date);
 		}
 
 		this.render();
@@ -127,33 +150,40 @@ export class ActivityDisplay {
 	// 		(goals.distance != null && (today.adjusted.distance ?? 0) >= goals.distance)
 	// 	) {
 	// 		// step or distance goal reached
-	// 		this.setView(1, 'nudge');
+	// 		this.setView(ActivityViews.Activity1, 'nudge');
 	// 	} else if (
 	// 		(goals.activeMinutes != null && (today.adjusted.activeMinutes ?? 0) >= goals.activeMinutes) ||
 	// 		(goals.calories != null && (today.adjusted.calories ?? 0) >= goals.calories)
 	// 	) {
 	// 		// active minutes or calories goal reached
-	// 		this.setView(2, 'nudge');
+	// 		this.setView(ActivityViews.Activity2, 'nudge');
 	// 	}
 	// }
 
 	@log('ActivityDisplay')
-	private onViewChanged(index: number, initializing: boolean = false) {
-		configuration.set('currentActivityView', index);
+	private onViewChanged(e: ActivityViewChangeEvent, initializing: boolean = false) {
+		configuration.set('currentActivityView', e.view);
 
-		const $day = document.getElementById<GroupElement>('date-day-display')!;
-		if (initializing || (index === 0 && $day.style.opacity !== 0) || (index !== 0 && $day.style.opacity === 0)) {
-			$day.animate(index === 0 ? 'unload' : 'load');
+		if (
+			configuration.get('showDayOnDateHide') &&
+			(initializing ||
+				(e.previous === ActivityViews.Date && e.view !== ActivityViews.Date) ||
+				(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
+		) {
+			document
+				.getElementById<GroupElement>('date-day')!
+				.parent!.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
 		}
 
-		if (initializing || index === 0) return;
+		this._onDidChangeActivityView.fire(e);
+		if (initializing || e.view === ActivityViews.Date) return;
 
 		this.render();
 	}
 
 	@log('ActivityDisplay')
 	private onViewClicked() {
-		const index = this.getView() + 1;
+		const view = this.getView() + 1;
 
 		// Force an unselect to reset the animation when an activity is hidden
 		let i = this.activities.length;
@@ -161,34 +191,34 @@ export class ActivityDisplay {
 			document.getElementById<GroupElement>(`activity${i}-display`)!.animate('unselect');
 		}
 
-		this.setView(index, 'bump');
+		this.setView(view, 'bump');
 	}
 
 	@defer()
 	// @log('ActivityDisplay')
 	private render() {
-		const index = this.getView() - 1;
-		if (index === -1) return;
+		const view = this.getView() - 1;
+		if (view === -1) return;
 
-		const activity = this.activities[index];
+		const activity = this.activities[view];
 		if (activity == null) return;
 
-		this.renderActivity(activity, Side.Left, `activity${index}-left`);
-		this.renderActivity(activity, Side.Right, `activity${index}-right`);
+		this.renderActivity(activity, Side.Left, `activity${view}-left`);
+		this.renderActivity(activity, Side.Right, `activity${view}-right`);
 
 		if (activity.goalReached[Side.Left] || activity.goalReached[Side.Right]) {
 			requestAnimationFrame(() => {
 				if (activity.goalReached[Side.Left]) {
-					document.getElementById<ArcElement>(`activity${index}-left-goal`)!.parent?.animate('enable');
+					document.getElementById<ArcElement>(`activity${view}-left-goal`)!.parent?.animate('enable');
 				}
 
 				if (activity.goalReached[Side.Right]) {
-					document.getElementById<ArcElement>(`activity${index}-right-goal`)!.parent?.animate('enable');
+					document.getElementById<ArcElement>(`activity${view}-right-goal`)!.parent?.animate('enable');
 				}
 			});
 		}
 
-		document.getElementById<GroupElement>(`activity${index}-display`)!.animate('select');
+		document.getElementById<GroupElement>(`activity${view}-display`)!.animate('select');
 	}
 
 	private renderActivity(activity: Activity, side: Side, prefix: string) {
@@ -278,41 +308,38 @@ export class ActivityDisplay {
 		$animate.to = goal != null ? 360 : 0;
 	}
 
-	private getView(): number {
-		return Number(this.$view.value ?? 0);
+	private getView(): ActivityViews {
+		return Number(this.$view.value ?? ActivityViews.Date);
 	}
 
-	private setView(index: number, vibrationPattern?: VibrationPatternName, initializing: boolean = false) {
-		if (index < 0 || index > this.maxViews) {
-			index = 0;
+	private setView(view: ActivityViews, vibrationPattern?: VibrationPatternName, initializing: boolean = false) {
+		if (view < 0 || view > this.maxViews) {
+			view = ActivityViews.Date;
 		}
 
-		// if (index === 0 && !configuration.get('showDate')) {
-		// 	index = 1;
-		// }
-
-		if (index !== 0 && index !== this.maxViews && !this.appManager.donated) {
-			index = this.maxViews;
+		if (view !== ActivityViews.Date && view !== this.maxViews && !this.appManager.donated) {
+			view = this.maxViews;
 		}
 
-		if (index === this.getView()) {
+		const previous = this.getView();
+		if (view === previous) {
 			if (initializing) {
-				this.onViewChanged(index, true);
+				this.onViewChanged({ previous: previous, view: view }, true);
 			}
 
-			return index;
+			return view;
 		}
 
 		if (vibrationPattern != null) {
 			vibration.start(vibrationPattern);
 		}
 
-		this.$view.value = index;
+		this.$view.value = view;
 
 		// Force an update, since we can't trust the cycleview to always do it
-		this.onViewChanged(index, initializing);
+		this.onViewChanged({ previous: previous, view: view }, initializing);
 
-		return index;
+		return view;
 	}
 
 	private get maxViews() {

@@ -12,18 +12,21 @@
 		<section id="battery-display">
 			<line id="battery-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
 			<image id="battery-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
-			<text id="battery-level" class="text--bold text--sm primary" text-anchor="start" text-length="4" x="$+10" y="21" />
+			<text id="battery-level" class="text--bold text--sm secondary" text-anchor="start" text-length="4" x="$+10" y="21" />
 			<!-- <text id="battery-until-charged" class="text text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" /> -->
 		</section>
 
-		<g id="date-day-display" opacity="0">
-			<text id="date-day" class="text text--lg primary theme-color--accent-foreground" text-anchor="middle" text-length="2" x="50%" y="25" />
+		<g opacity="0">
+			<text id="date-day" class="text text--lg primary theme-color--accent-foreground" text-anchor="middle" text-length="2" x="50%-6" y="25" />
+			<text id="date-day-ordinal" class="text text--sm secondary" text-anchor="start" text-length="2" x="$" y="25" />
+
+			<animate attributeName="opacity" from="1" to="0" dur="1s" begin="disable" easing="ease-in" />
 
 			<!-- Animate in -->
-			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
+			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="select" end="unselect" easing="ease-in" />
 
 			<!-- Animate out -->
-			<animate attributeName="opacity" to="0" dur="0.4s" begin="unload" easing="ease-in" />
+			<animate attributeName="opacity" to="0" dur="0s" begin="unselect" end="select" />
 		</g>
 
 		<section id="heartrate-display">
@@ -51,7 +54,7 @@
 			<g>
 				<text id="heartrate-resting" class="text--bold text--sm secondary" text-anchor="end" text-length="5" y="21" />
 
-				<animate attributeName="opacity" to="0" dur="0s" begin="select" easing="ease-in" />
+				<animate attributeName="opacity" to="0" dur="0s" begin="select" />
 				<animate attributeName="opacity" to="1" dur="0.4s" begin="select" easing="ease-in" />
 			</g>
 		</section>
