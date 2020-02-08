@@ -174,11 +174,12 @@ export class AppManager {
 
 		if (e?.key == null || e?.key === 'accentBackgroundColor') {
 			const color = configuration.get('accentBackgroundColor');
-			const $els = document.getElementsByClassName<StyledElement>('theme-color--accent-background');
+			const $els = document.getElementsByClassName<StyledElement>('theme-bg-color');
 
 			let i = $els.length;
+			let $el: StyledElement;
 			while (i--) {
-				const $el = $els[i];
+				$el = $els[i];
 				$el.style.visibility = color === 'fb-black' ? 'hidden' : 'visible';
 				$el.style.fill = color;
 			}
@@ -186,7 +187,7 @@ export class AppManager {
 
 		if (e?.key == null || e?.key === 'accentForegroundColor') {
 			const color = configuration.get('accentForegroundColor');
-			const $els = document.getElementsByClassName<StyledElement>('theme-color--accent-foreground');
+			const $els = document.getElementsByClassName<StyledElement>('theme-fg-color');
 
 			const index = colors.indexOf(color);
 			const opacity = Number(opacities[index === -1 ? 0 : index].toFixed(2));
@@ -195,8 +196,9 @@ export class AppManager {
 			// console.log(`color=${color}, index=${index}, opacity=${opacity}`);
 
 			let i = $els.length;
+			let $el: StyledElement;
 			while (i--) {
-				const $el = $els[i];
+				$el = $els[i];
 				$el.style.fill = color;
 
 				if ($el.id === 'time-separator') {

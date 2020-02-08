@@ -101,8 +101,9 @@ export class HeartRateDisplay {
 				const $els = document.getElementsByClassName<GraphicsElement>('heartrate-icon');
 
 				let i = $els.length;
+				let $el: GraphicsElement;
 				while (i--) {
-					const $el = $els[i];
+					$el = $els[i];
 
 					$el.animate('disable');
 					$el.style.display = 'none';

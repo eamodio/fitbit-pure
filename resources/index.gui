@@ -1,6 +1,6 @@
 <svg class="theme--pure">
 	<image id="editing" href="images/editing.png" class="bg bg--editing" x="0" y="0" display="none" />
-	<image id="background" href="images/background.png" class="bg theme-color--accent-background">
+	<image id="background" href="images/background.png" class="bg theme-bg-color">
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
@@ -17,7 +17,7 @@
 		</section>
 
 		<g opacity="0">
-			<text id="date-day" class="text text--lg primary theme-color--accent-foreground" text-anchor="middle" text-length="2" x="50%-6" y="25" />
+			<text id="date-day" class="text text--lg primary theme-fg-color" text-anchor="middle" text-length="2" x="50%-6" y="25" />
 			<text id="date-day-ordinal" class="text text--sm secondary" text-anchor="start" text-length="2" x="$+1" y="25" />
 
 			<animate attributeName="opacity" from="1" to="0" dur="1s" begin="disable" end="select;unselect" easing="ease-in" />
@@ -31,7 +31,7 @@
 
 		<section id="heartrate-display">
 			<g id="heartrate-icon--pulse" class="heartrate-icon" transform="translate(100%-26,12)" display="none">
-				<image href="images/heart.png" class="icon primary theme-color--accent-foreground" x="-16" y="-16" />
+				<image href="images/heart.png" class="icon primary theme-fg-color" x="-16" y="-16" />
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
 				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1s" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
 				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3s" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
@@ -39,7 +39,7 @@
 			</g>
 
 			<g id="heartrate-icon--interval" class="heartrate-icon" transform="translate(100%-26,12)" display="none">
-				<image href="images/heart.png" class="icon primary theme-color--accent-foreground" x="-16" y="-16" />
+				<image href="images/heart.png" class="icon primary theme-fg-color" x="-16" y="-16" />
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1s" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
 				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3s" end="disable" dur="0.1s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
@@ -47,7 +47,7 @@
 			</g>
 
 			<g id="heartrate-icon--off" class="heartrate-icon" transform="translate(100%-42,-4)" display="none">
-				<image href="images/heart.png" class="icon primary theme-color--accent-foreground" x="0" y="0" />
+				<image href="images/heart.png" class="icon primary theme-fg-color" x="0" y="0" />
 			</g>
 
 			<text id="heartrate-rate" class="text--bold text--lg primary" text-anchor="start" text-length="3" y="25" />
@@ -71,7 +71,7 @@
 	</g>
 
 	<g id="time-display" transform="translate(0, 34%)">
-		<image id="time-hour0--zero" href="images/0.png" class="digit theme-color--accent-foreground" x="1%" y="0" visibility="hidden">
+		<image id="time-hour0--zero" href="images/0.png" class="digit theme-fg-color" x="1%" y="0" visibility="hidden">
 			<!-- Animate in -->
 			<animate id="aod-animate-in--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 			<animate id="aod-animate-in--fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in"/>
@@ -83,7 +83,7 @@
 		<image id="time-hour0" href="images/0.png" class="digit" x="1%" y="0" />
 		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
 
-		<image id="time-separator" href="images/separator.png" class="digit theme-color--accent-foreground" x="50%-6" y="0" fill-opacity="0.5">
+		<image id="time-separator" href="images/separator.png" class="digit theme-fg-color" x="50%-6" y="0" fill-opacity="0.5">
 			<animate attributeName="fill-opacity" from="0.5" to="0" dur="0.5s" begin="select" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			<animate attributeName="fill-opacity" from="0" to="0.5" dur="0.5s" begin="select+0.5s" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 
@@ -123,7 +123,7 @@
 					<g id="date-display" transform="translate(0,50%)">
 						<text id="date-date" class="text text--lg secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
 						<rect id="date-highlight-bg" x="0" y="0" height="0" width="0" fill="fb-black"/>
-						<text id="date-highlight" class="text text--lg primary theme-color--accent-foreground" text-anchor="end" text-length="2" y="0" />
+						<text id="date-highlight" class="text text--lg primary theme-fg-color" text-anchor="end" text-length="2" y="0" />
 					</g>
 				</use>
 				<use href="#cycleview-item">
