@@ -8,7 +8,6 @@ import { ConfigChangeEvent, configuration } from './configuration';
 import { defer, log } from '../common/system';
 
 const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
-const leadingZeroClassRegex = /\btheme-color--accent-foreground\b/;
 
 enum Previous {
 	Minutes = 0,
@@ -21,14 +20,7 @@ export class TimeDisplay {
 	private _date: Date | undefined;
 	private _previous: Int8Array = new Int8Array(4);
 
-	constructor(
-		private readonly appManager: AppManager,
-		private readonly $hour0: ImageElement,
-		private readonly $hour1: ImageElement,
-		private readonly $minute0: ImageElement,
-		private readonly $minute1: ImageElement,
-		private readonly $seconds: TextElement
-	) {
+	constructor(private readonly appManager: AppManager, private readonly $seconds: TextElement) {
 		clock.addEventListener('tick', e => this.onTick(e));
 
 		appManager.onDidChangeDisplay(this.onDisplayChanged, this);
@@ -150,8 +142,8 @@ export class TimeDisplay {
 		this._previous[Previous.Minutes] = minutes;
 
 		const minute = zeroPad(minutes);
-		this.$minute0.href = `images/${minute[0] ?? 0}.png`;
-		this.$minute1.href = `images/${minute[1] ?? 0}.png`;
+		document.getElementById<ImageElement>('time-minute0')!.href = `images/${minute[0] ?? 0}.png`;
+		document.getElementById<ImageElement>('time-minute1')!.href = `images/${minute[1] ?? 0}.png`;
 
 		const hours = this.appManager.editing ? 0 : date.getHours();
 		if (!force && hours === this._previous[Previous.Hours]) return;
@@ -159,53 +151,38 @@ export class TimeDisplay {
 		this._previous[Previous.Hours] = hours;
 
 		const hour = zeroPad(!this.appManager.editing && preferences.clockDisplay === '12h' ? hours % 12 || 12 : hours);
-		this.$hour0.href = `images/${hour[0] ?? 0}.png`;
 		if (hour[0] === '0') {
+			let $hour0 = document.getElementById<ImageElement>('time-hour0')!;
+			if ($hour0.style.visibility !== 'hidden') {
+				$hour0.style.visibility = 'hidden';
+			}
+
+			$hour0 = document.getElementById<ImageElement>('time-hour0--zero')!;
+
 			if (configuration.get('showLeadingZero')) {
-				if (!leadingZeroClassRegex.test(this.$hour0.class)) {
-					this.$hour0.class += ' theme-color--accent-foreground';
-
-					this.appManager.refresh();
-				}
-
-				if (this.$hour0.style.visibility !== 'visible') {
+				if ($hour0.style.visibility !== 'visible') {
 					document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = 0;
-					this.$hour0.style.visibility = 'visible';
+					$hour0.style.visibility = 'visible';
 				}
-			} else if (this.$hour0.style.visibility !== 'hidden') {
-				this.$hour0.style.visibility = 'hidden';
+			} else if ($hour0.style.visibility !== 'hidden') {
+				$hour0.style.visibility = 'hidden';
 				document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = -33;
 			}
 		} else {
-			if (leadingZeroClassRegex.test(this.$hour0.class)) {
-				this.$hour0.class = this.$hour0.class.replace(leadingZeroClassRegex, '');
-				this.$hour0.style.fill = 'fb-white';
-				this.$hour0.style.fillOpacity = 1;
-
-				if (display.aodAvailable) {
-					let $animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in--fill');
-					if ($animate != null) {
-						$animate.to = 'fb-white';
-					}
-
-					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-in--fill-opacity');
-					if ($animate != null) {
-						$animate.to = 1;
-					}
-
-					$animate = this.$hour0.getElementById<AnimateElement>('aod-animate-out--fill');
-					if ($animate != null) {
-						$animate.from = 'fb-white';
-					}
-				}
+			let $hour0 = document.getElementById<ImageElement>('time-hour0--zero')!;
+			if ($hour0.style.visibility !== 'hidden') {
+				$hour0.style.visibility = 'hidden';
 			}
 
-			if (this.$hour0.style.visibility !== 'visible') {
+			$hour0 = document.getElementById<ImageElement>('time-hour0')!;
+			$hour0.href = `images/${hour[0] ?? 0}.png`;
+
+			if ($hour0.style.visibility !== 'visible') {
 				document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = 0;
-				this.$hour0.style.visibility = 'visible';
+				$hour0.style.visibility = 'visible';
 			}
 		}
-		this.$hour1.href = `images/${hour[1] ?? 0}.png`;
+		document.getElementById<ImageElement>('time-hour1')!.href = `images/${hour[1] ?? 0}.png`;
 
 		const day = date.getDay();
 		if (!force && day === this._previous[Previous.Day]) return;

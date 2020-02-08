@@ -38,14 +38,7 @@ const activities = new ActivityDisplay(
 	document.getElementById<GroupElement>('cycleview')!
 );
 
-new TimeDisplay(
-	appManager,
-	document.getElementById<ImageElement>('time-hour0')!,
-	document.getElementById<ImageElement>('time-hour1')!,
-	document.getElementById<ImageElement>('time-minute0')!,
-	document.getElementById<ImageElement>('time-minute1')!,
-	document.getElementById<TextElement>('time-seconds')!
-);
+new TimeDisplay(appManager, document.getElementById<TextElement>('time-seconds')!);
 
 new BatteryDisplay();
 

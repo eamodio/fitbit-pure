@@ -18,7 +18,7 @@
 
 		<g opacity="0">
 			<text id="date-day" class="text text--lg primary theme-color--accent-foreground" text-anchor="middle" text-length="2" x="50%-6" y="25" />
-			<text id="date-day-ordinal" class="text text--sm secondary" text-anchor="start" text-length="2" x="$" y="25" />
+			<text id="date-day-ordinal" class="text text--sm secondary" text-anchor="start" text-length="2" x="$+1" y="25" />
 
 			<animate attributeName="opacity" from="1" to="0" dur="1s" begin="disable" end="select;unselect" easing="ease-in" />
 
@@ -71,15 +71,16 @@
 	</g>
 
 	<g id="time-display" transform="translate(0, 34%)">
-		<image id="time-hour0" href="images/0.png" class="digit" x="1%" y="0">
+		<image id="time-hour0--zero" href="images/0.png" class="digit theme-color--accent-foreground" x="1%" y="0" visibility="hidden">
 			<!-- Animate in -->
-			<animate id="aod-animate-in--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+			<animate id="aod-animate-in--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 			<animate id="aod-animate-in--fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in"/>
 
 			<!-- Animate out -->
 			<animate id="aod-animate-out--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 			<animate attributeName="fill-opacity" to="0.35" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 		</image>
+		<image id="time-hour0" href="images/0.png" class="digit" x="1%" y="0" />
 		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
 
 		<image id="time-separator" href="images/separator.png" class="digit theme-color--accent-foreground" x="50%-6" y="0" fill-opacity="0.5">

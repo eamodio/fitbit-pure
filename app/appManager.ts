@@ -123,10 +123,6 @@ export class AppManager {
 		this._onDidChangeEditMode.fire(value);
 	}
 
-	refresh() {
-		requestAnimationFrame(() => this.onConfigurationChanged());
-	}
-
 	showDonatePopup() {
 		requestAnimationFrame(() => {
 			const popup = new DonatePopup(this);
@@ -207,7 +203,7 @@ export class AppManager {
 					$el.style.fillOpacity = separatorOpacity;
 					($el.children[0] as AnimateElement).from = separatorOpacity;
 					($el.children[1] as AnimateElement).to = separatorOpacity;
-				} else if ($el.id === 'time-hour0') {
+				} else if ($el.id === 'time-hour0--zero') {
 					$el.style.fillOpacity = opacity;
 				}
 
