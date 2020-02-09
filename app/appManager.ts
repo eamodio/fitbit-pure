@@ -98,6 +98,7 @@ export class AppManager {
 		this.$trigger.addEventListener('mouseup', e => this.onMouseUp(e));
 
 		this.onConfigurationChanged();
+		// this.demo();
 	}
 
 	get donated(): boolean {
@@ -374,4 +375,90 @@ export class AppManager {
 
 		this._mouseDownDisposable?.dispose();
 	}
+
+	// demo() {
+	// 	display.on = false;
+	// 	configuration.set('accentBackgroundColor', 'fb-black');
+	// 	configuration.set('accentForegroundColor', 'fb-white');
+	// 	configuration.set('currentActivityView', 0);
+
+	// 	const $text0 = document.getElementById<TextElement>('demo-text0')!;
+	// 	const $text1 = document.getElementById<TextElement>('demo-text1')!;
+
+	// 	let time = 1000;
+	// 	setTimeout(() => {
+	// 		$text0.y = 270;
+	// 		$text0.text = 'ALWAYS-ON DISPLAY';
+	// 		$text0.style.display = 'inline';
+	// 	}, time);
+
+	// 	time += 2000;
+	// 	setTimeout(() => {
+	// 		$text0.style.display = 'none';
+	// 		display.on = true;
+	// 	}, time);
+
+	// 	time += 2000;
+	// 	setTimeout(() => configuration.set('currentActivityView', 1), time);
+
+	// 	time += 3250;
+	// 	setTimeout(() => configuration.set('currentActivityView', 2), time);
+
+	// 	time += 3250;
+	// 	setTimeout(() => {
+	// 		configuration.set('currentActivityView', 0);
+	// 		$text0.y = 75;
+	// 		$text0.text = 'TAP & HOLD';
+	// 		$text0.style.display = 'inline';
+
+	// 		$text1.y = 240;
+	// 		$text1.text = 'TO CUSTOMIZE';
+	// 		$text1.style.display = 'inline';
+	// 	}, time);
+
+	// 	time += 2500;
+	// 	setTimeout(() => {
+	// 		this.editing = true;
+	// 		$text0.style.display = 'none';
+	// 		$text1.style.display = 'none';
+	// 	}, time);
+
+	// 	time += 2000;
+	// 	setTimeout(() => {
+	// 		document.getElementById<GroupElement>('editable-overlay')!.style.display = 'none';
+
+	// 		configuration.set('accentBackgroundColor', 'fb-white');
+	// 		configuration.set('accentForegroundColor', 'fb-white');
+	// 	}, time);
+
+	// 	time += 500;
+	// 	setTimeout(() => {
+	// 		configuration.set('accentBackgroundColor', 'fb-cyan');
+	// 		configuration.set('accentForegroundColor', 'fb-cyan');
+	// 	}, time);
+
+	// 	time += 500;
+	// 	setTimeout(() => {
+	// 		configuration.set('accentBackgroundColor', 'fb-blue');
+	// 		configuration.set('accentForegroundColor', 'fb-blue');
+	// 	}, time);
+
+	// 	time += 500;
+	// 	setTimeout(() => {
+	// 		configuration.set('accentBackgroundColor', 'fb-red');
+	// 		configuration.set('accentForegroundColor', 'fb-red');
+	// 	}, time);
+
+	// 	time += 500;
+	// 	setTimeout(() => {
+	// 		configuration.set('accentBackgroundColor', 'fb-purple');
+	// 		configuration.set('accentForegroundColor', 'fb-purple');
+	// 	}, time);
+
+	// 	time += 1000;
+	// 	setTimeout(() => (this.editing = false), time);
+
+	// 	time += 2000;
+	// 	setTimeout(() => this.demo(), time);
+	// }
 }

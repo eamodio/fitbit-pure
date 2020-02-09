@@ -183,6 +183,10 @@
 		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="enable+1.7s" easing="ease-in" />
 	</image>
 
+	<!-- DEMO MODE -->
+	<!-- <text id="demo-text0" class="text text--extra-bold primary" font-size="30" text-anchor="middle" text-length="18" x="50%" fill="fb-red" display="none" /> -->
+	<!-- <text id="demo-text1" class="text text--extra-bold primary" font-size="30" text-anchor="middle" text-length="18" x="50%" fill="fb-red" display="none" /> -->
+
 	<rect id="trigger" x="0" y="0" height="100%" width="100%" layer="100" pointer-events="visible" fill="none" />
 
 	<use id="donate-popup" href="#donate-popup" layer="200" pointer-events="visible" display="none" overflow="hidden" />

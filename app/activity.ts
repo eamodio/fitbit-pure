@@ -101,9 +101,21 @@ export class ActivityDisplay {
 
 	// @log('ActivityDisplay', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
-		if (e?.key != null && e.key !== 'donated' && e.key !== 'showActivityUnits' && e.key !== 'showDayOnDateHide') {
+		if (
+			e?.key != null &&
+			// e.key !== 'currentActivityView' &&
+			e.key !== 'donated' &&
+			e.key !== 'showActivityUnits' &&
+			e.key !== 'showDayOnDateHide'
+		) {
 			return;
 		}
+
+		// if (e?.key === 'currentActivityView') {
+		// 	this.setView(configuration.get('currentActivityView'));
+
+		// 	return;
+		// }
 
 		if (e?.key == null || e?.key === 'donated') {
 			const visibility = this.appManager.donated ? 'visible' : 'hidden';
