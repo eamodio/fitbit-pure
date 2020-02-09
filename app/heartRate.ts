@@ -173,10 +173,10 @@ export class HeartRateDisplay {
 		if (configuration.get('showDayOnDateHide') && configuration.get('currentActivityView') !== ActivityViews.Date) {
 			$restingRate.textAnchor = 'middle';
 			$restingRate.x = x + rect.width / 2;
-			$restingRate.y = rect.bottom + 8;
+			$restingRate.y = 29 + rect.height / 2;
 		} else {
 			$restingRate.textAnchor = 'end';
-			$restingRate.x = x - 10;
+			$restingRate.x = x - 8;
 			$restingRate.y = 21;
 		}
 
