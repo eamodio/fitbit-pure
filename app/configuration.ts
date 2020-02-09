@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { MessageEvent, peerSocket } from 'messaging';
 import { Config, defaultConfig } from '../common/config';
-import { debounce, Event, EventEmitter, log } from '../common/system';
+import { debounce, Event, EventEmitter } from '../common/system';
 
 export { Colors } from '../common/config';
 
@@ -23,9 +23,7 @@ class Configuration {
 		peerSocket.addEventListener('message', e => this.onMessageReceived(e));
 	}
 
-	@log('Configuration', {
-		0: e => `key=${e.data.key}, value=${e.data.value}`
-	})
+	// @log('Configuration', { 0: e => `key=${e.data.key}, value=${e.data.value}` })
 	private onMessageReceived(e: MessageEvent) {
 		if (e.data.key != null && this._config[e.data.key] === e.data.value) return;
 
@@ -47,7 +45,7 @@ class Configuration {
 		return (this._config[key] ?? defaultConfig[key]) as NonNullable<Config[T]>;
 	}
 
-	@log('Configuration')
+	// @log('Configuration')
 	set<T extends keyof Config>(key: T, value: Config[T]): void {
 		if (this._config[key] === value) return;
 
@@ -62,7 +60,7 @@ class Configuration {
 		}
 	}
 
-	@log('Configuration')
+	// @log('Configuration')
 	private load(): Config | undefined {
 		try {
 			const config = fs.readFileSync('pure.settings', 'json') as Config;
@@ -75,7 +73,7 @@ class Configuration {
 	}
 
 	@debounce(500)
-	@log('Configuration')
+	// @log('Configuration')
 	private save() {
 		try {
 			fs.writeFileSync('pure.settings', this._config, 'json');
@@ -85,7 +83,7 @@ class Configuration {
 		}
 	}
 
-	@log('Configuration')
+	// @log('Configuration')
 	private send<T extends keyof Config>(key: T, value: Config[T]) {
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);

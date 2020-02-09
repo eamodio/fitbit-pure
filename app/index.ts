@@ -23,7 +23,13 @@ if (display.aodAvailable && app.permissions.granted('access_aod')) {
 
 const appManager = new AppManager(document.getElementById<RectElement>('trigger')!);
 
-const activities = new ActivityDisplay(
+new TimeDisplay(appManager, document.getElementById<TextElement>('time-seconds')!);
+
+new BatteryDisplay();
+
+new HeartRateDisplay(appManager);
+
+new ActivityDisplay(
 	appManager,
 	[
 		{
@@ -37,9 +43,3 @@ const activities = new ActivityDisplay(
 	],
 	document.getElementById<GroupElement>('cycleview')!
 );
-
-new TimeDisplay(appManager, document.getElementById<TextElement>('time-seconds')!);
-
-new BatteryDisplay();
-
-new HeartRateDisplay(appManager, activities.onDidChangeActivityView);

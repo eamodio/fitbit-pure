@@ -1,14 +1,13 @@
-import { Display } from 'display';
 import document from 'document';
-import { AppManager } from './appManager';
-import { addEventListener, Disposable, log } from '../common/system';
+import { AppEvent, AppManager } from './appManager';
+import { addEventListener, Disposable } from '../common/system';
 
 export class DonatePopup implements Disposable {
 	private _disposable: Disposable | undefined;
 
 	constructor(private readonly appManager: AppManager) {
 		this._disposable = Disposable.from(
-			this.appManager.onDidChangeDisplay(this.onDisplayChanged, this),
+			this.appManager.onDidTriggerAppEvent(this.onAppEvent, this),
 			addEventListener(this.$button, 'click', () => this.onButtonClick())
 		);
 	}
@@ -29,7 +28,16 @@ export class DonatePopup implements Disposable {
 		return this.$popup.getElementsByClassName<GroupElement>('donate-step')!;
 	}
 
-	@log('DonatePopup')
+	// @log('DonatePopup', { 0: e => `e.type=${e.type}` })
+	private onAppEvent(e: AppEvent) {
+		if (e.type !== 'display') return;
+
+		if (!e.display.on || e.display.aodActive) {
+			this.close();
+		}
+	}
+
+	// @log('DonatePopup')
 	private onButtonClick() {
 		const $steps = this.$steps;
 		if ($steps[0].style.display !== 'none') {
@@ -59,12 +67,6 @@ export class DonatePopup implements Disposable {
 			this.accept();
 		} else {
 			this.reject();
-		}
-	}
-
-	private onDisplayChanged(sensor: Display) {
-		if (!sensor.on || sensor.aodActive) {
-			this.close();
 		}
 	}
 

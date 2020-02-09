@@ -2,7 +2,7 @@ import { battery, Battery } from 'power';
 import document from 'document';
 import { display } from 'display';
 import { ConfigChangeEvent, configuration } from './configuration';
-import { debounce, defer, log } from '../common/system';
+import { debounce, defer } from '../common/system';
 
 export class BatteryDisplay {
 	private _level: number | undefined;
@@ -19,17 +19,13 @@ export class BatteryDisplay {
 	}
 
 	@debounce(500)
-	@log('BatteryDisplay', {
-		0: sensor => `chargeLevel=${sensor.chargeLevel}`
-	})
+	// @log('BatteryDisplay', { 0: sensor => `chargeLevel=${sensor.chargeLevel}` })
 	private onBatteryChanged(sensor: Battery) {
 		this._level = Math.floor(sensor.chargeLevel);
 		this.render();
 	}
 
-	@log('BatteryDisplay', {
-		0: e => `e.key=${e?.key}`
-	})
+	// @log('BatteryDisplay', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (e?.key != null && e.key !== 'showBatteryPercentage') return;
 

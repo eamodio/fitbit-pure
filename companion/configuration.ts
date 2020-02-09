@@ -37,9 +37,7 @@ export class Configuration {
 		// }
 	}
 
-	@log('Configuration', {
-		0: e => `key=${e.data.key}, value=${e.data.value}`
-	})
+	@log('Configuration', { 0: e => `key=${e.data.key}, value=${e.data.value}` })
 	private onMessageReceived(e: MessageEvent) {
 		if (e.data.key == null || settingsStorage.getItem(e.data.key) === e.data.value) return;
 
@@ -50,9 +48,7 @@ export class Configuration {
 		this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
 	}
 
-	@log('Configuration', {
-		0: e => `e=${JSON.stringify(e)}`
-	})
+	@log('Configuration', { 0: e => `e=${JSON.stringify(e)}` })
 	private onSettingsStorageChanged(e: StorageChangeEvent) {
 		if (e.key != null && e.oldValue === e.newValue) return;
 

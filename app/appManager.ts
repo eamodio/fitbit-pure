@@ -1,7 +1,7 @@
 import { display, Display } from 'display';
 import document from 'document';
 import { vibration } from 'haptics';
-import { addEventListener, Disposable, Event, EventEmitter, log } from '../common/system';
+import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
 import { Colors, ConfigChangeEvent, configuration } from './configuration';
 import { DonatePopup } from './popup';
 import { ActivityViews } from './activity';
@@ -56,20 +56,32 @@ const opacities = new Float32Array([
 	0.5 // fb-green
 ]);
 
+export interface ActivityViewChangeEvent {
+	type: 'activityView';
+	previous: ActivityViews;
+	view: ActivityViews;
+}
+
+export interface ClickEvent {
+	type: 'click';
+}
+
+export interface DisplayChangeEvent {
+	type: 'display';
+	display: Display;
+}
+
+export interface EditingChangeEvent {
+	type: 'editing';
+	editing: boolean;
+}
+
+export type AppEvent = ActivityViewChangeEvent | ClickEvent | DisplayChangeEvent | EditingChangeEvent;
+
 export class AppManager {
-	private readonly _onDidChangeDisplay = new EventEmitter<Display>();
-	get onDidChangeDisplay(): Event<Display> {
-		return this._onDidChangeDisplay.event;
-	}
-
-	private readonly _onDidChangeEditMode = new EventEmitter<boolean>();
-	get onDidChangeEditMode(): Event<boolean> {
-		return this._onDidChangeEditMode.event;
-	}
-
-	private readonly _onDidClick = new EventEmitter<void>();
-	get onDidClick(): Event<void> {
-		return this._onDidClick.event;
+	private readonly _onDidTriggerAppEvent = new EventEmitter<AppEvent>();
+	get onDidTriggerAppEvent(): Event<AppEvent> {
+		return this._onDidTriggerAppEvent.event;
 	}
 
 	private _donateDisposable: Disposable | undefined;
@@ -120,7 +132,11 @@ export class AppManager {
 			requestAnimationFrame(() => $overlay.animate('enable'));
 		}
 
-		this._onDidChangeEditMode.fire(value);
+		this._onDidTriggerAppEvent.fire({ type: 'editing', editing: value });
+	}
+
+	fire(e: AppEvent) {
+		this._onDidTriggerAppEvent.fire(e);
 	}
 
 	showDonatePopup() {
@@ -130,9 +146,7 @@ export class AppManager {
 		});
 	}
 
-	@log('AppManager', {
-		0: e => `e.key=${e?.key}`
-	})
+	// @log('AppManager', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
@@ -229,9 +243,7 @@ export class AppManager {
 		}
 	}
 
-	@log('AppManager', {
-		0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}`
-	})
+	// @log('AppManager', { 0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}` })
 	private onDisplayChanged(sensor: Display) {
 		this.editing = false;
 
@@ -243,15 +255,15 @@ export class AppManager {
 			});
 		}
 
-		this._onDidChangeDisplay.fire(sensor);
+		this._onDidTriggerAppEvent.fire({ type: 'display', display: sensor });
 	}
 
-	@log('AppManager')
+	// @log('AppManager')
 	private onDonateClicked() {
 		this.showDonatePopup();
 	}
 
-	@log('AppManager', false)
+	// @log('AppManager', false)
 	private onMouseClick(e: MouseEvent) {
 		if (this._mouseClickCancelTimer != null) {
 			clearTimeout(this._mouseClickCancelTimer);
@@ -261,7 +273,7 @@ export class AppManager {
 		}
 
 		if (!this.editing) {
-			this._onDidClick.fire();
+			this._onDidTriggerAppEvent.fire({ type: 'click' });
 
 			return;
 		}
@@ -313,14 +325,14 @@ export class AppManager {
 					configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
 				}
 			} else {
-				this._onDidClick.fire();
+				this._onDidTriggerAppEvent.fire({ type: 'click' });
 			}
 		}
 
 		document.getElementById<GroupElement>('editable-overlay')!.animate('enable');
 	}
 
-	@log('AppManager', false)
+	// @log('AppManager', false)
 	private onMouseDown(e: MouseEvent) {
 		this.clearEditingTimer();
 
@@ -349,7 +361,7 @@ export class AppManager {
 		}, 1000);
 	}
 
-	@log('AppManager', false)
+	// @log('AppManager', false)
 	private onMouseUp(e: MouseEvent) {
 		this.clearEditingTimer();
 	}

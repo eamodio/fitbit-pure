@@ -1,14 +1,14 @@
 import { me as app } from 'appbit';
 import { me as device } from 'device';
-import { display, Display } from 'display';
+import { display } from 'display';
 import document from 'document';
 import { BodyPresenceSensor } from 'body-presence';
 import { HeartRateSensor } from 'heart-rate';
 import { user } from 'user-profile';
-import { ActivityViewChangeEvent, ActivityViews } from './activity';
-import { AppManager } from './appManager';
+import { ActivityViews } from './activity';
+import { AppEvent, AppManager } from './appManager';
 import { ConfigChangeEvent, configuration } from './configuration';
-import { debounce, defer, Event, log } from '../common/system';
+import { debounce, defer } from '../common/system';
 
 // if (device.screen == null) {
 // 	(device as any).screen = { width: 348, height: 250 };
@@ -27,7 +27,7 @@ export class HeartRateDisplay {
 	private _isOnBody: boolean | undefined;
 	private _rate: number | undefined;
 
-	constructor(private readonly appManager: AppManager, onDidChangeActivityView: Event<ActivityViewChangeEvent>) {
+	constructor(private readonly appManager: AppManager) {
 		this._hasUserProfileAccess = app.permissions.granted('access_user_profile');
 
 		if (HeartRateSensor == null || !app.permissions.granted('access_heart_rate')) {
@@ -42,9 +42,7 @@ export class HeartRateDisplay {
 		sensor.addEventListener('activate', () => this.onHeartRateChanged(sensor));
 		sensor.addEventListener('reading', () => this.onHeartRateChanged(sensor));
 
-		appManager.onDidChangeDisplay(this.onDisplayChanged, this);
-		appManager.onDidChangeEditMode(this.onEditModeChanged, this);
-		onDidChangeActivityView(this.onActivityViewChanged, this);
+		this.appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 
 		if (BodyPresenceSensor && app.permissions.granted('access_activity')) {
 			const sensor = new BodyPresenceSensor();
@@ -62,30 +60,40 @@ export class HeartRateDisplay {
 		this.updateState();
 	}
 
-	private onActivityViewChanged(e: ActivityViewChangeEvent) {
-		if (
-			configuration.get('showDayOnDateHide') &&
-			((e.previous === ActivityViews.Date && e.view !== ActivityViews.Date) ||
-				(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
-		) {
-			document.getElementById<TextElement>('heartrate-resting')!.parent!.animate('select');
+	// @log('HeartRateDisplay', { 0: e => `e.type=${e.type}` })
+	private onAppEvent(e: AppEvent) {
+		switch (e.type) {
+			case 'activityView': {
+				if (
+					configuration.get('showDayOnDateHide') &&
+					((e.previous === ActivityViews.Date && e.view !== ActivityViews.Date) ||
+						(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
+				) {
+					document.getElementById<TextElement>('heartrate-resting')!.parent!.animate('select');
 
-			this.render();
+					this.render();
+				}
+				break;
+			}
+			case 'display': {
+				this.updateState();
+				break;
+			}
+			case 'editing': {
+				this.render();
+				break;
+			}
 		}
 	}
 
 	@debounce(250)
-	@log('HeartRateDisplay', {
-		0: sensor => `present=${sensor.present}`
-	})
+	// @log('HeartRateDisplay', { 0: sensor => `present=${sensor.present}` })
 	private onBodyPresenceChanged(sensor: BodyPresenceSensor) {
 		this._isOnBody = sensor.present ?? undefined;
 		this.updateState();
 	}
 
-	@log('HeartRateDisplay', {
-		0: e => `e.key=${e?.key}`
-	})
+	// @log('HeartRateDisplay', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
@@ -130,19 +138,8 @@ export class HeartRateDisplay {
 		}
 	}
 
-	private onDisplayChanged(sensor: Display) {
-		this.updateState();
-	}
-
-	@log('HeartRateDisplay')
-	private onEditModeChanged(editing: boolean) {
-		this.render();
-	}
-
 	@debounce(100)
-	@log('HeartRateDisplay', {
-		0: sensor => `heartRate=${sensor.heartRate}`
-	})
+	// @log('HeartRateDisplay', { 0: sensor => `heartRate=${sensor.heartRate}` })
 	private onHeartRateChanged(sensor: HeartRateSensor) {
 		if (this._rate === sensor.heartRate) return;
 
@@ -195,7 +192,7 @@ export class HeartRateDisplay {
 	private _animationHandle: number | undefined;
 	private _animationInterval: number | undefined;
 
-	@log('HeartRateDisplay', { 0: rate => `rate=${rate}` })
+	// @log('HeartRateDisplay', { 0: rate => `rate=${rate}` })
 	private startAnimation(rate: number) {
 		const animation = configuration.get('animateHeartRate');
 		if (animation === 'off') return;
@@ -219,7 +216,7 @@ export class HeartRateDisplay {
 		}
 	}
 
-	@log('HeartRateDisplay')
+	// @log('HeartRateDisplay')
 	private stopAnimation() {
 		if (this._animationHandle !== undefined) {
 			clearInterval(this._animationHandle);

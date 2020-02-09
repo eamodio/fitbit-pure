@@ -1,11 +1,11 @@
 import clock, { TickEvent } from 'clock';
-import { display, Display } from 'display';
+import { display } from 'display';
 import { gettext } from 'i18n';
 import { locale, preferences } from 'user-settings';
 import document from 'document';
-import { AppManager } from './appManager';
+import { AppEvent, AppManager } from './appManager';
 import { ConfigChangeEvent, configuration } from './configuration';
-import { defer, log } from '../common/system';
+import { defer } from '../common/system';
 
 const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
 
@@ -23,8 +23,7 @@ export class TimeDisplay {
 	constructor(private readonly appManager: AppManager, private readonly $seconds: TextElement) {
 		clock.addEventListener('tick', e => this.onTick(e));
 
-		appManager.onDidChangeDisplay(this.onDisplayChanged, this);
-		appManager.onDidChangeEditMode(this.onEditModeChanged, this);
+		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
 		if (display.aodEnabled) {
@@ -38,9 +37,42 @@ export class TimeDisplay {
 		this.onConfigurationChanged();
 	}
 
-	@log('TimeDisplay', {
-		0: e => `e.key=${e?.key}`
-	})
+	// @log('TimeDisplay', { 0: e => `e.type=${e.type}` })
+	private onAppEvent(e: AppEvent) {
+		switch (e.type) {
+			case 'display': {
+				if (e.display.aodEnabled && configuration.get('showSeconds')) {
+					this.updateClock(true);
+				}
+
+				this.render();
+
+				requestAnimationFrame(() => {
+					if (e.display.aodEnabled) {
+						document
+							.getElementById<GroupElement>('time-display')!
+							.animate(e.display.aodActive ? 'disable' : 'enable');
+						document
+							.getElementById<ImageElement>('background')!
+							.animate(e.display.aodActive ? 'disable' : 'enable');
+					}
+
+					if (configuration.get('animateSeparator')) {
+						document
+							.getElementById<ImageElement>('time-separator')!
+							.animate(e.display.on && !e.display.aodActive ? 'select' : 'unselect');
+					}
+				});
+				break;
+			}
+			case 'editing': {
+				this.render();
+				break;
+			}
+		}
+	}
+
+	// @log('TimeDisplay', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
@@ -89,35 +121,7 @@ export class TimeDisplay {
 		this.render();
 	}
 
-	private onDisplayChanged(sensor: Display) {
-		if (sensor.aodEnabled && configuration.get('showSeconds')) {
-			this.updateClock(true);
-		}
-
-		this.render();
-
-		requestAnimationFrame(() => {
-			if (sensor.aodEnabled) {
-				document.getElementById<GroupElement>('time-display')!.animate(sensor.aodActive ? 'disable' : 'enable');
-				document.getElementById<ImageElement>('background')!.animate(sensor.aodActive ? 'disable' : 'enable');
-			}
-
-			if (configuration.get('animateSeparator')) {
-				document
-					.getElementById<ImageElement>('time-separator')!
-					.animate(sensor.on && !sensor.aodActive ? 'select' : 'unselect');
-			}
-		});
-	}
-
-	@log('TimeDisplay')
-	private onEditModeChanged(editing: boolean) {
-		this.render();
-	}
-
-	// @log('TimeDisplay', {
-	// 	0: e => `date=${e.date}`
-	// })
+	// @log('TimeDisplay', { 0: e => `date=${e.date}` })
 	private onTick({ date }: TickEvent) {
 		this._date = date;
 		this.renderCore();

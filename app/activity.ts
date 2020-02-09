@@ -1,13 +1,12 @@
 import { me as app } from 'appbit';
 import { me as device } from 'device';
 import document from 'document';
-import { Display } from 'display';
 import { vibration, VibrationPatternName } from 'haptics';
 import { gettext } from 'i18n';
 import { goals, today } from 'user-activity';
 import { units } from 'user-settings';
-import { AppManager } from './appManager';
-import { defer, Event, EventEmitter, log } from '../common/system';
+import { ActivityViewChangeEvent, AppEvent, AppManager } from './appManager';
+import { defer } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
 
 const arcWidth = 48;
@@ -40,17 +39,7 @@ export enum ActivityViews {
 	Donate = 3
 }
 
-export interface ActivityViewChangeEvent {
-	previous: ActivityViews;
-	view: ActivityViews;
-}
-
 export class ActivityDisplay {
-	private readonly _onDidChangeActivityView = new EventEmitter<ActivityViewChangeEvent>();
-	get onDidChangeActivityView(): Event<ActivityViewChangeEvent> {
-		return this._onDidChangeActivityView.event;
-	}
-
 	constructor(
 		private readonly appManager: AppManager,
 		private readonly activities: Activity[],
@@ -60,21 +49,57 @@ export class ActivityDisplay {
 
 		// Don't bother listening for cycleview updates, as they are somewhat unreliable -- e.g. won't fire if a view is cycled back to itself
 		// this.$view.addEventListener('select', () => this.onViewChanged(this.getView()));
-		this.appManager.onDidChangeDisplay(this.onDisplayChanged, this);
-		this.appManager.onDidChangeEditMode(e => this.onEditModeChanged(e));
-		this.appManager.onDidClick(() => this.onViewClicked());
+
+		this.appManager.onDidTriggerAppEvent(this.onAppEvent, this);
+		configuration.onDidChange(this.onConfigurationChanged, this);
 
 		// goals.addEventListener('reachgoal', () => this.onGoalReached(goals));
-
-		configuration.onDidChange(this.onConfigurationChanged, this);
 
 		this.setView(configuration.get('currentActivityView'), undefined, true);
 		this.onConfigurationChanged();
 	}
 
-	@log('ActivityDisplay', {
-		0: e => `e.key=${e?.key}`
-	})
+	// @log('ActivityDisplay', { 0: e => `e.type=${e.type}` })
+	private onAppEvent(e: AppEvent) {
+		switch (e.type) {
+			case 'display': {
+				if (e.display.on && !e.display.aodActive) {
+					let i = this.activities.length;
+					while (i--) {
+						document.getElementById<ArcElement>(`activity${i}-left-progress`)!.sweepAngle = 0;
+						document.getElementById<ArcElement>(`activity${i}-right-progress`)!.sweepAngle = 0;
+					}
+
+					if (this.getView() === ActivityViews.Date) return;
+
+					this.render();
+				}
+				break;
+			}
+			case 'click': {
+				const view = this.getView() + 1;
+
+				// Force an unselect to reset the animation when an activity is hidden
+				let i = this.activities.length;
+				while (i--) {
+					document.getElementById<GroupElement>(`activity${i}-display`)!.animate('unselect');
+				}
+
+				this.setView(view, 'bump');
+				break;
+			}
+			case 'editing': {
+				if (e.editing) {
+					this.setView(ActivityViews.Date);
+				}
+
+				this.render();
+				break;
+			}
+		}
+	}
+
+	// @log('ActivityDisplay', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (e?.key != null && e.key !== 'donated' && e.key !== 'showActivityUnits' && e.key !== 'showDayOnDateHide') {
 			return;
@@ -120,29 +145,6 @@ export class ActivityDisplay {
 		this.render();
 	}
 
-	private onDisplayChanged(sensor: Display) {
-		if (sensor.on && !sensor.aodActive) {
-			let i = this.activities.length;
-			while (i--) {
-				document.getElementById<ArcElement>(`activity${i}-left-progress`)!.sweepAngle = 0;
-				document.getElementById<ArcElement>(`activity${i}-right-progress`)!.sweepAngle = 0;
-			}
-
-			if (this.getView() === ActivityViews.Date) return;
-
-			this.render();
-		}
-	}
-
-	@log('ActivityDisplay')
-	private onEditModeChanged(editing: boolean) {
-		if (editing) {
-			this.setView(ActivityViews.Date);
-		}
-
-		this.render();
-	}
-
 	// @log('ActivityDisplay', false)
 	// private onGoalReached(goals: Goals) {
 	// 	if (
@@ -160,7 +162,7 @@ export class ActivityDisplay {
 	// 	}
 	// }
 
-	@log('ActivityDisplay')
+	// @log('ActivityDisplay')
 	private onViewChanged(e: ActivityViewChangeEvent, initializing: boolean = false) {
 		configuration.set('currentActivityView', e.view);
 
@@ -175,23 +177,10 @@ export class ActivityDisplay {
 				.parent!.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
 		}
 
-		this._onDidChangeActivityView.fire(e);
+		this.appManager.fire(e);
 		if (initializing || e.view === ActivityViews.Date) return;
 
 		this.render();
-	}
-
-	@log('ActivityDisplay')
-	private onViewClicked() {
-		const view = this.getView() + 1;
-
-		// Force an unselect to reset the animation when an activity is hidden
-		let i = this.activities.length;
-		while (i--) {
-			document.getElementById<GroupElement>(`activity${i}-display`)!.animate('unselect');
-		}
-
-		this.setView(view, 'bump');
 	}
 
 	@defer()
@@ -324,7 +313,7 @@ export class ActivityDisplay {
 		const previous = this.getView();
 		if (view === previous) {
 			if (initializing) {
-				this.onViewChanged({ previous: previous, view: view }, true);
+				this.onViewChanged({ type: 'activityView', previous: previous, view: view }, true);
 			}
 
 			return view;
@@ -337,7 +326,7 @@ export class ActivityDisplay {
 		this.$view.value = view;
 
 		// Force an update, since we can't trust the cycleview to always do it
-		this.onViewChanged({ previous: previous, view: view }, initializing);
+		this.onViewChanged({ type: 'activityView', previous: previous, view: view }, initializing);
 
 		return view;
 	}

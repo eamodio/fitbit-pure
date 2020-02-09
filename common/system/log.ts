@@ -1,68 +1,71 @@
 const enableLogging = false;
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const nullLogger: (() => void) | undefined = enableLogging ? undefined : function() {};
 
 export function log<T extends (...arg: any) => any>(
 	instanceName: string,
 	parameters?: false | { [arg: number]: false | ((arg: any) => string) }
 ) {
-	return (target: any, key: string, descriptor: PropertyDescriptor & { [key: string]: any }) => {
-		if (!enableLogging) return;
-
-		let fn: Function | undefined;
-		let fnKey: string | undefined;
-		if (typeof descriptor.value === 'function') {
-			fn = descriptor.value;
-			fnKey = 'value';
-		} else if (typeof descriptor.get === 'function') {
-			fn = descriptor.get;
-			fnKey = 'get';
-		}
-		if (fn == null || fnKey == null) throw new Error('Not supported');
-
-		descriptor[fnKey] = function(this: any, ...args: Parameters<T>) {
-			const prefix = `${instanceName}.${key}`;
-
-			let loggableParams: string;
-			if (parameters === false || args.length === 0) {
-				loggableParams = emptyStr;
-			} else {
-				const paramFns = typeof parameters === 'object' ? parameters : undefined;
-				let paramFn: undefined | false | ((arg: any) => string);
-
-				let loggable;
-				loggableParams = args
-					.map((v: any, index: number) => {
-						paramFn = paramFns?.[index];
-						if (paramFn === undefined) {
-							loggable = toLoggable(v);
-						} else {
-							if (paramFn === false) return undefined;
-
-							loggable = paramFn(v);
-							if (loggable === false) return undefined;
-						}
-
-						return loggable;
-					})
-					.filter(Boolean)
-					.join(', ');
+	return (
+		nullLogger ??
+		((target: any, key: string, descriptor: PropertyDescriptor & { [key: string]: any }) => {
+			let fn: Function | undefined;
+			let fnKey: string | undefined;
+			if (typeof descriptor.value === 'function') {
+				fn = descriptor.value;
+				fnKey = 'value';
+			} else if (typeof descriptor.get === 'function') {
+				fn = descriptor.get;
+				fnKey = 'get';
 			}
+			if (fn == null || fnKey == null) throw new Error('Not supported');
 
-			console.log(`${prefix}${loggableParams ? ` ${loggableParams}` : ''}`);
+			descriptor[fnKey] = function(this: any, ...args: Parameters<T>) {
+				const prefix = `${instanceName}.${key}`;
 
-			const start = Date.now();
+				let loggableParams: string;
+				if (parameters === false || args.length === 0) {
+					loggableParams = emptyStr;
+				} else {
+					const paramFns = typeof parameters === 'object' ? parameters : undefined;
+					let paramFn: undefined | false | ((arg: any) => string);
 
-			let result;
-			try {
-				result = fn!.apply(this, args);
-			} catch (ex) {
-				console.error(ex);
-				throw ex;
-			}
+					let loggable;
+					loggableParams = args
+						.map((v: any, index: number) => {
+							paramFn = paramFns?.[index];
+							if (paramFn === undefined) {
+								loggable = toLoggable(v);
+							} else {
+								if (paramFn === false) return undefined;
 
-			console.log(`${prefix}${loggableParams ? ` ${loggableParams}` : ''} \u2022 ${Date.now() - start} ms`);
-			return result;
-		};
-	};
+								loggable = paramFn(v);
+								if (loggable === false) return undefined;
+							}
+
+							return loggable;
+						})
+						.filter(Boolean)
+						.join(', ');
+				}
+
+				console.log(`${prefix}${loggableParams ? ` ${loggableParams}` : ''}`);
+
+				const start = Date.now();
+
+				let result;
+				try {
+					result = fn!.apply(this, args);
+				} catch (ex) {
+					console.error(ex);
+					throw ex;
+				}
+
+				console.log(`${prefix}${loggableParams ? ` ${loggableParams}` : ''} \u2022 ${Date.now() - start} ms`);
+				return result;
+			};
+		})
+	);
 }
 
 const emptyStr = '';
