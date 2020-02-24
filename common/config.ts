@@ -59,3 +59,20 @@ export const defaultConfig: Config = {
 	showSeconds: false,
 	currentActivityView: 0
 };
+
+export interface ConfigIpcMessage {
+	type: 'config';
+	data: {
+		key: keyof Config | null;
+		value: any;
+	};
+}
+
+export interface DonatedIpcMessage {
+	type: 'donated';
+	data: {
+		donated: boolean;
+	};
+}
+
+export type IpcMessage = ConfigIpcMessage | DonatedIpcMessage;

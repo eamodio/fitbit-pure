@@ -1,12 +1,12 @@
 import * as fs from 'fs';
-import { MessageEvent, peerSocket } from 'messaging';
-import { Config, defaultConfig } from '../common/config';
+import { peerSocket } from 'messaging';
+import { Config, ConfigIpcMessage, defaultConfig, DonatedIpcMessage, IpcMessage } from '../common/config';
 import { debounce, Event, EventEmitter } from '../common/system';
 
 export { Colors } from '../common/config';
 
 export interface ConfigChangeEvent {
-	key: keyof Config;
+	key: keyof Config | null;
 }
 
 class Configuration {
@@ -28,24 +28,30 @@ class Configuration {
 			this._config = {} as Config;
 		}
 
-		peerSocket.addEventListener('message', e => this.onMessageReceived(e));
+		peerSocket.addEventListener('message', ({ data }) => this.onMessageReceived(data));
+
+		// Send a message to ensure the companion has the correct donation state
+		setTimeout(() => this.ensureCompanionState(), 1000);
 	}
 
-	private onMessageReceived(e: MessageEvent) {
-		if (e.data.key != null && this._config[e.data.key] === e.data.value) return;
+	private onMessageReceived(msg: IpcMessage) {
+		if (msg.type !== 'config') return;
+
+		const { key, value } = msg.data;
+		if (key != null && this._config[key] === value) return;
 
 		// If the key is `null` assume a reset
-		if (e.data.key == null) {
+		if (key == null) {
 			// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 			this._config = {
 				donated: this._config.donated
 			} as Config;
 		} else {
-			this._config[e.data.key] = e.data.value;
+			this._config[key] = defaultConfig[key] === value ? undefined : value;
 		}
 
 		this.save();
-		this._onDidChange.fire({ key: e.data.key });
+		this._onDidChange.fire({ key: key });
 	}
 
 	get<T extends keyof Config>(key: T): NonNullable<Config[T]> {
@@ -70,6 +76,18 @@ class Configuration {
 		}
 	}
 
+	private ensureCompanionState() {
+		if (peerSocket.readyState !== peerSocket.OPEN) return;
+
+		const msg: DonatedIpcMessage = {
+			type: 'donated',
+			data: {
+				donated: this._config.donated ?? false
+			}
+		};
+		peerSocket.send(msg);
+	}
+
 	@debounce(500)
 	private save() {
 		try {
@@ -80,21 +98,27 @@ class Configuration {
 		}
 	}
 
-	private send<T extends keyof Config>(key: T, value: Config[T]) {
+	private send<T extends keyof Config>(key: T, value: Config[T]): boolean {
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);
 
-			return;
+			return false;
 		}
 
 		if (value === undefined) {
 			value = defaultConfig[key];
 		}
 
-		peerSocket.send({
-			key: key,
-			value: value !== null ? JSON.stringify(value) : value
-		});
+		const msg: ConfigIpcMessage = {
+			type: 'config',
+			data: {
+				key: key,
+				value: value !== null ? JSON.stringify(value) : value
+			}
+		};
+		peerSocket.send(msg);
+
+		return true;
 	}
 }
 

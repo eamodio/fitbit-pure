@@ -2,7 +2,7 @@
 import { peerSocket } from 'messaging';
 import { settingsStorage } from 'settings';
 import { device } from 'peer';
-import { defaultConfig } from '../common/config';
+import { Config, ConfigIpcMessage, defaultConfig, IpcMessage } from '../common/config';
 import { addEventListener, Disposable } from '../common/system';
 
 const defaults = {
@@ -19,7 +19,7 @@ export class Configuration {
 	constructor() {
 		this.ensureDefaults();
 
-		peerSocket.addEventListener('message', e => this.onMessageReceived(e));
+		peerSocket.addEventListener('message', ({ data }) => this.onMessageReceived(data));
 
 		// peerSocket.addEventListener('open', () => console.log('Configuration.onPeerSocketOpen'));
 		// peerSocket.addEventListener('close', () => console.log('Configuration.onPeerSocketClose'));
@@ -37,12 +37,26 @@ export class Configuration {
 		// }
 	}
 
-	private onMessageReceived(e: MessageEvent) {
-		if (e.data.key == null || settingsStorage.getItem(e.data.key) === e.data.value) return;
+	private onMessageReceived(msg: IpcMessage) {
+		if (msg.type === 'donated') {
+			const donated = settingsStorage.getItem('donated') === 'true';
+			if (donated !== msg.data.donated) {
+				this._disposable?.dispose();
+
+				settingsStorage.setItem('donated', msg.data.donated.toString());
+
+				this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
+			}
+		}
+
+		if (msg.type !== 'config') return;
+
+		const { key, value } = msg.data;
+		if (key == null || settingsStorage.getItem(key) === value) return;
 
 		this._disposable?.dispose();
 
-		settingsStorage.setItem(e.data.key, e.data.value);
+		settingsStorage.setItem(key, value);
 
 		this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
 	}
@@ -54,7 +68,7 @@ export class Configuration {
 			this.ensureDefaults();
 		}
 
-		this.send(e.key, e.newValue);
+		this.send(e.key as keyof Config, e.newValue);
 	}
 
 	private ensureDefaults() {
@@ -73,11 +87,11 @@ export class Configuration {
 		this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
 	}
 
-	private send(key: string | null, value: string | null) {
+	private send(key: keyof Config | null, value: string | null): boolean {
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);
 
-			return;
+			return false;
 		}
 
 		if (key != null && typeof defaults[key] === 'object') {
@@ -92,9 +106,15 @@ export class Configuration {
 			}
 		}
 
-		peerSocket.send({
-			key: key,
-			value: value != null ? JSON.parse(value) : value
-		});
+		const msg: ConfigIpcMessage = {
+			type: 'config',
+			data: {
+				key: key,
+				value: value != null ? JSON.parse(value) : value
+			}
+		};
+		peerSocket.send(msg);
+
+		return true;
 	}
 }
