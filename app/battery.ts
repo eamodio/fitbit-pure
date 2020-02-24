@@ -19,13 +19,11 @@ export class BatteryDisplay {
 	}
 
 	@debounce(500)
-	// @log('BatteryDisplay', { 0: sensor => `chargeLevel=${sensor.chargeLevel}` })
 	private onBatteryChanged(sensor: Battery) {
 		this._level = Math.floor(sensor.chargeLevel);
 		this.render();
 	}
 
-	// @log('BatteryDisplay', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (e?.key != null && e.key !== 'showBatteryPercentage') return;
 
@@ -37,7 +35,6 @@ export class BatteryDisplay {
 	}
 
 	@defer()
-	// @log('BatteryDisplay')
 	private render() {
 		const level = this._level ?? Math.floor(battery.chargeLevel) ?? 0;
 

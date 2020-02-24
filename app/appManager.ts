@@ -4,7 +4,6 @@ import { vibration } from 'haptics';
 import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
 import { Colors, ConfigChangeEvent, configuration } from './configuration';
 import { DonatePopup } from './popup';
-import { ActivityViews } from './activity';
 
 const colors: Colors[] = [
 	'fb-black',
@@ -55,6 +54,13 @@ const opacities = new Float32Array([
 	0.35, // fb-mint
 	0.5 // fb-green
 ]);
+
+export enum ActivityViews {
+	Date = 0,
+	Activity1 = 1,
+	Activity2 = 2,
+	Donate = 3
+}
 
 export interface ActivityViewChangeEvent {
 	type: 'activityView';
@@ -149,7 +155,6 @@ export class AppManager {
 		});
 	}
 
-	// @log('AppManager', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
@@ -246,7 +251,6 @@ export class AppManager {
 		}
 	}
 
-	// @log('AppManager', { 0: sensor => `on=${sensor.on}, aodActive=${sensor.aodActive}` })
 	private onDisplayChanged(sensor: Display) {
 		this.editing = false;
 
@@ -261,12 +265,10 @@ export class AppManager {
 		this._onDidTriggerAppEvent.fire({ type: 'display', display: sensor });
 	}
 
-	// @log('AppManager')
 	private onDonateClicked() {
 		this.showDonatePopup();
 	}
 
-	// @log('AppManager', false)
 	private onMouseClick(e: MouseEvent) {
 		if (this._mouseClickCancelTimer != null) {
 			clearTimeout(this._mouseClickCancelTimer);
@@ -335,7 +337,6 @@ export class AppManager {
 		document.getElementById<GroupElement>('editable-overlay')!.animate('enable');
 	}
 
-	// @log('AppManager', false)
 	private onMouseDown(e: MouseEvent) {
 		this.clearEditingTimer();
 
@@ -364,7 +365,6 @@ export class AppManager {
 		}, 1000);
 	}
 
-	// @log('AppManager', false)
 	private onMouseUp(e: MouseEvent) {
 		this.clearEditingTimer();
 	}
@@ -505,3 +505,5 @@ export class AppManager {
 	// 	setTimeout(() => this.demo(), time);
 	// }
 }
+
+export const appManager = new AppManager(document.getElementById<RectElement>('trigger')!);

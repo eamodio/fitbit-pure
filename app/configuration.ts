@@ -18,21 +18,28 @@ class Configuration {
 	private _config: Config;
 
 	constructor() {
-		this._config = this.load() ?? { ...defaultConfig };
+		try {
+			this._config = fs.readFileSync('pure.settings', 'json') as Config;
+			// console.log(`Configuration.load: loaded; json=${JSON.stringify(config)}`);
+		} catch (ex) {
+			// console.log(`Configuration.load: failed; ex=${ex}`);
+
+			// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+			this._config = {} as Config;
+		}
 
 		peerSocket.addEventListener('message', e => this.onMessageReceived(e));
 	}
 
-	// @log('Configuration', { 0: e => `key=${e.data.key}, value=${e.data.value}` })
 	private onMessageReceived(e: MessageEvent) {
 		if (e.data.key != null && this._config[e.data.key] === e.data.value) return;
 
 		// If the key is `null` assume a reset
 		if (e.data.key == null) {
+			// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 			this._config = {
-				...defaultConfig,
 				donated: this._config.donated
-			};
+			} as Config;
 		} else {
 			this._config[e.data.key] = e.data.value;
 		}
@@ -45,8 +52,11 @@ class Configuration {
 		return (this._config[key] ?? defaultConfig[key]) as NonNullable<Config[T]>;
 	}
 
-	// @log('Configuration')
-	set<T extends keyof Config>(key: T, value: Config[T]): void {
+	set<T extends keyof Config>(key: T, value: NonNullable<Config[T]>): void {
+		// Only save, non-default values
+		if (defaultConfig[key] === value) {
+			value = undefined!;
+		}
 		if (this._config[key] === value) return;
 
 		this._config[key] = value;
@@ -60,20 +70,7 @@ class Configuration {
 		}
 	}
 
-	// @log('Configuration')
-	private load(): Config | undefined {
-		try {
-			const config = fs.readFileSync('pure.settings', 'json') as Config;
-			// console.log(`Configuration.load: loaded; json=${JSON.stringify(config)}`);
-			return config;
-		} catch (ex) {
-			// console.log(`Configuration.load: failed; ex=${ex}`);
-			return undefined;
-		}
-	}
-
 	@debounce(500)
-	// @log('Configuration')
 	private save() {
 		try {
 			fs.writeFileSync('pure.settings', this._config, 'json');
@@ -83,7 +80,6 @@ class Configuration {
 		}
 	}
 
-	// @log('Configuration')
 	private send<T extends keyof Config>(key: T, value: Config[T]) {
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);
@@ -91,9 +87,13 @@ class Configuration {
 			return;
 		}
 
+		if (value === undefined) {
+			value = defaultConfig[key];
+		}
+
 		peerSocket.send({
 			key: key,
-			value: value != null ? JSON.stringify(value) : value
+			value: value !== null ? JSON.stringify(value) : value
 		});
 	}
 }

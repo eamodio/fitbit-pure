@@ -1,3 +1,6 @@
+declare function clearTimeout(handle: number): void;
+declare function setTimeout(handler: (...args: any[]) => void, timeout: number): number;
+
 export function debounce<T extends (...arg: any) => any>(wait: number) {
 	return (target: any, key: string, descriptor: PropertyDescriptor & { [key: string]: any }) => {
 		if (typeof descriptor.value !== 'function') {

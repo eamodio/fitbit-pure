@@ -1,7 +1,6 @@
 export * from './system/debounce';
 export * from './system/defer';
 export * from './system/events';
-export * from './system/log';
 
 export interface Disposable {
 	dispose(): void;

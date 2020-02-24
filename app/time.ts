@@ -3,7 +3,7 @@ import { display } from 'display';
 import { gettext } from 'i18n';
 import { locale, preferences } from 'user-settings';
 import document from 'document';
-import { AppEvent, AppManager } from './appManager';
+import { AppEvent, appManager } from './appManager';
 import { ConfigChangeEvent, configuration } from './configuration';
 import { defer } from '../common/system';
 
@@ -19,8 +19,11 @@ enum Previous {
 export class TimeDisplay {
 	private _date: Date | undefined;
 	private _previous: Int8Array = new Int8Array(4);
+	private readonly $seconds: TextElement;
 
-	constructor(private readonly appManager: AppManager, private readonly $seconds: TextElement) {
+	constructor() {
+		this.$seconds = document.getElementById<TextElement>('time-seconds')!;
+
 		clock.addEventListener('tick', e => this.onTick(e));
 
 		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
@@ -37,7 +40,6 @@ export class TimeDisplay {
 		this.onConfigurationChanged();
 	}
 
-	// @log('TimeDisplay', { 0: e => `e.type=${e.type}` })
 	private onAppEvent(e: AppEvent) {
 		switch (e.type) {
 			case 'display': {
@@ -72,7 +74,6 @@ export class TimeDisplay {
 		}
 	}
 
-	// @log('TimeDisplay', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
@@ -121,7 +122,6 @@ export class TimeDisplay {
 		this.render();
 	}
 
-	// @log('TimeDisplay', { 0: e => `date=${e.date}` })
 	private onTick({ date }: TickEvent) {
 		this._date = date;
 		this.renderCore();
@@ -132,7 +132,6 @@ export class TimeDisplay {
 		this.renderCore(true);
 	}
 
-	// @log('TimeDisplay')
 	private renderCore(force: boolean = false) {
 		const date = this._date ?? emptyDate;
 
@@ -140,7 +139,7 @@ export class TimeDisplay {
 			this.$seconds.text = `${toMonospaceDigits(date.getSeconds(), true)}s`;
 		}
 
-		const minutes = this.appManager.editing ? 0 : date.getMinutes();
+		const minutes = appManager.editing ? 0 : date.getMinutes();
 		if (!force && minutes === this._previous[Previous.Minutes]) return;
 
 		this._previous[Previous.Minutes] = minutes;
@@ -149,12 +148,12 @@ export class TimeDisplay {
 		document.getElementById<ImageElement>('time-minute0')!.href = `images/${minute[0] ?? 0}.png`;
 		document.getElementById<ImageElement>('time-minute1')!.href = `images/${minute[1] ?? 0}.png`;
 
-		const hours = this.appManager.editing ? 0 : date.getHours();
+		const hours = appManager.editing ? 0 : date.getHours();
 		if (!force && hours === this._previous[Previous.Hours]) return;
 
 		this._previous[Previous.Hours] = hours;
 
-		const hour = zeroPad(!this.appManager.editing && preferences.clockDisplay === '12h' ? hours % 12 || 12 : hours);
+		const hour = zeroPad(!appManager.editing && preferences.clockDisplay === '12h' ? hours % 12 || 12 : hours);
 		if (hour[0] === '0') {
 			let $hour0 = document.getElementById<ImageElement>('time-hour0')!;
 			if ($hour0.style.visibility !== 'hidden') {

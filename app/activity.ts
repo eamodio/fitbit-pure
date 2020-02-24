@@ -5,7 +5,7 @@ import { vibration, VibrationPatternName } from 'haptics';
 import { gettext } from 'i18n';
 import { goals, today } from 'user-activity';
 import { units } from 'user-settings';
-import { ActivityViewChangeEvent, AppEvent, AppManager } from './appManager';
+import { ActivityViewChangeEvent, ActivityViews, AppEvent, appManager } from './appManager';
 import { defer } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
 
@@ -32,25 +32,28 @@ enum Side {
 	Right = 1
 }
 
-export enum ActivityViews {
-	Date = 0,
-	Activity1 = 1,
-	Activity2 = 2,
-	Donate = 3
-}
-
 export class ActivityDisplay {
-	constructor(
-		private readonly appManager: AppManager,
-		private readonly activities: Activity[],
-		private readonly $view: GroupElement
-	) {
+	private readonly activities: Activity[] = [
+		{
+			names: ['steps', 'distance'],
+			goalReached: [false, false]
+		},
+		{
+			names: ['activeMinutes', 'calories'],
+			goalReached: [false, false]
+		}
+	];
+	private readonly $view: GroupElement;
+
+	constructor() {
+		this.$view = document.getElementById<GroupElement>('cycleview')!;
+
 		if (!app.permissions.granted('access_activity')) return;
 
 		// Don't bother listening for cycleview updates, as they are somewhat unreliable -- e.g. won't fire if a view is cycled back to itself
 		// this.$view.addEventListener('select', () => this.onViewChanged(this.getView()));
 
-		this.appManager.onDidTriggerAppEvent(this.onAppEvent, this);
+		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
 		// goals.addEventListener('reachgoal', () => this.onGoalReached(goals));
@@ -59,7 +62,6 @@ export class ActivityDisplay {
 		this.onConfigurationChanged();
 	}
 
-	// @log('ActivityDisplay', { 0: e => `e.type=${e.type}` })
 	private onAppEvent(e: AppEvent) {
 		switch (e.type) {
 			case 'display': {
@@ -99,7 +101,6 @@ export class ActivityDisplay {
 		}
 	}
 
-	// @log('ActivityDisplay', { 0: e => `e.key=${e?.key}` })
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
@@ -119,7 +120,7 @@ export class ActivityDisplay {
 		// }
 
 		if (e?.key == null || e?.key === 'donated') {
-			const visibility = this.appManager.donated ? 'visible' : 'hidden';
+			const visibility = appManager.donated ? 'visible' : 'hidden';
 
 			let i = this.activities.length;
 			while (i--) {
@@ -127,7 +128,7 @@ export class ActivityDisplay {
 			}
 
 			if (e != null) {
-				requestAnimationFrame(() => this.setView(this.appManager.donated ? ActivityViews.Date : this.maxViews));
+				requestAnimationFrame(() => this.setView(appManager.donated ? ActivityViews.Date : this.maxViews));
 			}
 
 			if (e?.key === 'donated') return;
@@ -158,7 +159,6 @@ export class ActivityDisplay {
 		this.render();
 	}
 
-	// @log('ActivityDisplay', false)
 	// private onGoalReached(goals: Goals) {
 	// 	if (
 	// 		(goals.steps != null && (today.adjusted.steps ?? 0) >= goals.steps) ||
@@ -175,7 +175,6 @@ export class ActivityDisplay {
 	// 	}
 	// }
 
-	// @log('ActivityDisplay')
 	private onViewChanged(e: ActivityViewChangeEvent, initializing: boolean = false) {
 		configuration.set('currentActivityView', e.view);
 
@@ -190,14 +189,13 @@ export class ActivityDisplay {
 				.parent!.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
 		}
 
-		this.appManager.fire(e);
+		appManager.fire(e);
 		if (initializing || e.view === ActivityViews.Date) return;
 
 		this.render();
 	}
 
 	@defer()
-	// @log('ActivityDisplay')
 	private render() {
 		const view = this.getView() - 1;
 		if (view === -1) return;
@@ -226,7 +224,7 @@ export class ActivityDisplay {
 	private renderActivity(activity: Activity, side: Side, prefix: string) {
 		const name = activity.names[side];
 
-		const value = this.appManager.editing ? 0 : today.adjusted[name];
+		const value = appManager.editing ? 0 : today.adjusted[name];
 		const goal = goals[name];
 
 		const color = activityToColor[name];
@@ -319,7 +317,7 @@ export class ActivityDisplay {
 			view = ActivityViews.Date;
 		}
 
-		if (view !== ActivityViews.Date && view !== this.maxViews && !this.appManager.donated) {
+		if (view !== ActivityViews.Date && view !== this.maxViews && !appManager.donated) {
 			view = this.maxViews;
 		}
 
@@ -345,6 +343,6 @@ export class ActivityDisplay {
 	}
 
 	private get maxViews() {
-		return this.appManager.donated ? this.activities.length : this.activities.length + 1;
+		return appManager.donated ? this.activities.length : this.activities.length + 1;
 	}
 }

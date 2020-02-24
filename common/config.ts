@@ -24,22 +24,22 @@ export type Colors =
 	| 'fb-green';
 
 export interface Config {
-	accentBackgroundColor: Colors | null;
-	accentForegroundColor: Colors | null;
-	allowEditing: boolean | null;
-	animateHeartRate: 'off' | 'interval' | 'pulse' | null;
-	animateSeparator: boolean | null;
-	aodOpacity: number | null;
-	donated: boolean | null;
-	showActivityUnits: boolean | null;
-	showBatteryPercentage: boolean | null;
-	showDate: boolean | null;
-	showDayOnDateHide: boolean | null;
-	showLeadingZero: boolean | null;
-	showRestingHeartRate: boolean | null;
-	showSeconds: boolean | null;
+	accentBackgroundColor: Colors | undefined;
+	accentForegroundColor: Colors | undefined;
+	allowEditing: boolean | undefined;
+	animateHeartRate: 'off' | 'interval' | 'pulse' | undefined;
+	animateSeparator: boolean | undefined;
+	aodOpacity: number | undefined;
+	donated: boolean | undefined;
+	showActivityUnits: boolean | undefined;
+	showBatteryPercentage: boolean | undefined;
+	showDate: boolean | undefined;
+	showDayOnDateHide: boolean | undefined;
+	showLeadingZero: boolean | undefined;
+	showRestingHeartRate: boolean | undefined;
+	showSeconds: boolean | undefined;
 
-	currentActivityView: number | null;
+	currentActivityView: number | undefined;
 }
 
 export const defaultConfig: Config = {

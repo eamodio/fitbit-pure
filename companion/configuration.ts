@@ -3,7 +3,7 @@ import { peerSocket } from 'messaging';
 import { settingsStorage } from 'settings';
 import { device } from 'peer';
 import { defaultConfig } from '../common/config';
-import { addEventListener, Disposable, log } from '../common/system';
+import { addEventListener, Disposable } from '../common/system';
 
 const defaults = {
 	...defaultConfig,
@@ -37,7 +37,6 @@ export class Configuration {
 		// }
 	}
 
-	@log('Configuration', { 0: e => `key=${e.data.key}, value=${e.data.value}` })
 	private onMessageReceived(e: MessageEvent) {
 		if (e.data.key == null || settingsStorage.getItem(e.data.key) === e.data.value) return;
 
@@ -48,7 +47,6 @@ export class Configuration {
 		this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
 	}
 
-	@log('Configuration', { 0: e => `e=${JSON.stringify(e)}` })
 	private onSettingsStorageChanged(e: StorageChangeEvent) {
 		if (e.key != null && e.oldValue === e.newValue) return;
 
@@ -75,7 +73,6 @@ export class Configuration {
 		this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
 	}
 
-	@log('Configuration', { 0: key => `key=${key}`, 1: value => `value=${value}` })
 	private send(key: string | null, value: string | null) {
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);

@@ -28,7 +28,6 @@ export class DonatePopup implements Disposable {
 		return this.$popup.getElementsByClassName<GroupElement>('donate-step')!;
 	}
 
-	// @log('DonatePopup', { 0: e => `e.type=${e.type}` })
 	private onAppEvent(e: AppEvent) {
 		if (e.type !== 'display') return;
 
@@ -37,7 +36,6 @@ export class DonatePopup implements Disposable {
 		}
 	}
 
-	// @log('DonatePopup')
 	private onButtonClick() {
 		const $steps = this.$steps;
 		if ($steps[0].style.display !== 'none') {
