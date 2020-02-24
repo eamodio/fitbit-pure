@@ -101,8 +101,8 @@ function PureSettings(props: SettingsComponentProps) {
 					)
 				}
 			>
-				{!donated && <Text>🔒 Show on Long Press (Tap &amp; Hold)</Text>}
-				{donated && <Toggle settingsKey="allowEditing" label="Show on Long Press (Tap &amp; Hold)" />}
+				{!donated && <Text>🔒 Show on Tap &amp; Hold</Text>}
+				{donated && <Toggle settingsKey="allowEditing" label="Show on Tap &amp; Hold" />}
 			</Section>
 
 			<Section
