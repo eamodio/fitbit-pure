@@ -111,6 +111,7 @@ export class ActivityDisplay {
 			return;
 		}
 
+		// DEMO MODE
 		// if (e?.key === 'currentActivityView') {
 		// 	this.setView(configuration.get('currentActivityView'));
 

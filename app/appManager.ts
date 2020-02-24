@@ -98,6 +98,8 @@ export class AppManager {
 		this.$trigger.addEventListener('mouseup', e => this.onMouseUp(e));
 
 		this.onConfigurationChanged();
+
+		// DEMO MODE
 		// this.demo();
 	}
 
@@ -376,11 +378,14 @@ export class AppManager {
 		this._mouseDownDisposable?.dispose();
 	}
 
+	// DEMO MODE
 	// demo() {
 	// 	display.on = false;
 	// 	configuration.set('accentBackgroundColor', 'fb-black');
 	// 	configuration.set('accentForegroundColor', 'fb-white');
 	// 	configuration.set('currentActivityView', 0);
+
+	// 	const $tap = document.getElementById<GraphicsElement>('demo-tap')!;
 
 	// 	const $text0 = document.getElementById<TextElement>('demo-text0')!;
 	// 	const $text1 = document.getElementById<TextElement>('demo-text1')!;
@@ -398,15 +403,38 @@ export class AppManager {
 	// 		display.on = true;
 	// 	}, time);
 
-	// 	time += 2000;
-	// 	setTimeout(() => configuration.set('currentActivityView', 1), time);
+	// 	time += 1500;
+	// 	setTimeout(() => {
+	// 		$tap.animate('enable');
+	// 	}, time);
 
-	// 	time += 3250;
-	// 	setTimeout(() => configuration.set('currentActivityView', 2), time);
+	// 	time += 500;
+	// 	setTimeout(() => {
+	// 		configuration.set('currentActivityView', 1);
+	// 	}, time);
 
-	// 	time += 3250;
+	// 	time += 2750;
+	// 	setTimeout(() => {
+	// 		$tap.animate('enable');
+	// 	}, time);
+
+	// 	time += 500;
+	// 	setTimeout(() => {
+	// 		configuration.set('currentActivityView', 2);
+	// 	}, time);
+
+	// 	time += 3000;
+	// 	setTimeout(() => {
+	// 		$tap.animate('enable');
+	// 	}, time);
+
+	// 	time += 500;
 	// 	setTimeout(() => {
 	// 		configuration.set('currentActivityView', 0);
+	// 	}, time);
+
+	// 	time += 500;
+	// 	setTimeout(() => {
 	// 		$text0.y = 75;
 	// 		$text0.text = 'TAP & HOLD';
 	// 		$text0.style.display = 'inline';
@@ -416,7 +444,12 @@ export class AppManager {
 	// 		$text1.style.display = 'inline';
 	// 	}, time);
 
-	// 	time += 2500;
+	// 	time += 500;
+	// 	setTimeout(() => {
+	// 		$tap.animate('select');
+	// 	}, time);
+
+	// 	time += 1500;
 	// 	setTimeout(() => {
 	// 		this.editing = true;
 	// 		$text0.style.display = 'none';
@@ -425,6 +458,7 @@ export class AppManager {
 
 	// 	time += 2000;
 	// 	setTimeout(() => {
+	// 		$tap.animate('enable');
 	// 		document.getElementById<GroupElement>('editable-overlay')!.style.display = 'none';
 
 	// 		configuration.set('accentBackgroundColor', 'fb-white');
@@ -433,29 +467,38 @@ export class AppManager {
 
 	// 	time += 500;
 	// 	setTimeout(() => {
+	// 		$tap.animate('enable');
 	// 		configuration.set('accentBackgroundColor', 'fb-cyan');
 	// 		configuration.set('accentForegroundColor', 'fb-cyan');
 	// 	}, time);
 
 	// 	time += 500;
 	// 	setTimeout(() => {
+	// 		$tap.animate('enable');
 	// 		configuration.set('accentBackgroundColor', 'fb-blue');
 	// 		configuration.set('accentForegroundColor', 'fb-blue');
 	// 	}, time);
 
 	// 	time += 500;
 	// 	setTimeout(() => {
+	// 		$tap.animate('enable');
 	// 		configuration.set('accentBackgroundColor', 'fb-red');
 	// 		configuration.set('accentForegroundColor', 'fb-red');
 	// 	}, time);
 
 	// 	time += 500;
 	// 	setTimeout(() => {
+	// 		$tap.animate('enable');
 	// 		configuration.set('accentBackgroundColor', 'fb-purple');
 	// 		configuration.set('accentForegroundColor', 'fb-purple');
 	// 	}, time);
 
-	// 	time += 1000;
+	// 	time += 500;
+	// 	setTimeout(() => {
+	// 		$tap.animate('select');
+	// 	}, time);
+
+	// 	time += 1500;
 	// 	setTimeout(() => (this.editing = false), time);
 
 	// 	time += 2000;
