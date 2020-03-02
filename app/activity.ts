@@ -68,8 +68,8 @@ export class ActivityDisplay {
 				if (e.display.on && !e.display.aodActive) {
 					let i = this.activities.length;
 					while (i--) {
-						document.getElementById<ArcElement>(`activity${i}-left-progress`)!.sweepAngle = 0;
-						document.getElementById<ArcElement>(`activity${i}-right-progress`)!.sweepAngle = 0;
+						document.getElementById<ArcElement>(`lstat${i}-progress`)!.sweepAngle = 0;
+						document.getElementById<ArcElement>(`rstat${i}-progress`)!.sweepAngle = 0;
 					}
 
 					if (this.getView() === ActivityViews.Date) return;
@@ -84,7 +84,7 @@ export class ActivityDisplay {
 				// Force an unselect to reset the animation when an activity is hidden
 				let i = this.activities.length;
 				while (i--) {
-					document.getElementById<GroupElement>(`activity${i}-display`)!.animate('unselect');
+					document.getElementById<GroupElement>(`stats${i}`)!.animate('unselect');
 				}
 
 				this.setView(view, 'bump');
@@ -124,7 +124,7 @@ export class ActivityDisplay {
 
 			let i = this.activities.length;
 			while (i--) {
-				document.getElementById<GroupElement>(`activity${i}-display`)!.style.visibility = visibility;
+				document.getElementById<GroupElement>(`stats${i}`)!.style.visibility = visibility;
 			}
 
 			if (e != null) {
@@ -136,7 +136,7 @@ export class ActivityDisplay {
 
 		if (e?.key == null || e?.key === 'showDayOnDateHide') {
 			document
-				.getElementById<GroupElement>('date-day')!
+				.getElementById<GroupElement>('day-value')!
 				.parent!.animate(
 					configuration.get('showDayOnDateHide') && this.getView() !== ActivityViews.Date
 						? 'select'
@@ -151,8 +151,8 @@ export class ActivityDisplay {
 
 			let i = this.activities.length;
 			while (i--) {
-				document.getElementById<TextElement>(`activity${i}-left-units`)!.style.display = display;
-				document.getElementById<TextElement>(`activity${i}-right-units`)!.style.display = display;
+				document.getElementById<TextElement>(`lstat${i}-units`)!.style.display = display;
+				document.getElementById<TextElement>(`rstat${i}-units`)!.style.display = display;
 			}
 		}
 
@@ -185,7 +185,7 @@ export class ActivityDisplay {
 				(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
 		) {
 			document
-				.getElementById<GroupElement>('date-day')!
+				.getElementById<GroupElement>('day-value')!
 				.parent!.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
 		}
 
@@ -203,22 +203,22 @@ export class ActivityDisplay {
 		const activity = this.activities[view];
 		if (activity == null) return;
 
-		this.renderActivity(activity, Side.Left, `activity${view}-left`);
-		this.renderActivity(activity, Side.Right, `activity${view}-right`);
+		this.renderActivity(activity, Side.Left, `lstat${view}`);
+		this.renderActivity(activity, Side.Right, `rstat${view}`);
 
 		if (activity.goalReached[Side.Left] || activity.goalReached[Side.Right]) {
 			requestAnimationFrame(() => {
 				if (activity.goalReached[Side.Left]) {
-					document.getElementById<ArcElement>(`activity${view}-left-goal`)!.parent?.animate('enable');
+					document.getElementById<ArcElement>(`lstat${view}-goal`)!.parent?.animate('enable');
 				}
 
 				if (activity.goalReached[Side.Right]) {
-					document.getElementById<ArcElement>(`activity${view}-right-goal`)!.parent?.animate('enable');
+					document.getElementById<ArcElement>(`rstat${view}-goal`)!.parent?.animate('enable');
 				}
 			});
 		}
 
-		document.getElementById<GroupElement>(`activity${view}-display`)!.animate('select');
+		document.getElementById<GroupElement>(`stats${view}`)!.animate('select');
 	}
 
 	private renderActivity(activity: Activity, side: Side, prefix: string) {
@@ -238,6 +238,7 @@ export class ActivityDisplay {
 		const $icon = document.getElementById<ImageElement>(`${prefix}-icon`)!;
 		$icon.href = `images/${name}.png`;
 		$icon.style.fill = color;
+		($icon.children[0] as AnimateElement).to = color;
 
 		activity.goalReached[side] = goal != null && value != null && value >= goal;
 
@@ -296,15 +297,15 @@ export class ActivityDisplay {
 
 		// console.log(`${key}: value=${value}, goal=${goal}, angle=${angle}, bounceAngle=${bounceAngle}`);
 
-		let $animate = $progress.firstChild as AnimateElement;
+		let $animate = $progress.children[1] as AnimateElement;
 		$animate.from = bounceAngle;
 		$animate.to = angle;
 
-		$animate = $animate.nextSibling as AnimateElement;
+		$animate = $progress.children[2] as AnimateElement;
 		$animate.to = bounceAngle;
 		$animate.from = goal != null ? 360 : 0;
 
-		$animate = $animate.nextSibling as AnimateElement;
+		$animate = $progress.children[3] as AnimateElement;
 		$animate.to = goal != null ? 360 : 0;
 	}
 

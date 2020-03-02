@@ -8,75 +8,81 @@
 		<link rel="import" href="/mnt/sysassets/widgets/tumblerview_widget.gui" />
 		<link rel="import" href="/mnt/sysassets/widgets/combo_button_widget.gui" />
 
-		<symbol id="activity-display-symbol">
+		<symbol id="stats">
 			<g transform="translate(24,-14)">
-				<arc id="activity-left-goal" x="-22" y="-24" width="48" height="48" arc-width="2" start-angle="0" sweep-angle="360" fill-opacity="0.5">
-					<animate attributeName="arc-width" to="48" dur="0s" begin="enable+2s" end="unselect;unload" />
-					<animate attributeName="fill-opacity" from="0" to="1" dur="0.4s" begin="enable+2s" end="unselect;unload" easing="ease-in-out" />
+				<arc id="lstat-goal" x="-22" y="-24" width="48" height="48" arc-width="2" start-angle="0" sweep-angle="360" fill-opacity="0.5">
+					<animate attributeName="arc-width" to="2" dur="0s" begin="select;unselect" />
+					<animate attributeName="fill-opacity" to="0.5" dur="0s" begin="select;unselect" />
 
-					<animate attributeName="arc-width" dur="0s" begin="select;unselect;unload" final="restore" />
-					<animate attributeName="fill-opacity" dur="0s" begin="select;unselect;unload" final="restore" />
+					<animate attributeName="arc-width" to="48" dur="0s" begin="enable+2s" />
+					<animate attributeName="fill-opacity" from="0" to="1" dur="0.4s" begin="enable+2s" easing="ease-in-out" />
 				</arc>
-				<arc id="activity-left-progress" x="-22" y="-24" width="48" height="48" arc-width="3" start-angle="0" sweep-angle="0">
+				<arc id="lstat-progress" x="-22" y="-24" width="48" height="48" arc-width="3" start-angle="0" sweep-angle="0">
+					<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect" />
+
 					<animate attributeName="sweep-angle" dur="0.1s" begin="select+1.1s" easing="ease-in" />
-					<animate attributeName="sweep-angle" from="360" dur="0.2s" begin="select+0.9s" easing="ease-out" final="freeze" />
-					<animate attributeName="sweep-angle" from="0" to="360" dur="0.4s" begin="select+0.5s" easing="ease-in" final="freeze" />
-					<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect;unload" />
+					<animate attributeName="sweep-angle" from="360" dur="0.2s" begin="select+0.9s" easing="ease-out" />
+					<animate attributeName="sweep-angle" from="0" to="360" dur="0.4s" begin="select+0.5s" easing="ease-in" />
 				</arc>
-				<image id="activity-left-icon" class="icon--activity primary" x="$-47" y="-23" fill-opacity="0.8">
-					<animate attributeName="fill" to="fb-black" dur="0.4s" begin="enable+2s" end="unselect;unload" easing="ease-in-out" />
+				<image id="lstat-icon" class="icon--activity primary" x="$-47" y="-23" fill-opacity="0.8">
+					<animate attributeName="fill" dur="0s" begin="select;unselect" />
+
+					<animate attributeName="fill" to="fb-black" dur="0.4s" begin="enable+2s" easing="ease-in-out" />
 				</image>
 
-				<animateTransform attributeType="scale" from="1" to="0.9" dur="0.1s" begin="enable+2.1s" end="unselect;unload" easing="ease-in" final="freeze" />
-				<animateTransform attributeType="scale" from="0.9" to="1.1" dur="0.2s" begin="enable+2.2s" end="unselect;unload" easing="ease-in" final="freeze" />
-				<animateTransform attributeType="scale" from="1.1" to="1" dur="0.1s" begin="enable+2.4s" end="unselect;unload" easing="ease-in" final="freeze" />
+				<animateTransform attributeType="scale" from="1" to="0.9" dur="0.1s" begin="enable+2.1s" easing="ease-in" />
+				<animateTransform attributeType="scale" from="0.9" to="1.1" dur="0.2s" begin="enable+2.2s" easing="ease-in" />
+				<animateTransform attributeType="scale" from="1.1" to="1" dur="0.1s" begin="enable+2.4s" easing="ease-in" />
 			</g>
-			<text id="activity-left-value" class="text text--md primary" text-anchor="start" text-length="8" x="58" y="-4" />
-			<text id="activity-left-units" class="text text--sm secondary" text-anchor="start" text-length="8" x="58" y="6" />
+			<text id="lstat-value" class="text text--md primary" text-anchor="start" text-length="8" x="58" y="-4" />
+			<text id="lstat-units" class="text text--sm secondary" text-anchor="start" text-length="8" x="58" y="6" />
 
 			<g transform="translate(100%-24,-14)">
-				<arc id="activity-right-goal" x="-26" y="-24" width="48" height="48" arc-width="2" start-angle="0" sweep-angle="360" fill-opacity="0.5">
-					<animate attributeName="arc-width" to="48" dur="0s" begin="enable+2s" end="unselect;unload" />
-					<animate attributeName="fill-opacity" from="0" to="1" dur="0.4s" begin="enable+2s" end="unselect;unload" easing="ease-in-out" />
+				<arc id="rstat-goal" x="-26" y="-24" width="48" height="48" arc-width="2" start-angle="0" sweep-angle="360" fill-opacity="0.5">
+					<animate attributeName="arc-width" to="2" dur="0s" begin="select;unselect" />
+					<animate attributeName="fill-opacity" to="0.5" dur="0s" begin="select;unselect" />
 
-					<animate attributeName="arc-width" dur="0s" begin="select;unselect;unload" final="restore" />
-					<animate attributeName="fill-opacity" dur="0s" begin="select;unselect;unload" final="restore" />
+					<animate attributeName="arc-width" to="48" dur="0s" begin="enable+2s" />
+					<animate attributeName="fill-opacity" from="0" to="1" dur="0.4s" begin="enable+2s" easing="ease-in-out" />
 				</arc>
-				<arc id="activity-right-progress" x="-26" y="-24" width="48" height="48" arc-width="3" start-angle="0" sweep-angle="0">
+				<arc id="rstat-progress" x="-26" y="-24" width="48" height="48" arc-width="3" start-angle="0" sweep-angle="0">
+					<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect" />
+
 					<animate attributeName="sweep-angle" dur="0.1s" begin="select+1.1s" easing="ease-in" />
-					<animate attributeName="sweep-angle" from="360" dur="0.2s" begin="select+0.9s" easing="ease-out" final="freeze" />
-					<animate attributeName="sweep-angle" from="0" to="360" dur="0.4s" begin="select+0.5s" easing="ease-in" final="freeze" />
-					<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect;unload" />
+					<animate attributeName="sweep-angle" from="360" dur="0.2s" begin="select+0.9s" easing="ease-out" />
+					<animate attributeName="sweep-angle" from="0" to="360" dur="0.4s" begin="select+0.5s" easing="ease-in" />
 				</arc>
-				<image id="activity-right-icon" class="icon--activity primary" x="$-47" y="-23" fill-opacity="0.8">
-					<animate attributeName="fill" to="fb-black" dur="0.4s" begin="enable+2s" end="unselect;unload" easing="ease-in-out" />
+				<image id="rstat-icon" class="icon--activity primary" x="$-47" y="-23" fill-opacity="0.8">
+					<animate attributeName="fill" dur="0s" begin="select;unselect" />
+
+					<animate attributeName="fill" to="fb-black" dur="0.4s" begin="enable+2s" easing="ease-in-out" />
 				</image>
 
-				<animateTransform attributeType="scale" from="1" to="0.9" dur="0.1s" begin="enable+2.1s" end="unselect;unload" easing="ease-in" final="freeze" />
-				<animateTransform attributeType="scale" from="0.9" to="1.1" dur="0.2s" begin="enable+2.2s" end="unselect;unload" easing="ease-in" final="freeze" />
-				<animateTransform attributeType="scale" from="1.1" to="1" dur="0.1s" begin="enable+2.4s" end="unselect;unload" easing="ease-in" final="freeze" />
+				<animateTransform attributeType="scale" from="1" to="0.9" dur="0.1s" begin="enable+2.1s" easing="ease-in" />
+				<animateTransform attributeType="scale" from="0.9" to="1.1" dur="0.2s" begin="enable+2.2s" easing="ease-in" />
+				<animateTransform attributeType="scale" from="1.1" to="1" dur="0.1s" begin="enable+2.4s" easing="ease-in" />
 			</g>
-			<text id="activity-right-value" class="text text--md primary" text-anchor="end" text-length="8" y="-4" />
-			<text id="activity-right-units" class="text text--sm secondary" text-anchor="end" text-length="8" y="6" />
+			<text id="rstat-value" class="text text--md primary" text-anchor="end" text-length="8" y="-4" />
+			<text id="rstat-units" class="text text--sm secondary" text-anchor="end" text-length="8" y="6" />
 		</symbol>
 
 		<symbol id="donate-popup">
 			<svg height="100%" overflow="hidden">
 				<defs>
 					<symbol id="tumblerview-digit">
-						<use id="donate-code-digit" href="#tumblerview">
-							<use id="donate-code-item-0" href="#tumbler-item"><text id="content">0</text></use>
-							<use id="donate-code-item-1" href="#tumbler-item"><text id="content">1</text></use>
-							<use id="donate-code-item-2" href="#tumbler-item"><text id="content">2</text></use>
-							<use id="donate-code-item-3" href="#tumbler-item"><text id="content">3</text></use>
-							<use id="donate-code-item-4" href="#tumbler-item"><text id="content">4</text></use>
-							<use id="donate-code-item-5" href="#tumbler-item"><text id="content">5</text></use>
-							<use id="donate-code-item-6" href="#tumbler-item"><text id="content">6</text></use>
-							<use id="donate-code-item-7" href="#tumbler-item"><text id="content">7</text></use>
-							<use id="donate-code-item-8" href="#tumbler-item"><text id="content">8</text></use>
-							<use id="donate-code-item-9" href="#tumbler-item"><text id="content">9</text></use>
-							<use id="donate-code-item-a" href="#tumbler-item"><text id="content">A</text></use>
-							<use id="donate-code-item-b" href="#tumbler-item"><text id="content">B</text></use>
+						<use id="code" href="#tumblerview">
+							<use href="#tumbler-item"><text id="content">0</text></use>
+							<use href="#tumbler-item"><text id="content">1</text></use>
+							<use href="#tumbler-item"><text id="content">2</text></use>
+							<use href="#tumbler-item"><text id="content">3</text></use>
+							<use href="#tumbler-item"><text id="content">4</text></use>
+							<use href="#tumbler-item"><text id="content">5</text></use>
+							<use href="#tumbler-item"><text id="content">6</text></use>
+							<use href="#tumbler-item"><text id="content">7</text></use>
+							<use href="#tumbler-item"><text id="content">8</text></use>
+							<use href="#tumbler-item"><text id="content">9</text></use>
+							<use href="#tumbler-item"><text id="content">A</text></use>
+							<use href="#tumbler-item"><text id="content">B</text></use>
 						</use>
 					</symbol>
 				</defs>
@@ -96,13 +102,13 @@
 						<rect x="0" y="0" height="210" width="100%" fill="fb-dark-gray" fill-opacity="0.6"/>
 
 						<use href="#tumblerview-digit" x="25" y="30">
-							<set href="donate-code-digit" attributeName="id" to="donate-code-digit-1" />
+							<set href="code" attributeName="id" to="code1" />
 						</use>
 						<use href="#tumblerview-digit" x="120" y="30">
-							<set href="donate-code-digit" attributeName="id" to="donate-code-digit-2" />
+							<set href="code" attributeName="id" to="code2" />
 						</use>
 						<use href="#tumblerview-digit" x="215" y="30">
-							<set href="donate-code-digit" attributeName="id" to="donate-code-digit-3" />
+							<set href="code" attributeName="id" to="code3" />
 						</use>
 					</svg>
 

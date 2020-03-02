@@ -9,16 +9,16 @@
 	</image>
 
 	<g id="top-bar">
-		<section id="battery-display">
-			<line id="battery-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
-			<image id="battery-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
-			<text id="battery-level" class="text--bold text--sm secondary" text-anchor="start" text-length="4" x="$+10" y="21" />
-			<!-- <text id="battery-until-charged" class="text text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" /> -->
-		</section>
+		<!-- <section id="bat-disp"> -->
+			<line id="bat-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
+			<image id="bat-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
+			<text id="bat-level" class="text--bold text--sm secondary" text-anchor="start" text-length="4" x="$+10" y="21" />
+			<!-- <text id="bat-until-charged" class="text text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" /> -->
+		<!-- </section> -->
 
 		<g opacity="0">
-			<text id="date-day" class="text text--lg primary theme-fg-color" text-anchor="middle" text-length="2" x="50%-6" y="25" />
-			<text id="date-day-ordinal" class="text text--sm secondary" text-anchor="start" text-length="2" x="$+1" y="25" />
+			<text id="day-value" class="text text--lg primary theme-fg-color" text-anchor="middle" text-length="2" x="50%-6" y="25" />
+			<text id="day-suffix" class="text text--sm secondary" text-anchor="start" text-length="2" x="$+1" y="25" />
 
 			<animate attributeName="opacity" from="1" to="0" dur="1s" begin="disable" end="select;unselect" easing="ease-in" />
 
@@ -29,30 +29,27 @@
 			<animate attributeName="opacity" to="0" dur="0s" begin="unselect" end="select" />
 		</g>
 
-		<section id="heartrate-display">
-			<g id="heartrate-icon--pulse" class="heartrate-icon" transform="translate(100%-26,12)" display="none">
-				<image href="images/heart.png" class="icon primary theme-fg-color" x="-16" y="-16" />
+		<section id="hr">
+			<g transform="translate(100%-26,12)">
+				<image id="hr-icon" href="images/heart.png" class="icon primary theme-fg-color" x="-16" y="-16" />
+
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
 				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1s" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
 				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3s" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
 				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4s" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
-			</g>
 
-			<g id="heartrate-icon--interval" class="heartrate-icon" transform="translate(100%-26,12)" display="none">
-				<image href="images/heart.png" class="icon primary theme-fg-color" x="-16" y="-16" />
+				<!--
+				Use this once the bug with repeatDur not settable from JS is fixed
 				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1s" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
+				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1s" end="disable" dur="0.2s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="" />
 				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3s" end="disable" dur="0.1s" easing="ease-in" final="freeze" repeatDur="1" repeatCount="indefinite" />
 				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4s" end="disable" dur="0.1s" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+				-->
 			</g>
 
-			<g id="heartrate-icon--off" class="heartrate-icon" transform="translate(100%-42,-4)" display="none">
-				<image href="images/heart.png" class="icon primary theme-fg-color" x="0" y="0" />
-			</g>
-
-			<text id="heartrate-rate" class="text--bold text--lg primary" text-anchor="start" text-length="3" y="25" />
+			<text id="hr-rate" class="text--bold text--lg primary" text-anchor="start" text-length="3" y="25" />
 			<g>
-				<text id="heartrate-resting" class="text--bold text--sm secondary" text-anchor="end" text-length="5" y="21" />
+				<text id="hr-resting" class="text--bold text--sm secondary" text-anchor="end" text-length="5" y="21" />
 
 				<animate attributeName="opacity" to="0" dur="0s" begin="select" />
 				<animate attributeName="opacity" to="1" dur="0.4s" begin="select" easing="ease-in" />
@@ -70,37 +67,37 @@
 		<animateTransform attributeType="translate" from="0,8" to="0,-30" dur="0.3s" begin="unload+0.1s" easing="ease-in" />
 	</g>
 
-	<g id="time-display" transform="translate(0, 34%)">
-		<image id="time-hour0--zero" href="images/0.png" class="digit theme-fg-color" x="1%" y="0" visibility="hidden">
+	<g id="time" transform="translate(0, 34%)" opacity="1">
+		<image id="time-hr0--zero" href="images/0.png" class="digit theme-fg-color" x="1%" y="0" visibility="hidden">
 			<!-- Animate in -->
-			<animate id="aod-animate-in--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
-			<animate id="aod-animate-in--fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in"/>
+			<animate id="aod-in--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+			<animate id="aod-in--fill-op" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
 			<!-- Animate out -->
-			<animate id="aod-animate-out--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
-			<animate attributeName="fill-opacity" to="0.35" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
+			<animate id="aod-out--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
+			<animate attributeName="fill-opacity" to="0.5" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 		</image>
-		<image id="time-hour0" href="images/0.png" class="digit" x="1%" y="0" />
-		<image id="time-hour1" href="images/0.png" class="digit primary" x="$" y="0" />
+		<image id="time-hr0" href="images/0.png" class="digit" x="1%" y="0" />
+		<image id="time-hr1" href="images/0.png" class="digit primary" x="$" y="0" />
 
-		<image id="time-separator" href="images/separator.png" class="digit theme-fg-color" x="50%-6" y="0" fill-opacity="0.5">
-			<animate attributeName="fill-opacity" from="0.5" to="0" dur="0.5s" begin="select" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-			<animate attributeName="fill-opacity" from="0" to="0.5" dur="0.5s" begin="select+0.5s" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+		<image id="time-sep" href="images/separator.png" class="digit theme-fg-color" x="50%-6" y="0" fill-opacity="0.5">
+			<animate attributeName="fill-opacity" from="0.6" to="0" dur="0.5s" begin="select" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+			<animate attributeName="fill-opacity" from="0" to="0.6" dur="0.5s" begin="select+0.5s" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 
 			<!-- Animate in -->
-			<animate id="aod-animate-in--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
-			<animate id="aod-animate-in--fill-opacity" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+			<animate id="aod-in--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+			<animate id="aod-in--fill-op" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
 			<!-- Animate out -->
-			<animate id="aod-animate-out--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
-			<animate attributeName="fill-opacity" to="0.35" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
+			<animate id="aod-out--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
+			<animate attributeName="fill-opacity" to="0.6" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 		</image>
 
-		<image id="time-minute0" href="images/0.png" class="digit primary" x="55%" y="0" />
-		<image id="time-minute1" href="images/0.png" class="digit primary" x="$" y="0" />
+		<image id="time-min0" href="images/0.png" class="digit primary" x="55%" y="0" />
+		<image id="time-min1" href="images/0.png" class="digit primary" x="$" y="0" />
 
 		<g>
-			<text id="time-seconds" class="text text--sm primary" text-anchor="middle" text-length="4" x="$-30" y="120" />
+			<text id="time-secs" class="text text--sm primary" text-anchor="middle" text-length="4" x="$-30" y="120" />
 
 			<!-- Animate in -->
 			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
@@ -110,51 +107,51 @@
 		</g>
 
 		<!-- Animate in -->
-		<animate id="aod-animate-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+		<animate id="aod-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
 		<!-- Animate out -->
-		<animate id="aod-animate-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="disable" end="enable" easing="ease-in" final="freeze" />
+		<animate id="aod-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="disable" end="enable" easing="ease-in" final="freeze" />
 	</g>
 
 	<section height="80" y="170">
 		<g id="bottom-bar">
 			<use id="cycleview" href="#cycleview">
 				<use href="#cycleview-item">
-					<g id="date-display" transform="translate(0,50%)">
-						<text id="date-date" class="text text--lg secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
-						<rect id="date-highlight-bg" x="0" y="0" height="0" width="0" fill="fb-black"/>
-						<text id="date-highlight" class="text text--lg primary theme-fg-color" text-anchor="end" text-length="2" y="0" />
+					<g id="date" transform="translate(0,50%)">
+						<text id="date-value" class="text text--lg secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
+						<rect id="date-day-bg" x="0" y="0" height="0" width="0" fill="fb-black"/>
+						<text id="date-day" class="text text--lg primary theme-fg-color" text-anchor="end" text-length="2" y="0" />
 					</g>
 				</use>
 				<use href="#cycleview-item">
-					<g id="activity0-display" transform="translate(0,50%)" visibility="hidden">
-						<use href="#activity-display-symbol">
-							<set href="activity-left-goal" attributeName="id" to="activity0-left-goal" />
-							<set href="activity-left-progress" attributeName="id" to="activity0-left-progress" />
-							<set href="activity-left-icon" attributeName="id" to="activity0-left-icon" />
-							<set href="activity-left-value" attributeName="id" to="activity0-left-value" />
-							<set href="activity-left-units" attributeName="id" to="activity0-left-units" />
-							<set href="activity-right-goal" attributeName="id" to="activity0-right-goal" />
-							<set href="activity-right-progress" attributeName="id" to="activity0-right-progress" />
-							<set href="activity-right-icon" attributeName="id" to="activity0-right-icon" />
-							<set href="activity-right-value" attributeName="id" to="activity0-right-value" />
-							<set href="activity-right-units" attributeName="id" to="activity0-right-units" />
+					<g id="stats0" transform="translate(0,50%)" visibility="hidden">
+						<use href="#stats">
+							<set href="lstat-goal" attributeName="id" to="lstat0-goal" />
+							<set href="lstat-progress" attributeName="id" to="lstat0-progress" />
+							<set href="lstat-icon" attributeName="id" to="lstat0-icon" />
+							<set href="lstat-value" attributeName="id" to="lstat0-value" />
+							<set href="lstat-units" attributeName="id" to="lstat0-units" />
+							<set href="rstat-goal" attributeName="id" to="rstat0-goal" />
+							<set href="rstat-progress" attributeName="id" to="rstat0-progress" />
+							<set href="rstat-icon" attributeName="id" to="rstat0-icon" />
+							<set href="rstat-value" attributeName="id" to="rstat0-value" />
+							<set href="rstat-units" attributeName="id" to="rstat0-units" />
 						</use>
 					</g>
 				</use>
 				<use href="#cycleview-item">
-					<g id="activity1-display" transform="translate(0,50%)" visibility="hidden">
-						<use href="#activity-display-symbol">
-							<set href="activity-left-goal" attributeName="id" to="activity1-left-goal" />
-							<set href="activity-left-progress" attributeName="id" to="activity1-left-progress" />
-							<set href="activity-left-icon" attributeName="id" to="activity1-left-icon" />
-							<set href="activity-left-value" attributeName="id" to="activity1-left-value" />
-							<set href="activity-left-units" attributeName="id" to="activity1-left-units" />
-							<set href="activity-right-goal" attributeName="id" to="activity1-right-goal" />
-							<set href="activity-right-progress" attributeName="id" to="activity1-right-progress" />
-							<set href="activity-right-icon" attributeName="id" to="activity1-right-icon" />
-							<set href="activity-right-value" attributeName="id" to="activity1-right-value" />
-							<set href="activity-right-units" attributeName="id" to="activity1-right-units" />
+					<g id="stats1" transform="translate(0,50%)" visibility="hidden">
+						<use href="#stats">
+							<set href="lstat-goal" attributeName="id" to="lstat1-goal" />
+							<set href="lstat-progress" attributeName="id" to="lstat1-progress" />
+							<set href="lstat-icon" attributeName="id" to="lstat1-icon" />
+							<set href="lstat-value" attributeName="id" to="lstat1-value" />
+							<set href="lstat-units" attributeName="id" to="lstat1-units" />
+							<set href="rstat-goal" attributeName="id" to="rstat1-goal" />
+							<set href="rstat-progress" attributeName="id" to="rstat1-progress" />
+							<set href="rstat-icon" attributeName="id" to="rstat1-icon" />
+							<set href="rstat-value" attributeName="id" to="rstat1-value" />
+							<set href="rstat-units" attributeName="id" to="rstat1-units" />
 						</use>
 					</g>
 				</use>

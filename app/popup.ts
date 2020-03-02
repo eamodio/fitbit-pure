@@ -51,9 +51,9 @@ export class DonatePopup implements Disposable {
 
 		const $popup = this.$popup;
 		const $tumblers = [
-			$popup.getElementById<TumblerViewElement>('donate-code-digit-1')!,
-			$popup.getElementById<TumblerViewElement>('donate-code-digit-2')!,
-			$popup.getElementById<TumblerViewElement>('donate-code-digit-3')!
+			$popup.getElementById<TumblerViewElement>('code1')!,
+			$popup.getElementById<TumblerViewElement>('code2')!,
+			$popup.getElementById<TumblerViewElement>('code3')!
 		];
 
 		const date = new Date();

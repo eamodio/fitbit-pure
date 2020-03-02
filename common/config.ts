@@ -27,14 +27,16 @@ export interface Config {
 	accentBackgroundColor: Colors | undefined;
 	accentForegroundColor: Colors | undefined;
 	allowEditing: boolean | undefined;
-	animateHeartRate: 'off' | 'interval' | 'pulse' | undefined;
+	animateHeartRate: boolean | undefined;
 	animateSeparator: boolean | undefined;
 	aodOpacity: number | undefined;
+	colorizeHeartRate: boolean | undefined;
 	donated: boolean | undefined;
 	showActivityUnits: boolean | undefined;
 	showBatteryPercentage: boolean | undefined;
 	showDate: boolean | undefined;
 	showDayOnDateHide: boolean | undefined;
+	showDaySuffix: boolean | undefined;
 	showLeadingZero: boolean | undefined;
 	showRestingHeartRate: boolean | undefined;
 	showSeconds: boolean | undefined;
@@ -46,16 +48,18 @@ export const defaultConfig: Config = {
 	accentBackgroundColor: 'fb-black',
 	accentForegroundColor: 'fb-white',
 	allowEditing: true,
-	animateHeartRate: 'pulse',
+	animateHeartRate: true,
 	animateSeparator: true,
-	aodOpacity: 0.6,
+	aodOpacity: 60,
+	colorizeHeartRate: false,
 	donated: false,
 	showActivityUnits: true,
 	showBatteryPercentage: true,
 	showDate: true,
 	showDayOnDateHide: true,
+	showDaySuffix: true,
 	showLeadingZero: true,
-	showRestingHeartRate: true,
+	showRestingHeartRate: false,
 	showSeconds: false,
 	currentActivityView: 0
 };

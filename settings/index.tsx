@@ -7,7 +7,7 @@ const friendlyColor = (color: string | undefined) => {
 	if (name === 'light-gray') return 'Gray';
 	return `${name[0].toUpperCase()}${name.substr(1)}`;
 };
-const friendlyOpacity = (value: string | undefined) => `${Number(value ?? 1) * 100}%`;
+const friendlyOpacity = (value: string | undefined) => `${Number(value ?? 100)}%`;
 
 const debug = false;
 
@@ -205,7 +205,22 @@ function PureSettings(props: SettingsComponentProps) {
 			<Section title={<TextImageRow label={<Text align="center">Date &amp; Time Display</Text>} />}>
 				<Toggle settingsKey="animateSeparator" label="Animate Time Separator" />
 				<Toggle settingsKey="showDate" label="Show Date" />
-				<Toggle settingsKey="showDayOnDateHide" label="Show Day (when Activity Stats are visible)" />
+				<Toggle
+					settingsKey="showDayOnDateHide"
+					label={
+						<Text>
+							Show Day <Text italic>(when date is hidden)</Text>
+						</Text>
+					}
+				/>
+				<Toggle
+					settingsKey="showDaySuffix"
+					label={
+						<Text>
+							Show Day Suffixes <Text italic>(-st, -nd, -rd, -th)</Text>
+						</Text>
+					}
+				/>
 				<Toggle settingsKey="showLeadingZero" label="Show Leading Zero" />
 				<Toggle settingsKey="showSeconds" label="Show Seconds" />
 			</Section>
@@ -215,29 +230,8 @@ function PureSettings(props: SettingsComponentProps) {
 			</Section>
 
 			<Section title={<TextImageRow label={<Text align="center">Heart Rate Display</Text>} />}>
-				<Select
-					label="Animate Heart Rate"
-					settingsKey="animateHeartRate"
-					selectViewTitle="Animate Heart Rate"
-					options={[
-						{
-							name: 'No Animation',
-							description: '',
-							value: 'off'
-						},
-						{
-							name: 'Pulse (regularly)',
-							description: 'Always pulses at 60 BPM',
-							value: 'interval'
-						},
-						{
-							name: 'Pulse (heart rate)',
-							description: 'Pulses with your heart rate. Can affect battery life',
-							value: 'pulse'
-						}
-					]}
-					renderItem={option => <TextImageRow label={option.name} sublabel={option.description} />}
-				/>
+				<Toggle settingsKey="animateHeartRate" label="Animate Heart Rate" />
+				<Toggle settingsKey="colorizeHeartRate" label="Change Color with Heart Rate" />
 				<Toggle settingsKey="showRestingHeartRate" label="Show Resting Heart Rate" />
 			</Section>
 
@@ -264,9 +258,9 @@ function PureSettings(props: SettingsComponentProps) {
 							</Text>
 						}
 						settingsKey="aodOpacity"
-						min="0.3"
-						max="1"
-						step="0.1"
+						min="30"
+						max="100"
+						step="10"
 					/>
 				</Section>
 			)}

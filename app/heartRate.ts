@@ -5,6 +5,7 @@ import document from 'document';
 import { BodyPresenceSensor } from 'body-presence';
 import { HeartRateSensor } from 'heart-rate';
 import { user } from 'user-profile';
+import { gettext } from 'i18n';
 import { ActivityViews, AppEvent, appManager } from './appManager';
 import { ConfigChangeEvent, configuration } from './configuration';
 import { debounce, defer } from '../common/system';
@@ -20,8 +21,6 @@ export class HeartRateDisplay {
 	private readonly bodyPresenceSensor: BodyPresenceSensor | undefined;
 	private readonly heartRateSensor: HeartRateSensor | undefined;
 
-	private $icon!: GraphicsElement;
-
 	private readonly _hasUserProfileAccess: boolean;
 	private _isOnBody: boolean | undefined;
 	private _rate: number | undefined;
@@ -30,7 +29,7 @@ export class HeartRateDisplay {
 		this._hasUserProfileAccess = app.permissions.granted('access_user_profile');
 
 		if (HeartRateSensor == null || !app.permissions.granted('access_heart_rate')) {
-			document.getElementById<ContainerElement>('heartrate-display')!.style.display = 'none';
+			document.getElementById<ContainerElement>('hr')!.style.display = 'none';
 
 			return;
 		}
@@ -67,7 +66,7 @@ export class HeartRateDisplay {
 					((e.previous === ActivityViews.Date && e.view !== ActivityViews.Date) ||
 						(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
 				) {
-					document.getElementById<TextElement>('heartrate-resting')!.parent!.animate('select');
+					document.getElementById<TextElement>('hr-resting')!.parent!.animate('select');
 
 					this.render();
 				}
@@ -94,6 +93,7 @@ export class HeartRateDisplay {
 		if (
 			e?.key != null &&
 			e.key !== 'animateHeartRate' &&
+			e.key !== 'colorizeHeartRate' &&
 			e.key !== 'showDayOnDateHide' &&
 			e.key !== 'showRestingHeartRate'
 		) {
@@ -101,28 +101,26 @@ export class HeartRateDisplay {
 		}
 
 		if (e?.key == null || e.key === 'animateHeartRate') {
-			if (e?.key === 'animateHeartRate') {
-				const $els = document.getElementsByClassName<GraphicsElement>('heartrate-icon');
-
-				let i = $els.length;
-				let $el: GraphicsElement;
-				while (i--) {
-					$el = $els[i];
-
-					$el.animate('disable');
-					$el.style.display = 'none';
-				}
-			}
-
-			this.$icon = document.getElementById<GraphicsElement>(
-				`heartrate-icon--${configuration.get('animateHeartRate')}`
-			)!;
-
 			this.stopAnimation();
+
+			if (configuration.get('animateHeartRate') && this._rate != null && this._rate > 0) {
+				this.startAnimation(this._rate);
+			}
+		}
+
+		if (e?.key == null || e.key === 'colorizeHeartRate') {
+			if (configuration.get('colorizeHeartRate')) {
+				const color = getHeartRateColor(this._rate);
+				document.getElementById<ImageElement>('hr-icon')!.style.fill = color;
+			} else {
+				document.getElementById<ImageElement>('hr-icon')!.style.fill = configuration.get(
+					'accentForegroundColor'
+				);
+			}
 		}
 
 		if (e?.key == null || e.key === 'showRestingHeartRate') {
-			document.getElementById<TextElement>('heartrate-resting')!.style.display = configuration.get(
+			document.getElementById<TextElement>('hr-resting')!.style.display = configuration.get(
 				'showRestingHeartRate'
 			)
 				? 'inline'
@@ -150,10 +148,10 @@ export class HeartRateDisplay {
 			rate = timestamp > 0 ? this.heartRateSensor?.heartRate ?? 0 : 0;
 		}
 
-		const $rate = document.getElementById<TextElement>('heartrate-rate')!;
+		const $rate = document.getElementById<TextElement>('hr-rate')!;
 		$rate.text = `${rate > 0 ? rate : '--'}`;
 
-		const $restingRate = document.getElementById<TextElement>('heartrate-resting')!;
+		const $restingRate = document.getElementById<TextElement>('hr-resting')!;
 		$restingRate.text = `${
 			this._hasUserProfileAccess ? (appManager.editing ? '00' : user.restingHeartRate) ?? '' : ''
 		}`;
@@ -174,7 +172,9 @@ export class HeartRateDisplay {
 			$restingRate.y = 21;
 		}
 
-		this.$icon.style.display = 'inline';
+		if (configuration.get('colorizeHeartRate')) {
+			document.getElementById<ImageElement>('hr-icon')!.style.fill = getHeartRateColor(rate);
+		}
 
 		if (rate <= 0) {
 			this.stopAnimation();
@@ -187,26 +187,31 @@ export class HeartRateDisplay {
 	private _animationInterval: number | undefined;
 
 	private startAnimation(rate: number) {
-		const animation = configuration.get('animateHeartRate');
-		if (animation === 'off') return;
+		const animate = configuration.get('animateHeartRate');
+		if (!animate) return;
 
 		// console.log(`HeartRateDisplay.startAnimation: rate=${rate}, animation=${animation}`);
 
-		if (animation === 'pulse') {
-			const interval = Math.round(1000 / (rate / 60) / 50) * 50;
-			if (interval === this._animationInterval) return;
+		const interval = Math.round(1000 / (rate / 60) / 50) * 50;
+		if (interval === this._animationInterval) return;
 
-			this._animationInterval = interval;
-			if (this._animationHandle !== undefined) {
-				clearInterval(this._animationHandle);
-			}
-			this._animationHandle = setInterval(() => this.$icon.animate('enable'), interval);
-		} else {
-			if (this._animationInterval === 1000) return;
-
-			this._animationInterval = 1000;
-			this.$icon.animate('enable');
+		this._animationInterval = interval;
+		if (this._animationHandle !== undefined) {
+			clearInterval(this._animationHandle);
 		}
+
+		const $container = document.getElementById<GraphicsElement>('hr-icon')!.parent!;
+
+		// BUG: Fitbit bug where setting repeatDur has no effect, once fixed can remove the manual setInterval
+		// const repeatDur = interval / 1000;
+		// let i = 5;
+		// while (i-- >= 2) {
+		// 	console.log(i);
+		// 	($container.children[i] as AnimateElement).repeatDur = repeatDur;
+		// }
+		// $container.animate('enable');
+
+		this._animationHandle = setInterval(() => $container.animate('enable'), interval);
 	}
 
 	private stopAnimation() {
@@ -216,7 +221,7 @@ export class HeartRateDisplay {
 		}
 		this._animationInterval = undefined;
 
-		this.$icon.animate('disable');
+		document.getElementById<GraphicsElement>('hr-icon')!.parent!.animate('disable');
 	}
 
 	private updateState() {
@@ -271,4 +276,10 @@ export class HeartRateDisplay {
 			}
 		}
 	}
+}
+
+function getHeartRateColor(rate: number | undefined) {
+	if (rate == null || rate <= 0) return 'fb-white';
+
+	return gettext(`heart_rate_color_${Math.max(Math.min(rate - 40, 160), 0)}`);
 }

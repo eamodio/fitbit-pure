@@ -2,6 +2,9 @@ interface AnimateElement extends Element {
 	from: string | number | undefined;
 	to: string | number | undefined;
 	dur: string | number | undefined;
+
+	repeatDur: string | number | undefined;
+	repeatCount: 'indefinite' | string | number | undefined;
 }
 
 interface ComboButtonElement extends Element, Styled {}

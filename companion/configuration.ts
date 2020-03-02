@@ -5,19 +5,11 @@ import { device } from 'peer';
 import { Config, ConfigIpcMessage, defaultConfig, IpcMessage } from '../common/config';
 import { addEventListener, Disposable } from '../common/system';
 
-const defaults = {
-	...defaultConfig,
-	animateHeartRate: {
-		values: [{ name: 'Pulse (heart rate)', value: 'pulse' }],
-		selected: [2]
-	}
-};
-
 export class Configuration {
 	private _disposable: Disposable | undefined;
 
 	constructor() {
-		this.ensureDefaults();
+		this.ensureDefaultsAndMigrate();
 
 		peerSocket.addEventListener('message', ({ data }) => this.onMessageReceived(data));
 
@@ -65,21 +57,35 @@ export class Configuration {
 		if (e.key != null && e.oldValue === e.newValue) return;
 
 		if (e.key == null) {
-			this.ensureDefaults();
+			this.ensureDefaultsAndMigrate();
 		}
 
 		this.send(e.key as keyof Config, e.newValue);
 	}
 
-	private ensureDefaults() {
+	private ensureDefaultsAndMigrate() {
 		this._disposable?.dispose();
 
 		settingsStorage.setItem('modelName', device.modelName);
 
 		try {
-			for (const key in defaults) {
-				if (settingsStorage.getItem(key) == null) {
-					settingsStorage.setItem(key, JSON.stringify(defaults[key]));
+			for (const key in defaultConfig) {
+				const value = settingsStorage.getItem(key);
+				if (value == null) {
+					settingsStorage.setItem(key, JSON.stringify(defaultConfig[key]));
+				} else {
+					switch (key) {
+						case 'animateHeartRate':
+							if (value !== 'true' && value !== 'false') {
+								settingsStorage.setItem(key, JSON.stringify(value === 'pulse'));
+							}
+							break;
+						case 'aodOpacity':
+							if (Number(value) <= 1) {
+								settingsStorage.setItem(key, JSON.stringify(Number(value) * 100));
+							}
+							break;
+					}
 				}
 			}
 		} catch {}
@@ -94,7 +100,7 @@ export class Configuration {
 			return false;
 		}
 
-		if (key != null && typeof defaults[key] === 'object') {
+		if (key != null && typeof defaultConfig[key] === 'object') {
 			if (value != null && value[0] === '{' && value[value.length - 1] === '}') {
 				try {
 					const selected = JSON.parse(value);

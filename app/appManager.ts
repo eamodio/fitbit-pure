@@ -223,26 +223,26 @@ export class AppManager {
 				$el = $els[i];
 				$el.style.fill = color;
 
-				if ($el.id === 'time-separator') {
+				if ($el.id === 'time-sep') {
 					$el.style.fillOpacity = separatorOpacity;
 					($el.children[0] as AnimateElement).from = separatorOpacity;
 					($el.children[1] as AnimateElement).to = separatorOpacity;
-				} else if ($el.id === 'time-hour0--zero') {
+				} else if ($el.id === 'time-hr0--zero') {
 					$el.style.fillOpacity = opacity;
 				}
 
 				if (display.aodAvailable) {
-					let $animate = $el.getElementById<AnimateElement>('aod-animate-in--fill');
+					let $animate = $el.getElementById<AnimateElement>('aod-in--fill');
 					if ($animate != null) {
 						$animate.to = color;
 					}
 
-					$animate = $el.getElementById<AnimateElement>('aod-animate-in--fill-opacity');
+					$animate = $el.getElementById<AnimateElement>('aod-in--fill-op');
 					if ($animate != null) {
 						$animate.to = opacity;
 					}
 
-					$animate = $el.getElementById<AnimateElement>('aod-animate-out--fill');
+					$animate = $el.getElementById<AnimateElement>('aod-out--fill');
 					if ($animate != null) {
 						$animate.from = color;
 					}
@@ -294,7 +294,7 @@ export class AppManager {
 				configuration.get('showDayOnDateHide') &&
 				configuration.get('currentActivityView') === ActivityViews.Date
 			) {
-				document.getElementById<TextElement>('date-day')!.parent!.animate('disable');
+				document.getElementById<TextElement>('day-value')!.parent!.animate('disable');
 			}
 		} else if (e.screenX >= 236 && e.screenY <= 64) {
 			vibration.start('bump');

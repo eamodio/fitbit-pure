@@ -20,6 +20,32 @@ class Configuration {
 	constructor() {
 		try {
 			this._config = fs.readFileSync('pure.settings', 'json') as Config;
+
+			// Migrate settings
+			let migrated = false;
+			if (
+				this._config.animateHeartRate === null ||
+				((this._config.animateHeartRate as any) as string) === 'pulse'
+			) {
+				migrated = true;
+				this._config.animateHeartRate = undefined;
+			} else if (this._config.animateHeartRate !== undefined) {
+				migrated = true;
+				this._config.animateHeartRate = false;
+			}
+
+			if (this._config.aodOpacity != null && this._config.aodOpacity <= 1) {
+				migrated = true;
+				this._config.aodOpacity = this._config.aodOpacity * 100;
+				if (this._config.aodOpacity === defaultConfig.aodOpacity) {
+					this._config.aodOpacity = undefined;
+				}
+			}
+
+			if (migrated) {
+				setTimeout(() => this.save(), 0);
+			}
+
 			// console.log(`Configuration.load: loaded; json=${JSON.stringify(config)}`);
 		} catch (ex) {
 			// console.log(`Configuration.load: failed; ex=${ex}`);
@@ -31,7 +57,7 @@ class Configuration {
 		peerSocket.addEventListener('message', ({ data }) => this.onMessageReceived(data));
 
 		// Send a message to ensure the companion has the correct donation state
-		setTimeout(() => this.ensureCompanionState(), 1000);
+		setTimeout(() => this.ensureCompanionState(), 500);
 	}
 
 	private onMessageReceived(msg: IpcMessage) {

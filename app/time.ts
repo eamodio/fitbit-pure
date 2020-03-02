@@ -1,4 +1,5 @@
 import clock, { TickEvent } from 'clock';
+import { me as device } from 'device';
 import { display } from 'display';
 import { gettext } from 'i18n';
 import { locale, preferences } from 'user-settings';
@@ -8,6 +9,7 @@ import { ConfigChangeEvent, configuration } from './configuration';
 import { defer } from '../common/system';
 
 const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
+const screenWidth = device.screen.width;
 
 enum Previous {
 	Minutes = 0,
@@ -22,17 +24,17 @@ export class TimeDisplay {
 	private readonly $seconds: TextElement;
 
 	constructor() {
-		this.$seconds = document.getElementById<TextElement>('time-seconds')!;
+		this.$seconds = document.getElementById<TextElement>('time-secs')!;
 
 		clock.addEventListener('tick', e => this.onTick(e));
 
 		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
-		if (display.aodEnabled) {
+		if (display.aodAvailable) {
 			const aodOpacity = configuration.get('aodOpacity');
 			// 0.6 is the default in the svg (index.gui)
-			if (aodOpacity !== 0.6) {
+			if (aodOpacity !== 60) {
 				this.updateAlwaysOnOpacity(aodOpacity);
 			}
 		}
@@ -43,16 +45,19 @@ export class TimeDisplay {
 	private onAppEvent(e: AppEvent) {
 		switch (e.type) {
 			case 'display': {
-				if (e.display.aodEnabled && configuration.get('showSeconds')) {
+				if (
+					e.display.aodEnabled ||
+					(e.display.on && e.display.aodAvailable && configuration.get('showSeconds'))
+				) {
 					this.updateClock(true);
 				}
 
 				this.render();
 
 				requestAnimationFrame(() => {
-					if (e.display.aodEnabled) {
+					if (e.display.aodEnabled || (e.display.on && e.display.aodAvailable)) {
 						document
-							.getElementById<GroupElement>('time-display')!
+							.getElementById<GroupElement>('time')!
 							.animate(e.display.aodActive ? 'disable' : 'enable');
 						document
 							.getElementById<ImageElement>('background')!
@@ -61,7 +66,7 @@ export class TimeDisplay {
 
 					if (configuration.get('animateSeparator')) {
 						document
-							.getElementById<ImageElement>('time-separator')!
+							.getElementById<ImageElement>('time-sep')!
 							.animate(e.display.on && !e.display.aodActive ? 'select' : 'unselect');
 					}
 				});
@@ -81,6 +86,7 @@ export class TimeDisplay {
 			e.key !== 'aodOpacity' &&
 			e.key !== 'showDate' &&
 			e.key !== 'showDayOnDateHide' &&
+			e.key !== 'showDaySuffix' &&
 			e.key !== 'showLeadingZero' &&
 			e.key !== 'showSeconds'
 		) {
@@ -89,7 +95,7 @@ export class TimeDisplay {
 
 		if (e?.key == null || e?.key === 'animateSeparator') {
 			document
-				.getElementById<ImageElement>('time-separator')!
+				.getElementById<ImageElement>('time-sep')!
 				.animate(!display.aodActive && configuration.get('animateSeparator') ? 'select' : 'unselect');
 
 			if (e?.key === 'animateSeparator') return;
@@ -102,7 +108,7 @@ export class TimeDisplay {
 		}
 
 		if (e?.key == null || e?.key === 'showDate') {
-			document.getElementById<GroupElement>('date-display')!.style.display = configuration.get('showDate')
+			document.getElementById<GroupElement>('date')!.style.display = configuration.get('showDate')
 				? 'inline'
 				: 'none';
 		}
@@ -145,8 +151,8 @@ export class TimeDisplay {
 		this._previous[Previous.Minutes] = minutes;
 
 		const minute = zeroPad(minutes);
-		document.getElementById<ImageElement>('time-minute0')!.href = `images/${minute[0] ?? 0}.png`;
-		document.getElementById<ImageElement>('time-minute1')!.href = `images/${minute[1] ?? 0}.png`;
+		document.getElementById<ImageElement>('time-min0')!.href = `images/${minute[0] ?? 0}.png`;
+		document.getElementById<ImageElement>('time-min1')!.href = `images/${minute[1] ?? 0}.png`;
 
 		const hours = appManager.editing ? 0 : date.getHours();
 		if (!force && hours === this._previous[Previous.Hours]) return;
@@ -155,37 +161,45 @@ export class TimeDisplay {
 
 		const hour = zeroPad(!appManager.editing && preferences.clockDisplay === '12h' ? hours % 12 || 12 : hours);
 		if (hour[0] === '0') {
-			let $hour0 = document.getElementById<ImageElement>('time-hour0')!;
+			let $hour0 = document.getElementById<ImageElement>('time-hr0')!;
+			let changed = false;
 			if ($hour0.style.visibility !== 'hidden') {
 				$hour0.style.visibility = 'hidden';
+				changed = true;
 			}
 
-			$hour0 = document.getElementById<ImageElement>('time-hour0--zero')!;
+			$hour0 = document.getElementById<ImageElement>('time-hr0--zero')!;
 
 			if (configuration.get('showLeadingZero')) {
 				if ($hour0.style.visibility !== 'visible') {
-					document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = 0;
+					document.getElementById<GroupElement>('time')!.groupTransform!.translate.x = 0;
 					$hour0.style.visibility = 'visible';
 				}
-			} else if ($hour0.style.visibility !== 'hidden') {
-				$hour0.style.visibility = 'hidden';
-				document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = -33;
+			} else {
+				if ($hour0.style.visibility !== 'hidden') {
+					$hour0.style.visibility = 'hidden';
+					changed = true;
+				}
+
+				if (changed) {
+					document.getElementById<GroupElement>('time')!.groupTransform!.translate.x = -33;
+				}
 			}
 		} else {
-			let $hour0 = document.getElementById<ImageElement>('time-hour0--zero')!;
+			let $hour0 = document.getElementById<ImageElement>('time-hr0--zero')!;
 			if ($hour0.style.visibility !== 'hidden') {
 				$hour0.style.visibility = 'hidden';
 			}
 
-			$hour0 = document.getElementById<ImageElement>('time-hour0')!;
+			$hour0 = document.getElementById<ImageElement>('time-hr0')!;
 			$hour0.href = `images/${hour[0] ?? 0}.png`;
 
 			if ($hour0.style.visibility !== 'visible') {
-				document.getElementById<GroupElement>('time-display')!.groupTransform!.translate.x = 0;
+				document.getElementById<GroupElement>('time')!.groupTransform!.translate.x = 0;
 				$hour0.style.visibility = 'visible';
 			}
 		}
-		document.getElementById<ImageElement>('time-hour1')!.href = `images/${hour[1] ?? 0}.png`;
+		document.getElementById<ImageElement>('time-hr1')!.href = `images/${hour[1] ?? 0}.png`;
 
 		const day = date.getDay();
 		if (!force && day === this._previous[Previous.Day]) return;
@@ -198,11 +212,22 @@ export class TimeDisplay {
 		this._previous[Previous.Month] = month;
 
 		const dayOfMonth = date.getDate();
-		const dayOfMonthOrdinal = getOrdinal(dayOfMonth);
+		const dayOfMonthSuffix = getOrdinalSuffix(dayOfMonth);
 
 		if (configuration.get('showDayOnDateHide')) {
-			document.getElementById<TextElement>('date-day')!.text = dayOfMonth.toString();
-			document.getElementById<TextElement>('date-day-ordinal')!.text = dayOfMonthOrdinal;
+			const $day = document.getElementById<TextElement>('day-value')!;
+			$day.text = dayOfMonth.toString();
+
+			const $daySuffix = document.getElementById<TextElement>('day-suffix')!;
+			$daySuffix.text = dayOfMonthSuffix;
+
+			if (configuration.get('showDaySuffix')) {
+				$day.x = screenWidth / 2 + 1 - $daySuffix.getBBox().width / 2;
+				$daySuffix.style.display = 'inline';
+			} else {
+				$day.x = screenWidth / 2 + 1;
+				$daySuffix.style.display = 'none';
+			}
 		}
 
 		if (!configuration.get('showDate')) return;
@@ -211,7 +236,7 @@ export class TimeDisplay {
 		const dayName = gettext(`day_short_${day}`);
 		const dayMonthSeparator = gettext('day_month_separator');
 
-		const $date = document.getElementById<TextElement>('date-date')!;
+		const $date = document.getElementById<TextElement>('date-value')!;
 
 		let x: number;
 		switch (locale.language) {
@@ -254,7 +279,7 @@ export class TimeDisplay {
 				break;
 		}
 
-		const $dateHighlight = document.getElementById<TextElement>('date-highlight')!;
+		const $dateHighlight = document.getElementById<TextElement>('date-day')!;
 		$dateHighlight.x = x;
 		$dateHighlight.text = dayOfMonth.toString();
 
@@ -262,7 +287,7 @@ export class TimeDisplay {
 
 		// Required because there seems to be an off-by-1 pixel calc with certain characters
 		// So instead of relying on exact overlay, paint a black rect below the highlight
-		const $dateHighlightBg = document.getElementById<RectElement>('date-highlight-bg')!;
+		const $dateHighlightBg = document.getElementById<RectElement>('date-day-bg')!;
 		$dateHighlightBg.x = rect.x;
 		$dateHighlightBg.y = -rect.height;
 		$dateHighlightBg.height = rect.height;
@@ -270,16 +295,19 @@ export class TimeDisplay {
 	}
 
 	private updateAlwaysOnOpacity(aodOpacity: number) {
-		const $timeContainer = document.getElementById<GroupElement>('time-display')!;
+		if (!display.aodAvailable) return;
 
-		let $animate = $timeContainer.getElementById<AnimateElement>('aod-animate-in');
+		const $timeContainer = document.getElementById<GroupElement>('time')!;
+		const opacity = aodOpacity / 100;
+
+		let $animate = $timeContainer.getElementById<AnimateElement>('aod-in');
 		if ($animate != null) {
-			$animate.from = aodOpacity;
+			$animate.from = opacity;
 		}
 
-		$animate = $timeContainer.getElementById<AnimateElement>('aod-animate-out');
+		$animate = $timeContainer.getElementById<AnimateElement>('aod-out');
 		if ($animate != null) {
-			$animate.to = aodOpacity;
+			$animate.to = opacity;
 		}
 	}
 
@@ -288,16 +316,16 @@ export class TimeDisplay {
 	}
 }
 
-const ordinals = [
-	gettext('day_ordinal_0'),
-	gettext('day_ordinal_1'),
-	gettext('day_ordinal_2'),
-	gettext('day_ordinal_3')
+const suffixes = [
+	gettext('ordinal_suffix_0'),
+	gettext('ordinal_suffix_1'),
+	gettext('ordinal_suffix_2'),
+	gettext('ordinal_suffix_3')
 ];
 
-function getOrdinal(num: number): string {
+function getOrdinalSuffix(num: number): string {
 	const index = num % 100;
-	return ordinals[(index - 20) % 10] || ordinals[index] || ordinals[0];
+	return suffixes[(index - 20) % 10] || suffixes[index] || suffixes[0];
 }
 
 const chars = String.fromCharCode(0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19);
