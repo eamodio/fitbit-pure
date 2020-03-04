@@ -5,6 +5,7 @@ import { vibration, VibrationPatternName } from 'haptics';
 import { gettext } from 'i18n';
 import { goals, today } from 'user-activity';
 import { units } from 'user-settings';
+import { display } from 'display';
 import { ActivityViewChangeEvent, ActivityViews, AppEvent, appManager } from './appManager';
 import { defer } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
@@ -72,13 +73,21 @@ export class ActivityDisplay {
 						document.getElementById<ArcElement>(`rstat${i}-progress`)!.sweepAngle = 0;
 					}
 
-					if (this.getView() === ActivityViews.Date) return;
+					if (configuration.get('autoRotate')) {
+						this.setAutoRotate(true);
+					} else {
+						if (this.getView() === ActivityViews.Date) return;
 
-					this.render();
+						this.render();
+					}
+				} else {
+					this.setAutoRotate(false);
 				}
 				break;
 			}
 			case 'click': {
+				this.setAutoRotate(false);
+
 				const view = this.getView() + 1;
 
 				// Force an unselect to reset the animation when an activity is hidden
@@ -91,6 +100,8 @@ export class ActivityDisplay {
 				break;
 			}
 			case 'editing': {
+				this.setAutoRotate(false);
+
 				if (e.editing) {
 					this.setView(ActivityViews.Date);
 				}
@@ -104,6 +115,8 @@ export class ActivityDisplay {
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
+			e.key !== 'autoRotate' &&
+			e.key !== 'autoRotateInterval' &&
 			// e.key !== 'currentActivityView' &&
 			e.key !== 'donated' &&
 			e.key !== 'showActivityUnits' &&
@@ -118,6 +131,12 @@ export class ActivityDisplay {
 
 		// 	return;
 		// }
+
+		if (e?.key == null || e?.key === 'autoRotate' || e?.key === 'autoRotateInterval') {
+			this.setAutoRotate(configuration.get('autoRotate'));
+
+			if (e?.key === 'autoRotate' || e?.key === 'autoRotateInterval') return;
+		}
 
 		if (e?.key == null || e?.key === 'donated') {
 			const visibility = appManager.donated ? 'visible' : 'hidden';
@@ -307,6 +326,22 @@ export class ActivityDisplay {
 
 		$animate = $progress.children[3] as AnimateElement;
 		$animate.to = goal != null ? 360 : 0;
+	}
+
+	private _autoRotateHandle: number = 0;
+
+	private setAutoRotate(enabled: boolean) {
+		clearInterval(this._autoRotateHandle);
+		this._autoRotateHandle = 0;
+
+		if (!enabled || !display.on || display.aodActive) return;
+
+		this.setView(ActivityViews.Date);
+
+		this._autoRotateHandle = setInterval(
+			() => this.setView(this.getView() + 1),
+			configuration.get('autoRotateInterval')
+		);
 	}
 
 	private getView(): ActivityViews {

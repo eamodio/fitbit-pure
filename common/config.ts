@@ -30,6 +30,8 @@ export interface Config {
 	animateHeartRate: boolean | undefined;
 	animateSeparator: boolean | undefined;
 	aodOpacity: number | undefined;
+	autoRotate: boolean | undefined;
+	autoRotateInterval: number | undefined;
 	colorizeHeartRate: boolean | undefined;
 	donated: boolean | undefined;
 	showActivityUnits: boolean | undefined;
@@ -51,6 +53,8 @@ export const defaultConfig: Config = {
 	animateHeartRate: true,
 	animateSeparator: true,
 	aodOpacity: 60,
+	autoRotate: false,
+	autoRotateInterval: 3000,
 	colorizeHeartRate: false,
 	donated: false,
 	showActivityUnits: true,

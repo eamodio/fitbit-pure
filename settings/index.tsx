@@ -8,11 +8,15 @@ const friendlyColor = (color: string | undefined) => {
 	return `${name[0].toUpperCase()}${name.substr(1)}`;
 };
 const friendlyOpacity = (value: string | undefined) => `${Number(value ?? 100)}%`;
+const friendlyInterval = (value: string | undefined) =>
+	Number(value) === 1000 ? '1 second' : `${Number(value) / 1000} seconds`;
 
 const debug = false;
 
 function PureSettings(props: SettingsComponentProps) {
 	const donated = props.settings.donated === 'true';
+	const autoRotate = props.settings.autoRotate === 'true';
+
 	return (
 		<Page>
 			<Section
@@ -93,13 +97,6 @@ function PureSettings(props: SettingsComponentProps) {
 						sublabel={<Text align="center">Quick and easy customizations, right on your wrist</Text>}
 					/>
 				}
-				description={
-					!donated && (
-						<Text bold align="right">
-							🔒 PRO
-						</Text>
-					)
-				}
 			>
 				{!donated && <Text>🔒 Show on Tap &amp; Hold</Text>}
 				{donated && <Toggle settingsKey="allowEditing" label="Show on Tap &amp; Hold" />}
@@ -115,13 +112,6 @@ function PureSettings(props: SettingsComponentProps) {
 						}
 						sublabel={<Text align="center">Choose colors that suit your style</Text>}
 					/>
-				}
-				description={
-					!donated && (
-						<Text bold align="right">
-							🔒 PRO
-						</Text>
-					)
 				}
 			>
 				<Text>
@@ -235,16 +225,22 @@ function PureSettings(props: SettingsComponentProps) {
 				<Toggle settingsKey="showRestingHeartRate" label="Show Resting Heart Rate" />
 			</Section>
 
-			<Section
-				title={<TextImageRow label={<Text align="center">Activity Stats Display (PRO)</Text>} />}
-				description={
-					!donated && (
-						<Text bold align="right">
-							🔒 PRO
-						</Text>
-					)
-				}
-			>
+			<Section title={<TextImageRow label={<Text align="center">Activity Stats Display (PRO)</Text>} />}>
+				{!donated && <Text>🔒 Auto-Rotate Between Date &amp; Stats</Text>}
+				{donated && <Toggle settingsKey="autoRotate" label="Auto-Rotate Between Date &amp; Stats" />}
+				{donated && autoRotate && (
+					<Slider
+						label={
+							<Text>
+								Rotate After: <Text bold>{friendlyInterval(props.settings.autoRotateInterval)}</Text>
+							</Text>
+						}
+						settingsKey="autoRotateInterval"
+						min="1000"
+						max="5000"
+						step="500"
+					/>
+				)}
 				{!donated && <Text>🔒 Show Units</Text>}
 				{donated && <Toggle settingsKey="showActivityUnits" label="Show Units" />}
 			</Section>
