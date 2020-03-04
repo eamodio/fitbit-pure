@@ -3,7 +3,7 @@ import { me as device } from 'device';
 import document from 'document';
 import { vibration, VibrationPatternName } from 'haptics';
 import { gettext } from 'i18n';
-import { goals, today } from 'user-activity';
+import { goals, Goals, today } from 'user-activity';
 import { units } from 'user-settings';
 import { display } from 'display';
 import { ActivityViewChangeEvent, ActivityViews, AppEvent, appManager } from './appManager';
@@ -57,7 +57,7 @@ export class ActivityDisplay {
 		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
-		// goals.addEventListener('reachgoal', () => this.onGoalReached(goals));
+		goals.addEventListener('reachgoal', () => this.onGoalReached(goals));
 
 		this.setView(configuration.get('currentActivityView'), undefined, true);
 		this.onConfigurationChanged();
@@ -73,7 +73,7 @@ export class ActivityDisplay {
 						document.getElementById<ArcElement>(`rstat${i}-progress`)!.sweepAngle = 0;
 					}
 
-					if (configuration.get('autoRotate')) {
+					if (!this._autoRotateOverride && configuration.get('autoRotate')) {
 						this.setAutoRotate(true);
 					} else {
 						if (this.getView() === ActivityViews.Date) return;
@@ -178,21 +178,33 @@ export class ActivityDisplay {
 		this.render();
 	}
 
-	// private onGoalReached(goals: Goals) {
-	// 	if (
-	// 		(goals.steps != null && (today.adjusted.steps ?? 0) >= goals.steps) ||
-	// 		(goals.distance != null && (today.adjusted.distance ?? 0) >= goals.distance)
-	// 	) {
-	// 		// step or distance goal reached
-	// 		this.setView(ActivityViews.Activity1, 'nudge');
-	// 	} else if (
-	// 		(goals.activeMinutes != null && (today.adjusted.activeMinutes ?? 0) >= goals.activeMinutes) ||
-	// 		(goals.calories != null && (today.adjusted.calories ?? 0) >= goals.calories)
-	// 	) {
-	// 		// active minutes or calories goal reached
-	// 		this.setView(ActivityViews.Activity2, 'nudge');
-	// 	}
-	// }
+	private onGoalReached(goals: Goals) {
+		let view: ActivityViews;
+
+		if (
+			(goals.steps != null && (today.adjusted.steps ?? 0) >= goals.steps) ||
+			(goals.distance != null && (today.adjusted.distance ?? 0) >= goals.distance)
+		) {
+			// step or distance goal reached
+			view = ActivityViews.Activity1;
+		} else if (
+			(goals.activeMinutes != null && (today.adjusted.activeMinutes ?? 0) >= goals.activeMinutes) ||
+			(goals.calories != null && (today.adjusted.calories ?? 0) >= goals.calories)
+		) {
+			// active minutes or calories goal reached
+			view = ActivityViews.Activity2;
+		} else {
+			return;
+		}
+
+		if (display.on && !display.aodActive) {
+			this.setAutoRotate(false);
+		} else {
+			this._autoRotateOverride = true;
+		}
+		this.setView(view, 'nudge');
+		display.on = true;
+	}
 
 	private onViewChanged(e: ActivityViewChangeEvent, initializing: boolean = false) {
 		configuration.set('currentActivityView', e.view);
@@ -329,10 +341,12 @@ export class ActivityDisplay {
 	}
 
 	private _autoRotateHandle: number = 0;
+	private _autoRotateOverride = false;
 
 	private setAutoRotate(enabled: boolean) {
 		clearInterval(this._autoRotateHandle);
 		this._autoRotateHandle = 0;
+		this._autoRotateOverride = false;
 
 		if (!enabled || !display.on || display.aodActive) return;
 
@@ -357,6 +371,10 @@ export class ActivityDisplay {
 			view = this.maxViews;
 		}
 
+		if (vibrationPattern != null) {
+			vibration.start(vibrationPattern);
+		}
+
 		const previous = this.getView();
 		if (view === previous) {
 			if (initializing) {
@@ -364,10 +382,6 @@ export class ActivityDisplay {
 			}
 
 			return view;
-		}
-
-		if (vibrationPattern != null) {
-			vibration.start(vibrationPattern);
 		}
 
 		this.$view.value = view;
