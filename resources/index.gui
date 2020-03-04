@@ -80,7 +80,7 @@
 		<image id="time-hr0" href="images/0.png" class="digit" x="1%" y="0" />
 		<image id="time-hr1" href="images/0.png" class="digit primary" x="$" y="0" />
 
-		<image id="time-sep" href="images/separator.png" class="digit theme-fg-color" x="50%-6" y="0" fill-opacity="0.5">
+		<image id="time-sep" href="images/separator.png" class="digit theme-fg-color" x="50%-6" y="0" fill-opacity="0.6">
 			<animate attributeName="fill-opacity" from="0.6" to="0" dur="0.5s" begin="select" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 			<animate attributeName="fill-opacity" from="0" to="0.6" dur="0.5s" begin="select+0.5s" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
 
