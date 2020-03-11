@@ -18,15 +18,14 @@ class Configuration {
 	private _config: Config;
 
 	constructor() {
+		let donated = false;
 		try {
 			this._config = fs.readFileSync('pure.settings', 'json') as Config;
+			donated = this._config.donated ?? false;
 
 			// Migrate settings
 			let migrated = false;
-			if (
-				this._config.animateHeartRate === null ||
-				((this._config.animateHeartRate as any) as string) === 'pulse'
-			) {
+			if (this._config.animateHeartRate === null || (this._config.animateHeartRate as any) !== 'off') {
 				migrated = true;
 				this._config.animateHeartRate = undefined;
 			} else if (this._config.animateHeartRate !== undefined) {
@@ -48,10 +47,10 @@ class Configuration {
 
 			// console.log(`Configuration.load: loaded; json=${JSON.stringify(config)}`);
 		} catch (ex) {
-			// console.log(`Configuration.load: failed; ex=${ex}`);
+			console.log(`Configuration.load: failed; ex=${ex}`);
 
 			// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-			this._config = {} as Config;
+			this._config = { donated: donated } as Config;
 		}
 
 		peerSocket.addEventListener('message', ({ data }) => this.onMessageReceived(data));

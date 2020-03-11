@@ -33,11 +33,18 @@ export class Configuration {
 		if (msg.type === 'donated') {
 			const donated = settingsStorage.getItem('donated') === 'true';
 			if (donated !== msg.data.donated) {
-				this._disposable?.dispose();
+				// If the companion has donated === true, then trust it and send it to the device
+				if (donated && !msg.data.donated) {
+					this.send('donated', 'true');
+				} else {
+					this._disposable?.dispose();
 
-				settingsStorage.setItem('donated', msg.data.donated.toString());
+					settingsStorage.setItem('donated', msg.data.donated.toString());
 
-				this._disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
+					this._disposable = addEventListener(settingsStorage, 'change', e =>
+						this.onSettingsStorageChanged(e)
+					);
+				}
 			}
 		}
 
@@ -77,7 +84,7 @@ export class Configuration {
 					switch (key) {
 						case 'animateHeartRate':
 							if (value !== 'true' && value !== 'false') {
-								settingsStorage.setItem(key, JSON.stringify(value === 'pulse'));
+								settingsStorage.setItem(key, JSON.stringify(value.indexOf('"value":"off"') === -1));
 							}
 							break;
 						case 'aodOpacity':
