@@ -3,21 +3,27 @@ import { AppEvent, AppManager } from './appManager';
 import { addEventListener, Disposable } from '../common/system';
 
 export class DonatePopup implements Disposable {
-	private _disposable: Disposable | undefined;
+	private disposable: Disposable | undefined;
 
 	constructor(private readonly appManager: AppManager) {
-		this._disposable = Disposable.from(
+		this.disposable = Disposable.from(
 			this.appManager.onDidTriggerAppEvent(this.onAppEvent, this),
-			addEventListener(this.$button, 'click', () => this.onButtonClick())
+			addEventListener(this.$backButton, 'click', () => this.onBackButtonClick()),
+			addEventListener(this.$nextButton, 'click', () => this.onNextButtonClick()),
+			addEventListener(document, 'unload', () => this.dispose()),
 		);
 	}
 
-	dispose() {
-		this._disposable?.dispose();
+	dispose(): void {
+		this.disposable?.dispose();
 	}
 
-	private get $button(): ComboButtonElement {
-		return this.$popup.getElementById<ComboButtonElement>('donate-button')!;
+	private get $backButton(): TextButtonElement {
+		return this.$popup.getElementById<TextButtonElement>('back-button')!;
+	}
+
+	private get $nextButton(): TextButtonElement {
+		return this.$popup.getElementById<TextButtonElement>('next-button')!;
 	}
 
 	private get $popup(): GroupElement {
@@ -36,15 +42,29 @@ export class DonatePopup implements Disposable {
 		}
 	}
 
-	private onButtonClick() {
+	private onBackButtonClick() {
+		console.log('DonatePopup:close');
+
+		const $steps = this.$steps;
+		if ($steps[0].style.display === 'none') {
+			$steps[0].style.display = 'inline';
+			$steps[1].style.display = 'none';
+
+			this.$nextButton.text = 'Next';
+
+			return;
+		}
+
+		this.close();
+	}
+
+	private onNextButtonClick() {
 		const $steps = this.$steps;
 		if ($steps[0].style.display !== 'none') {
 			$steps[0].style.display = 'none';
 			$steps[1].style.display = 'inline';
 
-			const $button = this.$button;
-			$button.getElementById<ImageElement>('combo-button-icon')!.href = 'images/check.png';
-			$button.getElementById<ImageElement>('combo-button-icon-press')!.href = 'images/check-pressed.png';
+			this.$nextButton.text = 'Done';
 
 			return;
 		}
@@ -53,14 +73,11 @@ export class DonatePopup implements Disposable {
 		const $tumblers = [
 			$popup.getElementById<TumblerViewElement>('code1')!,
 			$popup.getElementById<TumblerViewElement>('code2')!,
-			$popup.getElementById<TumblerViewElement>('code3')!
+			$popup.getElementById<TumblerViewElement>('code3')!,
 		];
 
 		const date = new Date();
-		const value = `${date
-			.getUTCFullYear()
-			.toString()
-			.substr(2)}${date.getUTCMonth().toString(16)}`;
+		const value = `${date.getUTCFullYear().toString().substr(2)}${date.getUTCMonth().toString(16)}`;
 		if ($tumblers.every(($, index) => $.value === Number(value[index]))) {
 			this.accept();
 		} else {
@@ -68,15 +85,20 @@ export class DonatePopup implements Disposable {
 		}
 	}
 
-	close() {
-		this.$popup.style.display = 'none';
-		this.dispose();
+	async close() {
+		console.log('DonatePopup:close');
+
+		await document.location.replace('index.view');
+
+		// document.history.go(-1);
+		// this.$popup.style.display = 'none';
+		// this.dispose();
 	}
 
 	show() {
-		this.reset();
+		console.log('DonatePopup:show');
 
-		this.$popup.style.display = 'inline';
+		// this.$popup.style.display = 'inline';
 	}
 
 	private accept() {
@@ -86,16 +108,6 @@ export class DonatePopup implements Disposable {
 
 	private reject() {
 		// Show an error state on the button for a short time
-		this.$button.animate('enable');
-	}
-
-	private reset() {
-		const $steps = this.$steps;
-		$steps[0].style.display = 'inline';
-		$steps[1].style.display = 'none';
-
-		const $button = this.$button;
-		$button.getElementById<ImageElement>('combo-button-icon')!.href = 'images/next.png';
-		$button.getElementById<ImageElement>('combo-button-icon-press')!.href = 'images/next-pressed.png';
+		this.$nextButton.animate('enable');
 	}
 }

@@ -10,7 +10,7 @@ export function defer<T extends (...arg: any) => any>() {
 		const deferKey = `$defer$${key}`;
 		const fn = descriptor.value;
 
-		descriptor.value = function(this: any, ...args: Parameters<T>) {
+		descriptor.value = function (this: any, ...args: Parameters<T>) {
 			cancelAnimationFrame(this[deferKey]);
 			this[deferKey] = requestAnimationFrame(() => fn.apply(this, args));
 		};

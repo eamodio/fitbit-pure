@@ -28,7 +28,7 @@ export class BatteryDisplay {
 	}
 
 	@debounce(500)
-	private onBatteryChanged(sensor: Battery) {
+	private onBatteryChanged(_sensor: Battery) {
 		this.render();
 	}
 
@@ -44,26 +44,19 @@ export class BatteryDisplay {
 	private render() {
 		const level = Math.floor(battery.chargeLevel) ?? 0;
 
-		document.getElementById<TextElement>('bat-level')!.text = `${level > 0 ? level : '--'}%`;
+		document.getElementById<TextElement>('bat-level')!.text = `${level > 0 ? level : '--'}`;
 
 		const $indicator = document.getElementById<LineElement>('bat-indicator')!;
-		$indicator.x2 = $indicator.x1 + Math.round(level * 0.23);
+		$indicator.x2 = ($indicator.x1 as number) + Math.round(level * 0.23);
 
 		if (battery.charging) {
-			$indicator.style.fill = 'fb-black';
-			// document.getElementById<TextElement>('bat-until-charged')!.text =
-			// 	battery.timeUntilFull == null ? '' : `${battery.timeUntilFull} left`;
+			$indicator.style.fill = 'fb-green';
+		} else if (level <= 16) {
+			$indicator.style.fill = 'fb-red';
+		} else if (level <= 30) {
+			$indicator.style.fill = 'fb-peach';
 		} else {
-			// document.getElementById<TextElement>('bat-until-charged')!.text = '';
-
-			// eslint-disable-next-line no-lonely-if
-			if (level <= 16) {
-				$indicator.style.fill = 'fb-black';
-			} else if (level <= 30) {
-				$indicator.style.fill = 'fb-peach';
-			} else {
-				$indicator.style.fill = 'fb-white';
-			}
+			$indicator.style.fill = 'fb-white';
 		}
 	}
 }

@@ -1,5 +1,4 @@
 import { me as app } from 'appbit';
-import { me as device } from 'device';
 import document from 'document';
 import { vibration, VibrationPatternName } from 'haptics';
 import { gettext } from 'i18n';
@@ -10,18 +9,16 @@ import { ActivityViewChangeEvent, ActivityViews, AppEvent, appManager } from './
 import { defer } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
 
-const arcWidth = 48;
-const screenWidth = device.screen.width;
 const meterToMile = 0.000621371192;
 
 const activityToColor = {
 	steps: 'fb-cyan',
 	calories: 'fb-orange',
 	distance: 'fb-purple',
-	activeMinutes: 'fb-mint'
+	activeZoneMinutes: 'fb-mint',
 };
 
-type Activities = 'activeMinutes' | 'calories' | 'distance' | 'steps';
+type Activities = 'activeZoneMinutes' | 'calories' | 'distance' | 'steps';
 
 interface Activity {
 	names: [Activities, Activities];
@@ -30,19 +27,19 @@ interface Activity {
 
 enum Side {
 	Left = 0,
-	Right = 1
+	Right = 1,
 }
 
 export class ActivityDisplay {
 	private readonly activities: Activity[] = [
 		{
 			names: ['steps', 'distance'],
-			goalReached: [false, false]
+			goalReached: [false, false],
 		},
 		{
-			names: ['activeMinutes', 'calories'],
-			goalReached: [false, false]
-		}
+			names: ['activeZoneMinutes', 'calories'],
+			goalReached: [false, false],
+		},
 	];
 	private readonly $view: GroupElement;
 
@@ -155,11 +152,11 @@ export class ActivityDisplay {
 
 		if (e?.key == null || e?.key === 'showDayOnDateHide') {
 			document
-				.getElementById<GroupElement>('day-value')!
+				.getElementById<GroupElement>('day-of-week')!
 				.parent!.animate(
 					configuration.get('showDayOnDateHide') && this.getView() !== ActivityViews.Date
 						? 'select'
-						: 'unselect'
+						: 'unselect',
 				);
 
 			if (e?.key === 'showDayOnDateHide') return;
@@ -188,7 +185,8 @@ export class ActivityDisplay {
 			// step or distance goal reached
 			view = ActivityViews.Activity1;
 		} else if (
-			(goals.activeMinutes != null && (today.adjusted.activeMinutes ?? 0) >= goals.activeMinutes) ||
+			(goals.activeZoneMinutes != null &&
+				(today.adjusted.activeZoneMinutes?.total ?? 0) >= goals.activeZoneMinutes.total) ||
 			(goals.calories != null && (today.adjusted.calories ?? 0) >= goals.calories)
 		) {
 			// active minutes or calories goal reached
@@ -216,7 +214,7 @@ export class ActivityDisplay {
 				(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
 		) {
 			document
-				.getElementById<GroupElement>('day-value')!
+				.getElementById<GroupElement>('day-of-week')!
 				.parent!.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
 		}
 
@@ -255,8 +253,12 @@ export class ActivityDisplay {
 	private renderActivity(activity: Activity, side: Side, prefix: string) {
 		const name = activity.names[side];
 
-		const value = appManager.editing ? 0 : today.adjusted[name];
-		const goal = goals[name];
+		const value = appManager.editing
+			? 0
+			: name === 'activeZoneMinutes'
+			? today.adjusted[name]?.total
+			: today.adjusted[name];
+		const goal = name === 'activeZoneMinutes' ? goals[name]?.total : goals[name];
 
 		const color = activityToColor[name];
 
@@ -296,7 +298,7 @@ export class ActivityDisplay {
 					$value.text = value.toLocaleString();
 					unitsLabel = 'steps_units';
 					break;
-				case 'activeMinutes':
+				case 'activeZoneMinutes':
 					$value.text = value.toString();
 					unitsLabel = 'active_minutes_units';
 					break;
@@ -312,15 +314,6 @@ export class ActivityDisplay {
 
 		if (configuration.get('showActivityUnits')) {
 			$units.text = unitsLabel != null ? gettext(unitsLabel) : '';
-			$value.y = $units.text.length > 0 ? -12 : -4;
-		} else {
-			$value.y = -4;
-		}
-
-		if (side === Side.Right) {
-			const x = screenWidth - arcWidth - 10;
-			$value.x = x;
-			$units.x = x;
 		}
 
 		const angle = goal != null ? Math.min(Math.floor(360 * ((value ?? 0) / goal)), 360) : 0;
@@ -354,7 +347,7 @@ export class ActivityDisplay {
 
 		this._autoRotateHandle = setInterval(
 			() => this.setView(this.getView() + 1),
-			configuration.get('autoRotateInterval')
+			configuration.get('autoRotateInterval'),
 		);
 	}
 

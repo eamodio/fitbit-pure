@@ -29,9 +29,8 @@
 			"access_user_profile"
 		],
 		"buildTargets": [
-			"meson",
-			"gemini",
-			"mira"
+			"atlas",
+			"vulcan"
 		],
 		"i18n": {
 			"en": {
@@ -52,17 +51,17 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@fitbit/sdk": "4.1.0",
-		"@fitbit/sdk-cli": "1.7.1",
-		"@typescript-eslint/eslint-plugin": "2.22.0",
-		"@typescript-eslint/parser": "2.22.0",
+		"@fitbit/sdk": "5.0.1",
+		"@fitbit/sdk-cli": "1.7.3",
+		"@typescript-eslint/eslint-plugin": "4.3.0",
+		"@typescript-eslint/parser": "4.3.0",
 		"chroma-js": "2.1.0",
-		"eslint": "6.8.0",
+		"eslint": "7.10.0",
 		"eslint-cli": "1.1.1",
-		"eslint-config-prettier": "6.10.0",
-		"eslint-plugin-import": "2.20.1",
-		"fitbit-sdk-types": "4.3.5",
-		"fitfont": "1.3.1",
-		"prettier": "1.19.1"
+		"eslint-config-prettier": "6.12.0",
+		"eslint-plugin-import": "2.22.1",
+		"fitbit-sdk-types": "6.0.0",
+		"fitfont": "1.3.3",
+		"prettier": "2.1.2"
 	}
 }

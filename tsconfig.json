@@ -4,7 +4,7 @@
 		"alwaysStrict": true,
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
-		"importHelpers": false,
+		// "importHelpers": false,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
 		"strict": true,

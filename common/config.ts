@@ -38,7 +38,6 @@ export interface Config {
 	showBatteryPercentage: boolean | undefined;
 	showDate: boolean | undefined;
 	showDayOnDateHide: boolean | undefined;
-	showDaySuffix: boolean | undefined;
 	showLeadingZero: boolean | undefined;
 	showRestingHeartRate: boolean | undefined;
 	showSeconds: boolean | undefined;
@@ -55,17 +54,16 @@ export const defaultConfig: Config = {
 	aodOpacity: 60,
 	autoRotate: false,
 	autoRotateInterval: 3000,
-	colorizeHeartRate: false,
+	colorizeHeartRate: true,
 	donated: false,
 	showActivityUnits: true,
 	showBatteryPercentage: true,
 	showDate: true,
 	showDayOnDateHide: true,
-	showDaySuffix: true,
 	showLeadingZero: true,
 	showRestingHeartRate: false,
 	showSeconds: false,
-	currentActivityView: 0
+	currentActivityView: 0,
 };
 
 export interface ConfigIpcMessage {

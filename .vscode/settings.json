@@ -5,16 +5,12 @@
 	"eslint.packageManager": "yarn",
 	"files.associations": {
 		".eslintrc.json": "jsonc",
-		"*.gui": "svg"
+		"*.view": "svg"
 	},
 	"files.trimTrailingWhitespace": true,
 	"gitlens.advanced.blame.customArguments": ["--ignore-revs-file", ".gitignore-revs"],
 	"npm.packageManager": "yarn",
-	"postcssSorting.config": {
-		"order": ["custom-properties", "dollar-variables", "declarations", "at-rules", "rules"],
-		"properties-order": "alphabetical",
-		"unspecified-properties-position": "bottom"
-	},
+	"prettier.documentSelectors": ["**/*.defs", "**/*.view"],
 	"prettier.requireConfig": true,
 	"search.exclude": {
 		"**/dist": true

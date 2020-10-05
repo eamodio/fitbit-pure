@@ -1,12 +1,21 @@
 /* Fitbit Component Styles */
 
-.combo-button-background {
-	fill-opacity: 0.4;
+.tumblerview-item {
+	font-family: System-Light;
+	font-size: 110;
 }
 
-.tumblerview-item {
-	font-family: SevilleSharp-Book;
-	font-size: 110;
+#code {
+	width: 120;
+	height: 180;
+	fill: fb-orange;
+	overflow: hidden;
+}
+
+#code #value text {
+	x: 50%;
+	y: 110;
+	text-anchor: middle;
 }
 
 /* My Styles */
@@ -39,7 +48,7 @@
 
 .icon--activity {
 	height: 48;
-	width: 47;
+	width: 48;
 	fill: fb-white;
 }
 
@@ -56,15 +65,15 @@
 }
 
 .text {
-	font-family: SevilleSharp-Book;
+	font-family: System-Light;
 }
 
 .text--bold {
-	font-family: SevilleSharp-Regular;
+	font-family: System-Regular;
 }
 
 .text--extra-bold {
-	font-family: SevilleSharp-Bold;
+	font-family: System-Bold;
 }
 
 .text--xl {
@@ -84,12 +93,16 @@
 }
 
 .text--sm {
-	font-size: 22;
+	font-size: 20;
 }
 
 /* .text--xs {
 	font-size: 18;
 } */
+
+.text--caps {
+	text-transform: uppercase;
+}
 
 .theme--pure text {
 	fill: fb-white;

@@ -1,4 +1,7 @@
 {
+	"arrowParens": "avoid",
+	"endOfLine": "lf",
+	"trailingComma": "all",
 	"printWidth": 120,
 	"singleQuote": true,
 	"tabWidth": 4,
@@ -11,6 +14,14 @@
 		{
 			"files": "*.md",
 			"options": { "tabWidth": 2 }
+		},
+		{
+			"files": "*.defs",
+			"options": { "parser": "html" }
+		},
+		{
+			"files": "*.view",
+			"options": { "parser": "html" }
 		}
 	]
 }

@@ -1,4 +1,3 @@
-const isVersa2 = (props: SettingsComponentProps) => props.settings.modelName === 'Versa 2';
 const friendlyColor = (color: string | undefined) => {
 	const name = color?.replace(/"/g, '')?.substr(3) ?? '';
 	if (!name) return name;
@@ -13,6 +12,7 @@ const friendlyInterval = (value: string | undefined) =>
 
 const debug = false;
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function PureSettings(props: SettingsComponentProps) {
 	const donated = props.settings.donated === 'true';
 	const autoRotate = props.settings.autoRotate === 'true';
@@ -203,14 +203,6 @@ function PureSettings(props: SettingsComponentProps) {
 						</Text>
 					}
 				/>
-				<Toggle
-					settingsKey="showDaySuffix"
-					label={
-						<Text>
-							Show Day Suffixes <Text italic>(-st, -nd, -rd, -th)</Text>
-						</Text>
-					}
-				/>
 				<Toggle settingsKey="showLeadingZero" label="Show Leading Zero" />
 				<Toggle settingsKey="showSeconds" label="Show Seconds" />
 			</Section>
@@ -221,7 +213,8 @@ function PureSettings(props: SettingsComponentProps) {
 
 			<Section title={<TextImageRow label={<Text align="center">Heart Rate Display</Text>} />}>
 				<Toggle settingsKey="animateHeartRate" label="Animate Heart Rate" />
-				<Toggle settingsKey="colorizeHeartRate" label="Change Color with Heart Rate" />
+				{!donated && <Text>🔒 Change Color with Heart Rate</Text>}
+				{donated && <Toggle settingsKey="colorizeHeartRate" label="Change Color with Heart Rate" />}
 				<Toggle settingsKey="showRestingHeartRate" label="Show Resting Heart Rate" />
 			</Section>
 
@@ -245,21 +238,19 @@ function PureSettings(props: SettingsComponentProps) {
 				{donated && <Toggle settingsKey="showActivityUnits" label="Show Units" />}
 			</Section>
 
-			{isVersa2(props) && (
-				<Section title={<TextImageRow label={<Text align="center">Always-on Display</Text>} />}>
-					<Slider
-						label={
-							<Text>
-								Brightness: <Text bold>{friendlyOpacity(props.settings.aodOpacity)}</Text>
-							</Text>
-						}
-						settingsKey="aodOpacity"
-						min="30"
-						max="100"
-						step="10"
-					/>
-				</Section>
-			)}
+			<Section title={<TextImageRow label={<Text align="center">Always-on Display</Text>} />}>
+				<Slider
+					label={
+						<Text>
+							Brightness: <Text bold>{friendlyOpacity(props.settings.aodOpacity)}</Text>
+						</Text>
+					}
+					settingsKey="aodOpacity"
+					min="30"
+					max="100"
+					step="10"
+				/>
+			</Section>
 
 			<Button
 				label="Reset All Settings"

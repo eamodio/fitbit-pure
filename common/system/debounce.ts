@@ -10,7 +10,7 @@ export function debounce<T extends (...arg: any) => any>(wait: number) {
 		const debounceKey = `$debounce$${key}`;
 		const fn = descriptor.value;
 
-		descriptor.value = function(this: any, ...args: Parameters<T>) {
+		descriptor.value = function (this: any, ...args: Parameters<T>) {
 			clearTimeout(this[debounceKey]);
 			this[debounceKey] = setTimeout(() => fn.apply(this, args), wait);
 		};

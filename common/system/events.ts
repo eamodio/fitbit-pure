@@ -7,6 +7,10 @@ export interface Event<T> {
 type Listener<T> = [(e: T) => void, any] | ((e: T) => void);
 
 export class EventEmitter<T> {
+	private static readonly _noop = function () {
+		/* noop */
+	};
+
 	private _disposed: boolean = false;
 	private _event?: Event<T>;
 	private _listeners?: Listener<T>[];
@@ -24,15 +28,14 @@ export class EventEmitter<T> {
 
 				const result = {
 					dispose: () => {
-						// eslint-disable-next-line @typescript-eslint/no-empty-function
-						result.dispose = function() {};
+						result.dispose = EventEmitter._noop;
 						if (!this._disposed) {
 							const index = this._listeners?.indexOf(item);
 							if (index != null && index !== -1) {
 								this._listeners?.splice(index, 1);
 							}
 						}
-					}
+					},
 				};
 
 				return result;
@@ -48,16 +51,16 @@ export class EventEmitter<T> {
 		if (this._queue == null) {
 			this._queue = [];
 		}
+
 		this._queue.push(
-			...this._listeners.map<[Listener<T>, T]>(l => [l, event])
+			...this._listeners.map<[Listener<T>, T]>(l => [l, event]),
 		);
 
 		while (this._queue.length > 0) {
 			const [listener, event] = this._queue.shift()!;
 			try {
 				if (typeof listener === 'function') {
-					// eslint-disable-next-line no-useless-call
-					listener.call(undefined, event);
+					listener(event);
 				} else {
 					listener[0].call(listener[1], event);
 				}

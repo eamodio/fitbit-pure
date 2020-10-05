@@ -7,9 +7,11 @@ interface AnimateElement extends Element {
 	repeatCount: 'indefinite' | string | number | undefined;
 }
 
-interface ComboButtonElement extends Element, Styled {}
+interface IconButtonElement extends Element, Styled {}
+interface IconTextButtonElement extends Element, Styled {}
 
-interface SquareButtonElement extends Element, Styled {}
+interface TextareaButtonElement extends Element, Styled {}
+interface TextButtonElement extends Element, Styled {}
 
 interface TumblerViewElement extends ContainerElement, Styled {
 	value: number;

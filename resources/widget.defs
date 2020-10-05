@@ -1,0 +1,184 @@
+<svg class="theme--pure">
+	<defs>
+		<link rel="stylesheet" href="styles.css" />
+		<link rel="import" href="/mnt/sysassets/system_widget.defs" />
+		<link rel="import" href="/mnt/sysassets/widgets/baseview_widget.defs" />
+		<link rel="import" href="/mnt/sysassets/widgets/text_button.defs" />
+		<link rel="import" href="/mnt/sysassets/widgets/icon_button.defs" />
+		<link rel="import" href="/mnt/sysassets/widgets/cycleview_widget.defs" />
+		<link rel="import" href="/mnt/sysassets/widgets/tumblerview_widget.defs" />
+
+		<symbol id="stats">
+			<g transform="translate(44,-12)">
+				<arc
+					id="lstat-goal"
+					x="-22"
+					y="-24"
+					width="48"
+					height="48"
+					arc-width="2"
+					start-angle="0"
+					sweep-angle="360"
+					fill-opacity="0.5"
+				>
+					<animate attributeName="arc-width" to="2" dur="0s" begin="select;unselect" />
+					<animate attributeName="fill-opacity" to="0.5" dur="0s" begin="select;unselect" />
+
+					<animate attributeName="arc-width" to="48" dur="0s" begin="enable+2s" />
+					<animate
+						attributeName="fill-opacity"
+						from="0"
+						to="1"
+						dur="0.4s"
+						begin="enable+2s"
+						easing="ease-in-out"
+					/>
+				</arc>
+				<arc
+					id="lstat-progress"
+					x="-22"
+					y="-24"
+					width="48"
+					height="48"
+					arc-width="3"
+					start-angle="0"
+					sweep-angle="0"
+				>
+					<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect" />
+
+					<animate attributeName="sweep-angle" dur="0.1s" begin="select+1.1s" easing="ease-in" />
+					<animate attributeName="sweep-angle" from="360" dur="0.2s" begin="select+0.9s" easing="ease-out" />
+					<animate
+						attributeName="sweep-angle"
+						from="0"
+						to="360"
+						dur="0.4s"
+						begin="select+0.5s"
+						easing="ease-in"
+					/>
+				</arc>
+				<image id="lstat-icon" class="icon--activity primary" x="$-47" y="-23" fill-opacity="0.8">
+					<animate attributeName="fill" dur="0s" begin="select;unselect" />
+
+					<animate attributeName="fill" to="fb-black" dur="0.4s" begin="enable+2s" easing="ease-in-out" />
+				</image>
+
+				<animateTransform
+					attributeType="scale"
+					from="1"
+					to="0.9"
+					dur="0.1s"
+					begin="enable+2.1s"
+					easing="ease-in"
+				/>
+				<animateTransform
+					attributeType="scale"
+					from="0.9"
+					to="1.1"
+					dur="0.2s"
+					begin="enable+2.2s"
+					easing="ease-in"
+				/>
+				<animateTransform
+					attributeType="scale"
+					from="1.1"
+					to="1"
+					dur="0.1s"
+					begin="enable+2.4s"
+					easing="ease-in"
+				/>
+			</g>
+			<text id="lstat-value" class="text text--md primary" text-anchor="start" text-length="8" x="80" y="0" />
+			<text id="lstat-units" class="text text--sm secondary" text-anchor="start" text-length="8" x="75" y="20" />
+
+			<g transform="translate(100%-44,-12)">
+				<arc
+					id="rstat-goal"
+					x="-26"
+					y="-24"
+					width="48"
+					height="48"
+					arc-width="2"
+					start-angle="0"
+					sweep-angle="360"
+					fill-opacity="0.5"
+				>
+					<animate attributeName="arc-width" to="2" dur="0s" begin="select;unselect" />
+					<animate attributeName="fill-opacity" to="0.5" dur="0s" begin="select;unselect" />
+
+					<animate attributeName="arc-width" to="48" dur="0s" begin="enable+2s" />
+					<animate
+						attributeName="fill-opacity"
+						from="0"
+						to="1"
+						dur="0.4s"
+						begin="enable+2s"
+						easing="ease-in-out"
+					/>
+				</arc>
+				<arc
+					id="rstat-progress"
+					x="-26"
+					y="-24"
+					width="48"
+					height="48"
+					arc-width="3"
+					start-angle="0"
+					sweep-angle="0"
+				>
+					<animate attributeName="sweep-angle" to="0" dur="0s" begin="select;unselect" />
+
+					<animate attributeName="sweep-angle" dur="0.1s" begin="select+1.1s" easing="ease-in" />
+					<animate attributeName="sweep-angle" from="360" dur="0.2s" begin="select+0.9s" easing="ease-out" />
+					<animate
+						attributeName="sweep-angle"
+						from="0"
+						to="360"
+						dur="0.4s"
+						begin="select+0.5s"
+						easing="ease-in"
+					/>
+				</arc>
+				<image id="rstat-icon" class="icon--activity primary" x="$-47" y="-23" fill-opacity="0.8">
+					<animate attributeName="fill" dur="0s" begin="select;unselect" />
+
+					<animate attributeName="fill" to="fb-black" dur="0.4s" begin="enable+2s" easing="ease-in-out" />
+				</image>
+
+				<animateTransform
+					attributeType="scale"
+					from="1"
+					to="0.9"
+					dur="0.1s"
+					begin="enable+2.1s"
+					easing="ease-in"
+				/>
+				<animateTransform
+					attributeType="scale"
+					from="0.9"
+					to="1.1"
+					dur="0.2s"
+					begin="enable+2.2s"
+					easing="ease-in"
+				/>
+				<animateTransform
+					attributeType="scale"
+					from="1.1"
+					to="1"
+					dur="0.1s"
+					begin="enable+2.4s"
+					easing="ease-in"
+				/>
+			</g>
+			<text id="rstat-value" class="text text--md primary" text-anchor="end" text-length="8" x="100%-80" y="0" />
+			<text
+				id="rstat-units"
+				class="text text--sm secondary"
+				text-anchor="end"
+				text-length="8"
+				x="100%-75"
+				y="20"
+			/>
+		</symbol>
+	</defs>
+</svg>

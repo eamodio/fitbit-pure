@@ -1,9 +1,13 @@
+import { me as device } from 'device';
 import { display, Display } from 'display';
 import document from 'document';
 import { vibration } from 'haptics';
 import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
 import { Colors, ConfigChangeEvent, configuration } from './configuration';
 import { DonatePopup } from './popup';
+
+const screenHeight = device.screen.height;
+const screenWidth = device.screen.width;
 
 const colors: Colors[] = [
 	'fb-black',
@@ -27,7 +31,7 @@ const colors: Colors[] = [
 	'fb-yellow',
 	'fb-lime',
 	'fb-mint',
-	'fb-green'
+	'fb-green',
 ];
 
 const opacities = new Float32Array([
@@ -52,14 +56,14 @@ const opacities = new Float32Array([
 	0.35, // fb-yellow
 	0.35, // fb-lime
 	0.35, // fb-mint
-	0.5 // fb-green
+	0.5, // fb-green
 ]);
 
 export enum ActivityViews {
 	Date = 0,
 	Activity1 = 1,
 	Activity2 = 2,
-	Donate = 3
+	Donate = 3,
 }
 
 export interface ActivityViewChangeEvent {
@@ -90,10 +94,10 @@ export class AppManager {
 		return this._onDidTriggerAppEvent.event;
 	}
 
-	private _donateDisposable: Disposable | undefined;
-	private _mouseClickCancelTimer: number | undefined;
-	private _mouseDownDisposable: Disposable | undefined;
-	private _mouseDownTimer: number | undefined;
+	private donateDisposable: Disposable | undefined;
+	private mouseClickCancelTimer: number | undefined;
+	private mouseDownDisposable: Disposable | undefined;
+	private mouseDownTimer: number | undefined;
 
 	constructor(private readonly $trigger: RectElement) {
 		display.addEventListener('change', () => this.onDisplayChanged(display));
@@ -126,7 +130,7 @@ export class AppManager {
 		if (this._editing === value) return;
 
 		if (value && !this.donated) {
-			this.showDonatePopup();
+			void this.showDonatePopup();
 
 			return;
 		}
@@ -148,11 +152,16 @@ export class AppManager {
 		this._onDidTriggerAppEvent.fire(e);
 	}
 
-	showDonatePopup() {
-		requestAnimationFrame(() => {
-			const popup = new DonatePopup(this);
-			popup.show();
-		});
+	async showDonatePopup() {
+		// requestAnimationFrame(() => {
+		// 	const popup = new DonatePopup(this);
+		// 	popup.show();
+		// });
+
+		console.log(`showDonatePopup: views=${document.history.length}`);
+		await document.location.replace('donate.view');
+		console.log(`showDonatePopup:loaded views=${document.history.length}`);
+		new DonatePopup(this);
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
@@ -175,20 +184,21 @@ export class AppManager {
 		}
 
 		if (e?.key == null || e?.key === 'donated') {
-			const $donateButton = document.getElementById<SquareButtonElement>('donate-button')!;
+			const $donateButton = document.getElementById<TextButtonElement>('donate-button')!;
 
 			if (this.donated) {
 				$donateButton.style.visibility = 'hidden';
 
-				if (this._donateDisposable != null) {
-					this._donateDisposable.dispose();
-					this._donateDisposable = undefined;
+				if (this.donateDisposable != null) {
+					console.log('donate:dispose');
+					this.donateDisposable.dispose();
+					this.donateDisposable = undefined;
 				}
 			} else {
 				$donateButton.style.visibility = 'visible';
 
-				this._donateDisposable?.dispose();
-				this._donateDisposable = addEventListener($donateButton, 'click', () => this.onDonateClicked());
+				this.donateDisposable?.dispose();
+				this.donateDisposable = addEventListener($donateButton, 'click', () => this.onDonateClicked());
 			}
 
 			if (e?.key === 'donated') return;
@@ -266,14 +276,20 @@ export class AppManager {
 	}
 
 	private onDonateClicked() {
-		this.showDonatePopup();
+		void this.showDonatePopup();
 	}
 
 	private onMouseClick(e: MouseEvent) {
-		if (this._mouseClickCancelTimer != null) {
-			clearTimeout(this._mouseClickCancelTimer);
-			this._mouseClickCancelTimer = undefined;
+		// console.log(`onMouseClick: e=${e.screenX},${e.screenY}`);
 
+		if (this.mouseClickCancelTimer != null) {
+			clearTimeout(this.mouseClickCancelTimer);
+			this.mouseClickCancelTimer = undefined;
+
+			return;
+		}
+
+		if (!isWithinBounds(this.mouseDownPoint, e)) {
 			return;
 		}
 
@@ -294,7 +310,7 @@ export class AppManager {
 				configuration.get('showDayOnDateHide') &&
 				configuration.get('currentActivityView') === ActivityViews.Date
 			) {
-				document.getElementById<TextElement>('day-value')!.parent!.animate('disable');
+				document.getElementById<TextElement>('day-of-week')!.parent!.animate('disable');
 			}
 		} else if (e.screenX >= 236 && e.screenY <= 64) {
 			vibration.start('bump');
@@ -337,45 +353,80 @@ export class AppManager {
 		document.getElementById<GroupElement>('editable-overlay')!.animate('enable');
 	}
 
+	private mouseDownPoint: { x: number; y: number } | undefined;
 	private onMouseDown(e: MouseEvent) {
+		// console.log(`onMouseDown: e=${e.screenX},${e.screenY}`);
+
+		this.mouseDownPoint = { x: e.screenX, y: e.screenY };
+
 		this.clearEditingTimer();
 
-		if (this._mouseClickCancelTimer != null) {
-			clearTimeout(this._mouseClickCancelTimer);
-			this._mouseClickCancelTimer = undefined;
+		if (this.mouseClickCancelTimer != null) {
+			clearTimeout(this.mouseClickCancelTimer);
+			this.mouseClickCancelTimer = undefined;
 		}
 
 		if (!configuration.get('allowEditing')) return;
 
+		if (
+			!this.editing &&
+			!isWithinBounds({ x: screenHeight / 2, y: screenWidth / 2 }, e, {
+				x: screenWidth / 4,
+				y: screenHeight / 4,
+			})
+		) {
+			console.log('cancel down');
+			return;
+		}
+
 		// When there is a swipe (up/down/left/right) on the clock face, no mouseup is fired,
 		// but the parent element seems to get a "reload" event when this happens (but only on the device)
 		// So when we get a "reload" cancel any pending timer
-		this._mouseDownDisposable = addEventListener(this.$trigger.parent!, 'reload', e => this.clearEditingTimer());
+		this.mouseDownDisposable = Disposable.from(
+			addEventListener(this.$trigger, 'mousemove', e => {
+				// console.log(`trigger:mousemove e=${e.screenX},${e.screenY}`);
 
-		this._mouseDownTimer = setTimeout(() => {
-			this._mouseDownTimer = undefined;
+				if (!isWithinBounds(this.mouseDownPoint, e)) {
+					this.clearEditingTimer();
+				}
+			}),
+			addEventListener(this.$trigger, 'mouseout', _e => {
+				// console.log(`trigger:mouseout e=${_e.screenX},${_e.screenY}`);
+
+				this.clearEditingTimer();
+			}),
+			addEventListener(this.$trigger.parent!, 'reload', () => {
+				// console.log('trigger.parent:reload');
+				this.clearEditingTimer();
+			}),
+		);
+
+		this.mouseDownTimer = setTimeout(() => {
+			this.mouseDownTimer = undefined;
 			vibration.start('confirmation-max');
 
 			// Start a timer to cancel the next click, if it comes -- since we don't want to allow that
-			this._mouseClickCancelTimer = setTimeout(() => {
-				this._mouseClickCancelTimer = undefined;
+			this.mouseClickCancelTimer = setTimeout(() => {
+				this.mouseClickCancelTimer = undefined;
 			}, 500);
 
 			this.editing = !this.editing;
 		}, 1000);
 	}
 
-	private onMouseUp(e: MouseEvent) {
+	private onMouseUp(_e: MouseEvent) {
+		// console.log(`onMouseUp: e=${_e.screenX},${_e.screenY}`);
+
 		this.clearEditingTimer();
 	}
 
 	private clearEditingTimer() {
-		if (this._mouseDownTimer != null) {
-			clearTimeout(this._mouseDownTimer);
-			this._mouseDownTimer = undefined;
+		if (this.mouseDownTimer != null) {
+			clearTimeout(this.mouseDownTimer);
+			this.mouseDownTimer = undefined;
 		}
 
-		this._mouseDownDisposable?.dispose();
+		this.mouseDownDisposable?.dispose();
 	}
 
 	// DEMO MODE
@@ -506,4 +557,19 @@ export class AppManager {
 	// }
 }
 
+function isWithinBounds(
+	bounds: { x: number; y: number } | undefined,
+	e: { screenX: number; screenY: number },
+	tolerance: { x: number; y: number } = { x: 20, y: 20 },
+) {
+	if (bounds == null) return true;
+
+	const { x, y } = bounds;
+	return (
+		e.screenX >= x - tolerance.x &&
+		e.screenX <= x + tolerance.x &&
+		e.screenY >= y - tolerance.y &&
+		e.screenY <= y + tolerance.y
+	);
+}
 export const appManager = new AppManager(document.getElementById<RectElement>('trigger')!);

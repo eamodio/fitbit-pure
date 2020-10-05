@@ -1,0 +1,84 @@
+<svg class="theme--pure">
+	<animate attributeName="x" from="100%" to="0" begin="load" dur="0.5" easing="ease-in-out" />
+	<svg id="donate-popup">
+		<defs>
+			<symbol id="tumblerview-digit">
+				<use id="code" href="#tumblerview">
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="0" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="1" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="2" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="3" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="4" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="5" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="6" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="7" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="8" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="9" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="A" />
+					</use>
+					<use id="content" href="#tumbler-item">
+						<set href="value/text" attributeName="text-buffer" to="B" />
+					</use>
+				</use>
+			</symbol>
+		</defs>
+
+		<rect x="0" y="0" height="100%" width="100%" fill="fb-black" />
+
+		<g class="donate-step">
+			<text class="text text--sm-plus" x="50%" y="48" text-anchor="middle" text-buffer="Please donate at" />
+			<text class="text--extra-bold text--xl" x="50%" y="$+11" text-anchor="middle" text-buffer="pure.amod.io" />
+			<textarea class="text text--sm-plus" x="0" y="$-32" width="100%-10" height="140" text-anchor="middle">
+				to get access to PRO features — activity stats, theming, &amp; on-device quick toggles.
+			</textarea>
+		</g>
+
+		<g class="donate-step" display="none">
+			<text class="text text--sm-plus" x="50%" y="40" text-anchor="middle" text-buffer="Enter donation code" />
+
+			<section y="$-10">
+				<use href="#tumblerview-digit" x="10" y="0">
+					<set href="code" attributeName="id" to="code1" />
+				</use>
+				<use href="#tumblerview-digit" x="105" y="0">
+					<set href="code" attributeName="id" to="code2" />
+				</use>
+				<use href="#tumblerview-digit" x="200" y="0">
+					<set href="code" attributeName="id" to="code3" />
+				</use>
+			</section>
+		</g>
+
+		<use id="back-button" href="#text-button" class="text-button text--caps bottom left secondary" fill="fb-orange">
+			<set href="#text" attributeName="text-buffer" to="Back" />
+		</use>
+		<use id="next-button" href="#text-button" class="text-button text--caps bottom right" fill="fb-orange">
+			<set href="#text" attributeName="text-buffer" to="Next" />
+			<set href="#text" attributeName="fill" to="fb-black" />
+
+			<animate attributeName="fill" to="fb-red" dur="0s" begin="enable" />
+			<animate attributeName="fill" to="fb-orange" dur="0.2s" begin="enable+0.5s" easing="ease-out" />
+		</use>
+	</svg>
+</svg>

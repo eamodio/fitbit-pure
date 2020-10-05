@@ -1,7 +1,7 @@
 // import { me as companion } from 'companion';
 import { peerSocket } from 'messaging';
-import { settingsStorage } from 'settings';
 import { device } from 'peer';
+import { settingsStorage } from 'settings';
 import { Config, ConfigIpcMessage, defaultConfig, IpcMessage } from '../common/config';
 import { addEventListener, Disposable } from '../common/system';
 
@@ -42,7 +42,7 @@ export class Configuration {
 					settingsStorage.setItem('donated', msg.data.donated.toString());
 
 					this._disposable = addEventListener(settingsStorage, 'change', e =>
-						this.onSettingsStorageChanged(e)
+						this.onSettingsStorageChanged(e),
 					);
 				}
 			}
@@ -123,8 +123,8 @@ export class Configuration {
 			type: 'config',
 			data: {
 				key: key,
-				value: value != null ? JSON.parse(value) : value
-			}
+				value: value != null ? JSON.parse(value) : value,
+			},
 		};
 		peerSocket.send(msg);
 
