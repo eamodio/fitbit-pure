@@ -2,15 +2,19 @@ import { battery, Battery } from 'power';
 import document from 'document';
 import { display } from 'display';
 import { ConfigChangeEvent, configuration } from './configuration';
-import { debounce, defer } from '../common/system';
+import { addEventListener, debounce, defer, Disposable } from '../common/system';
 import { AppEvent, appManager } from './appManager';
 
-export class BatteryDisplay {
-	constructor() {
-		battery.addEventListener('change', () => this.onBatteryChanged(battery));
+export class BatteryDisplay implements Disposable {
+	private disposed: boolean = false;
+	private readonly disposable: Disposable;
 
-		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
-		configuration.onDidChange(this.onConfigurationChanged, this);
+	constructor() {
+		this.disposable = Disposable.from(
+			configuration.onDidChange(this.onConfigurationChanged, this),
+			appManager.onDidTriggerAppEvent(this.onAppEvent, this),
+			addEventListener(battery, 'change', () => this.onBatteryChanged(battery)),
+		);
 
 		this.onConfigurationChanged();
 
@@ -19,8 +23,13 @@ export class BatteryDisplay {
 		}
 	}
 
+	dispose(): void {
+		this.disposed = true;
+		this.disposable.dispose();
+	}
+
 	private onAppEvent(e: AppEvent) {
-		if (e.type !== 'display') return;
+		if (this.disposed || e.type !== 'display') return;
 
 		if (e.display.on && !e.display.aodActive) {
 			this.render();
@@ -29,10 +38,13 @@ export class BatteryDisplay {
 
 	@debounce(500)
 	private onBatteryChanged(_sensor: Battery) {
+		if (this.disposed) return;
+
 		this.render();
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
+		if (this.disposed) return;
 		if (e?.key != null && e.key !== 'showBatteryPercentage') return;
 
 		document.getElementById<TextElement>('bat-level')!.style.display = configuration.get('showBatteryPercentage')
@@ -42,6 +54,8 @@ export class BatteryDisplay {
 
 	@defer()
 	private render() {
+		if (this.disposed) return;
+
 		const level = Math.floor(battery.chargeLevel) ?? 0;
 
 		document.getElementById<TextElement>('bat-level')!.text = `${level > 0 ? level : '--'}`;

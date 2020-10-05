@@ -1,10 +1,7 @@
 import { me as app } from 'appbit';
 import { display } from 'display';
+import { appManager } from './appManager';
 // import { memory } from 'system';
-import { ActivityDisplay } from './activity';
-import { BatteryDisplay } from './battery';
-import { HeartRateDisplay } from './heartRate';
-import { TimeDisplay } from './time';
 
 // setInterval(
 // 	() =>
@@ -19,7 +16,4 @@ if (display.aodAvailable && app.permissions.granted('access_aod')) {
 	display.aodAllowed = true;
 }
 
-new TimeDisplay();
-new BatteryDisplay();
-new HeartRateDisplay();
-new ActivityDisplay();
+appManager.start();

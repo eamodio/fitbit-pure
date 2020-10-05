@@ -1,6 +1,6 @@
 <svg class="theme--pure">
 	<animate attributeName="x" from="100%" to="0" begin="load" dur="0.5" easing="ease-in-out" />
-	<svg id="donate-popup">
+	<svg id="donate-view">
 		<defs>
 			<symbol id="tumblerview-digit">
 				<use id="code" href="#tumblerview">

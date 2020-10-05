@@ -2,49 +2,43 @@ import document from 'document';
 import { AppEvent, AppManager } from './appManager';
 import { addEventListener, Disposable } from '../common/system';
 
-export class DonatePopup implements Disposable {
+export class DonateView implements Disposable {
 	private disposable: Disposable | undefined;
+	private accepted = false;
+	private resolver: ((value?: boolean | PromiseLike<boolean> | undefined) => void) | undefined;
 
-	constructor(private readonly appManager: AppManager) {
-		this.disposable = Disposable.from(
-			this.appManager.onDidTriggerAppEvent(this.onAppEvent, this),
-			addEventListener(this.$backButton, 'click', () => this.onBackButtonClick()),
-			addEventListener(this.$nextButton, 'click', () => this.onNextButtonClick()),
-			addEventListener(document, 'unload', () => this.dispose()),
-		);
-	}
+	constructor(private readonly appManager: AppManager) {}
 
 	dispose(): void {
+		this.resolver?.(this.accepted);
 		this.disposable?.dispose();
 	}
 
 	private get $backButton(): TextButtonElement {
-		return this.$popup.getElementById<TextButtonElement>('back-button')!;
+		return this.$view.getElementById<TextButtonElement>('back-button')!;
 	}
 
 	private get $nextButton(): TextButtonElement {
-		return this.$popup.getElementById<TextButtonElement>('next-button')!;
+		return this.$view.getElementById<TextButtonElement>('next-button')!;
 	}
 
-	private get $popup(): GroupElement {
-		return document.getElementById<GroupElement>('donate-popup')!;
+	private get $view(): GroupElement {
+		return document.getElementById<GroupElement>('donate-view')!;
 	}
 
 	private get $steps(): GroupElement[] {
-		return this.$popup.getElementsByClassName<GroupElement>('donate-step')!;
+		return this.$view.getElementsByClassName<GroupElement>('donate-step')!;
 	}
 
 	private onAppEvent(e: AppEvent) {
 		if (e.type !== 'display') return;
 
 		if (!e.display.on || e.display.aodActive) {
-			this.close();
+			this.dispose();
 		}
 	}
 
 	private onBackButtonClick() {
-		console.log('DonatePopup:close');
-
 		const $steps = this.$steps;
 		if ($steps[0].style.display === 'none') {
 			$steps[0].style.display = 'inline';
@@ -55,7 +49,7 @@ export class DonatePopup implements Disposable {
 			return;
 		}
 
-		this.close();
+		this.dispose();
 	}
 
 	private onNextButtonClick() {
@@ -69,7 +63,7 @@ export class DonatePopup implements Disposable {
 			return;
 		}
 
-		const $popup = this.$popup;
+		const $popup = this.$view;
 		const $tumblers = [
 			$popup.getElementById<TumblerViewElement>('code1')!,
 			$popup.getElementById<TumblerViewElement>('code2')!,
@@ -85,25 +79,24 @@ export class DonatePopup implements Disposable {
 		}
 	}
 
-	async close() {
-		console.log('DonatePopup:close');
+	show(): Promise<boolean> {
+		// eslint-disable-next-line no-async-promise-executor
+		return new Promise<boolean>(async resolve => {
+			this.resolver = resolve;
+			await document.location.replace('./resources/donate.view');
 
-		await document.location.replace('index.view');
-
-		// document.history.go(-1);
-		// this.$popup.style.display = 'none';
-		// this.dispose();
-	}
-
-	show() {
-		console.log('DonatePopup:show');
-
-		// this.$popup.style.display = 'inline';
+			this.disposable = Disposable.from(
+				this.appManager.onDidTriggerAppEvent(this.onAppEvent, this),
+				addEventListener(this.$backButton, 'click', () => this.onBackButtonClick()),
+				addEventListener(this.$nextButton, 'click', () => this.onNextButtonClick()),
+				addEventListener(document, 'unload', () => this.dispose()),
+			);
+		});
 	}
 
 	private accept() {
-		this.appManager.donated = true;
-		this.close();
+		this.accepted = true;
+		this.dispose();
 	}
 
 	private reject() {

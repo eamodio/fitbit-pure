@@ -6,9 +6,7 @@ import { locale, preferences } from 'user-settings';
 import document from 'document';
 import { AppEvent, appManager } from './appManager';
 import { ConfigChangeEvent, configuration } from './configuration';
-import { defer } from '../common/system';
-
-const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
+import { addEventListener, defer, Disposable } from '../common/system';
 
 const screenWidth = device.screen.width;
 const digitWidth = 66;
@@ -23,7 +21,9 @@ enum Previous {
 	Month = 3,
 }
 
-export class TimeDisplay {
+export class TimeDisplay implements Disposable {
+	private disposed: boolean = false;
+	private readonly disposable: Disposable;
 	private date: Date | undefined;
 	private previous: Int8Array = new Int8Array(4);
 	private readonly $seconds: TextElement;
@@ -31,10 +31,11 @@ export class TimeDisplay {
 	constructor() {
 		this.$seconds = document.getElementById<TextElement>('time-secs')!;
 
-		clock.addEventListener('tick', e => this.onTick(e));
-
-		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
-		configuration.onDidChange(this.onConfigurationChanged, this);
+		this.disposable = Disposable.from(
+			configuration.onDidChange(this.onConfigurationChanged, this),
+			appManager.onDidTriggerAppEvent(this.onAppEvent, this),
+			addEventListener(clock, 'tick', e => this.onTick(e)),
+		);
 
 		if (display.aodAvailable) {
 			const aodOpacity = configuration.get('aodOpacity');
@@ -47,7 +48,14 @@ export class TimeDisplay {
 		this.onConfigurationChanged();
 	}
 
+	dispose(): void {
+		this.disposed = true;
+		this.disposable.dispose();
+	}
+
 	private onAppEvent(e: AppEvent) {
+		if (this.disposed) return;
+
 		switch (e.type) {
 			case 'display': {
 				if (
@@ -85,6 +93,7 @@ export class TimeDisplay {
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
+		if (this.disposed) return;
 		if (
 			e?.key != null &&
 			e.key !== 'animateSeparator' &&
@@ -133,6 +142,8 @@ export class TimeDisplay {
 	}
 
 	private onTick({ date }: TickEvent) {
+		if (this.disposed) return;
+
 		this.date = date;
 		this.renderCore();
 	}
@@ -143,7 +154,9 @@ export class TimeDisplay {
 	}
 
 	private renderCore(force: boolean = false) {
-		const date = this.date ?? emptyDate;
+		if (this.disposed) return;
+
+		const date = this.date ?? new Date();
 
 		if (configuration.get('showSeconds') && !display.aodActive) {
 			this.$seconds.text = `${toMonospaceDigits(date.getSeconds(), true)}s`;

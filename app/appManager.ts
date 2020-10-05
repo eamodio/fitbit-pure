@@ -2,9 +2,13 @@ import { me as device } from 'device';
 import { display, Display } from 'display';
 import document from 'document';
 import { vibration } from 'haptics';
-import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
+import { ActivityDisplay } from './activity';
+import { BatteryDisplay } from './battery';
 import { Colors, ConfigChangeEvent, configuration } from './configuration';
-import { DonatePopup } from './popup';
+import { DonateView } from './donateView';
+import { HeartRateDisplay } from './heartRate';
+import { TimeDisplay } from './time';
+import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
 
 const screenHeight = device.screen.height;
 const screenWidth = device.screen.width;
@@ -98,20 +102,9 @@ export class AppManager {
 	private mouseClickCancelTimer: number | undefined;
 	private mouseDownDisposable: Disposable | undefined;
 	private mouseDownTimer: number | undefined;
+	private $trigger!: RectElement;
 
-	constructor(private readonly $trigger: RectElement) {
-		display.addEventListener('change', () => this.onDisplayChanged(display));
-		configuration.onDidChange(this.onConfigurationChanged, this);
-
-		this.$trigger.addEventListener('click', e => this.onMouseClick(e));
-		this.$trigger.addEventListener('mousedown', e => this.onMouseDown(e));
-		this.$trigger.addEventListener('mouseup', e => this.onMouseUp(e));
-
-		this.onConfigurationChanged();
-
-		// DEMO MODE
-		// this.demo();
-	}
+	constructor() {}
 
 	get donated(): boolean {
 		return configuration.get('donated');
@@ -130,7 +123,7 @@ export class AppManager {
 		if (this._editing === value) return;
 
 		if (value && !this.donated) {
-			void this.showDonatePopup();
+			void this.showDonateView();
 
 			return;
 		}
@@ -152,16 +145,45 @@ export class AppManager {
 		this._onDidTriggerAppEvent.fire(e);
 	}
 
-	async showDonatePopup() {
-		// requestAnimationFrame(() => {
-		// 	const popup = new DonatePopup(this);
-		// 	popup.show();
-		// });
+	private disposable: Disposable | undefined;
+	start() {
+		this.disposable?.dispose();
 
-		console.log(`showDonatePopup: views=${document.history.length}`);
-		await document.location.replace('donate.view');
-		console.log(`showDonatePopup:loaded views=${document.history.length}`);
-		new DonatePopup(this);
+		this.$trigger = document.getElementById<RectElement>('trigger')!;
+
+		this.disposable = Disposable.from(
+			configuration.onDidChange(this.onConfigurationChanged, this),
+
+			addEventListener(display, 'change', () => this.onDisplayChanged(display)),
+
+			addEventListener(this.$trigger, 'click', e => this.onMouseClick(e)),
+			addEventListener(this.$trigger, 'mousedown', e => this.onMouseDown(e)),
+			addEventListener(this.$trigger, 'mouseup', e => this.onMouseUp(e)),
+
+			new TimeDisplay(),
+			new BatteryDisplay(),
+			new HeartRateDisplay(),
+			new ActivityDisplay(),
+		);
+
+		this.onConfigurationChanged();
+
+		// DEMO MODE
+		// this.demo();
+	}
+
+	async showDonateView() {
+		this.disposable?.dispose();
+		const view = new DonateView(this);
+		try {
+			const donated = await view.show();
+			if (donated) {
+				appManager.donated = true;
+			}
+		} finally {
+			await document.location.replace('./resources/index.view');
+			this.start();
+		}
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
@@ -190,7 +212,6 @@ export class AppManager {
 				$donateButton.style.visibility = 'hidden';
 
 				if (this.donateDisposable != null) {
-					console.log('donate:dispose');
 					this.donateDisposable.dispose();
 					this.donateDisposable = undefined;
 				}
@@ -276,7 +297,7 @@ export class AppManager {
 	}
 
 	private onDonateClicked() {
-		void this.showDonatePopup();
+		void this.showDonateView();
 	}
 
 	private onMouseClick(e: MouseEvent) {
@@ -375,7 +396,6 @@ export class AppManager {
 				y: screenHeight / 4,
 			})
 		) {
-			console.log('cancel down');
 			return;
 		}
 
@@ -572,4 +592,5 @@ function isWithinBounds(
 		e.screenY <= y + tolerance.y
 	);
 }
-export const appManager = new AppManager(document.getElementById<RectElement>('trigger')!);
+
+export const appManager = new AppManager();

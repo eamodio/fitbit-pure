@@ -7,9 +7,11 @@ import { user } from 'user-profile';
 import { gettext } from 'i18n';
 import { AppEvent, appManager } from './appManager';
 import { ConfigChangeEvent, configuration } from './configuration';
-import { debounce, defer } from '../common/system';
+import { addEventListener, debounce, defer, Disposable } from '../common/system';
 
-export class HeartRateDisplay {
+export class HeartRateDisplay implements Disposable {
+	private disposed: boolean = false;
+	private readonly disposable: Disposable | undefined;
 	private readonly bodyPresenceSensor: BodyPresenceSensor | undefined;
 	private readonly heartRateSensor: HeartRateSensor | undefined;
 	private readonly hasUserProfileAccess: boolean;
@@ -28,8 +30,11 @@ export class HeartRateDisplay {
 		const sensor = new HeartRateSensor({ frequency: 5 });
 		this.heartRateSensor = sensor;
 
-		sensor.addEventListener('activate', () => this.onHeartRateChanged(sensor));
-		sensor.addEventListener('reading', () => this.onHeartRateChanged(sensor));
+		const disposables = [
+			configuration.onDidChange(this.onConfigurationChanged, this),
+			addEventListener(sensor, 'activate', () => this.onHeartRateChanged(sensor)),
+			addEventListener(sensor, 'reading', () => this.onHeartRateChanged(sensor)),
+		];
 
 		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 
@@ -37,19 +42,30 @@ export class HeartRateDisplay {
 			const sensor = new BodyPresenceSensor();
 			this.bodyPresenceSensor = sensor;
 
-			sensor.addEventListener('activate', () => this.onBodyPresenceChanged(sensor));
-			sensor.addEventListener('reading', () => this.onBodyPresenceChanged(sensor));
+			disposables.push(
+				addEventListener(sensor, 'activate', () => this.onBodyPresenceChanged(sensor)),
+				addEventListener(sensor, 'reading', () => this.onBodyPresenceChanged(sensor)),
+			);
 		} else {
 			this.isOnBody = true;
 		}
 
-		configuration.onDidChange(this.onConfigurationChanged, this);
+		this.disposable = Disposable.from(...disposables);
 
 		this.onConfigurationChanged();
 		this.updateState();
 	}
 
+	dispose(): void {
+		this.disposed = true;
+		this.disposable?.dispose();
+
+		this.stopAnimation();
+	}
+
 	private onAppEvent(e: AppEvent) {
+		if (this.disposed) return;
+
 		switch (e.type) {
 			case 'display': {
 				this.updateState();
@@ -64,11 +80,14 @@ export class HeartRateDisplay {
 
 	@debounce(250)
 	private onBodyPresenceChanged(sensor: BodyPresenceSensor) {
+		if (this.disposed) return;
+
 		this.isOnBody = sensor.present ?? undefined;
 		this.updateState();
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
+		if (this.disposed) return;
 		if (
 			e?.key != null &&
 			e.key !== 'animateHeartRate' &&
@@ -113,7 +132,7 @@ export class HeartRateDisplay {
 
 	@debounce(100)
 	private onHeartRateChanged(sensor: HeartRateSensor) {
-		if (this.rate === sensor.heartRate) return;
+		if (this.disposed || this.rate === sensor.heartRate) return;
 
 		this.rate = sensor.heartRate ?? undefined;
 		this.render();
@@ -121,6 +140,8 @@ export class HeartRateDisplay {
 
 	@defer()
 	private render() {
+		if (this.disposed) return;
+
 		let rate = appManager.editing ? 0 : this.rate;
 		if (rate == null) {
 			const timestamp = this.heartRateSensor?.activated ? this.heartRateSensor?.timestamp ?? 0 : 0;
@@ -149,21 +170,23 @@ export class HeartRateDisplay {
 		}
 	}
 
-	private _animationHandle: number | undefined;
-	private _animationInterval: number | undefined;
+	private animationHandle: number | undefined;
+	private animationInterval: number | undefined;
 
 	private startAnimation(rate: number) {
+		if (this.disposed) return;
+
 		const animate = configuration.get('animateHeartRate');
 		if (!animate) return;
 
 		// console.log(`HeartRateDisplay.startAnimation: rate=${rate}, animation=${animation}`);
 
 		const interval = Math.round(1000 / (rate / 60) / 50) * 50;
-		if (interval === this._animationInterval) return;
+		if (interval === this.animationInterval) return;
 
-		this._animationInterval = interval;
-		if (this._animationHandle !== undefined) {
-			clearInterval(this._animationHandle);
+		this.animationInterval = interval;
+		if (this.animationHandle != null) {
+			clearInterval(this.animationHandle);
 		}
 
 		const $container = document.getElementById<GraphicsElement>('hr-icon')!.parent!;
@@ -177,21 +200,23 @@ export class HeartRateDisplay {
 		// }
 		// $container.animate('enable');
 
-		this._animationHandle = setInterval(() => $container.animate('enable'), interval);
+		this.animationHandle = setInterval(() => $container.animate('enable'), interval);
 	}
 
 	private stopAnimation() {
-		if (this._animationHandle !== undefined) {
-			clearInterval(this._animationHandle);
-			this._animationHandle = undefined;
+		if (this.animationHandle != null) {
+			clearInterval(this.animationHandle);
+			this.animationHandle = undefined;
 		}
-		this._animationInterval = undefined;
+		this.animationInterval = undefined;
+
+		if (this.disposed) return;
 
 		document.getElementById<GraphicsElement>('hr-icon')!.parent!.animate('disable');
 	}
 
 	private updateState() {
-		if (this.heartRateSensor == null) return;
+		if (this.disposed || this.heartRateSensor == null) return;
 
 		if (!display.on || display.aodActive) {
 			// console.log(`HeartRateDisplay.updateState: display.on=${display.on}; stopping sensors...`);

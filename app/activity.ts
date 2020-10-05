@@ -6,7 +6,7 @@ import { goals, Goals, today } from 'user-activity';
 import { units } from 'user-settings';
 import { display } from 'display';
 import { ActivityViewChangeEvent, ActivityViews, AppEvent, appManager } from './appManager';
-import { defer } from '../common/system';
+import { addEventListener, defer, Disposable } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
 
 const meterToMile = 0.000621371192;
@@ -30,7 +30,9 @@ enum Side {
 	Right = 1,
 }
 
-export class ActivityDisplay {
+export class ActivityDisplay implements Disposable {
+	private disposed: boolean = false;
+	private readonly disposable: Disposable | undefined;
 	private readonly activities: Activity[] = [
 		{
 			names: ['steps', 'distance'],
@@ -48,19 +50,29 @@ export class ActivityDisplay {
 
 		if (!app.permissions.granted('access_activity')) return;
 
-		// Don't bother listening for cycleview updates, as they are somewhat unreliable -- e.g. won't fire if a view is cycled back to itself
-		// this.$view.addEventListener('select', () => this.onViewChanged(this.getView()));
+		this.disposable = Disposable.from(
+			configuration.onDidChange(this.onConfigurationChanged, this),
+			appManager.onDidTriggerAppEvent(this.onAppEvent, this),
 
-		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
-		configuration.onDidChange(this.onConfigurationChanged, this);
+			// Don't bother listening for cycleview updates, as they are somewhat unreliable -- e.g. won't fire if a view is cycled back to itself
+			// addEventListener(this.$view, 'select', () => this.onViewChanged(this.getView())),
 
-		goals.addEventListener('reachgoal', () => this.onGoalReached(goals));
+			addEventListener(goals, 'reachgoal', () => this.onGoalReached(goals)),
+		);
 
 		this.setView(configuration.get('currentActivityView'), undefined, true);
 		this.onConfigurationChanged();
 	}
 
+	dispose(): void {
+		this.disposed = true;
+		this.disposable?.dispose();
+		clearInterval(this.autoRotateHandle);
+	}
+
 	private onAppEvent(e: AppEvent) {
+		if (this.disposed) return;
+
 		switch (e.type) {
 			case 'display': {
 				if (e.display.on && !e.display.aodActive) {
@@ -70,7 +82,7 @@ export class ActivityDisplay {
 						document.getElementById<ArcElement>(`rstat${i}-progress`)!.sweepAngle = 0;
 					}
 
-					if (!this._autoRotateOverride && configuration.get('autoRotate')) {
+					if (!this.autoRotateOverride && configuration.get('autoRotate')) {
 						this.setAutoRotate(true);
 					} else {
 						if (this.getView() === ActivityViews.Date) return;
@@ -110,6 +122,7 @@ export class ActivityDisplay {
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
+		if (this.disposed) return;
 		if (
 			e?.key != null &&
 			e.key !== 'autoRotate' &&
@@ -176,6 +189,8 @@ export class ActivityDisplay {
 	}
 
 	private onGoalReached(goals: Goals) {
+		if (this.disposed) return;
+
 		let view: ActivityViews;
 
 		if (
@@ -198,13 +213,15 @@ export class ActivityDisplay {
 		if (display.on && !display.aodActive) {
 			this.setAutoRotate(false);
 		} else {
-			this._autoRotateOverride = true;
+			this.autoRotateOverride = true;
 		}
 		this.setView(view, 'nudge');
 		display.on = true;
 	}
 
 	private onViewChanged(e: ActivityViewChangeEvent, initializing: boolean = false) {
+		if (this.disposed) return;
+
 		configuration.set('currentActivityView', e.view);
 
 		if (
@@ -226,6 +243,8 @@ export class ActivityDisplay {
 
 	@defer()
 	private render() {
+		if (this.disposed) return;
+
 		const view = this.getView() - 1;
 		if (view === -1) return;
 
@@ -333,19 +352,19 @@ export class ActivityDisplay {
 		$animate.to = goal != null ? 360 : 0;
 	}
 
-	private _autoRotateHandle: number = 0;
-	private _autoRotateOverride = false;
+	private autoRotateHandle: number = 0;
+	private autoRotateOverride = false;
 
 	private setAutoRotate(enabled: boolean) {
-		clearInterval(this._autoRotateHandle);
-		this._autoRotateHandle = 0;
-		this._autoRotateOverride = false;
+		clearInterval(this.autoRotateHandle);
+		this.autoRotateHandle = 0;
+		this.autoRotateOverride = false;
 
-		if (!enabled || !display.on || display.aodActive) return;
+		if (this.disposed || !enabled || !display.on || display.aodActive) return;
 
 		this.setView(ActivityViews.Date);
 
-		this._autoRotateHandle = setInterval(
+		this.autoRotateHandle = setInterval(
 			() => this.setView(this.getView() + 1),
 			configuration.get('autoRotateInterval'),
 		);
