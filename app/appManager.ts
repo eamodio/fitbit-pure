@@ -331,7 +331,7 @@ export class AppManager {
 				configuration.get('showDayOnDateHide') &&
 				configuration.get('currentActivityView') === ActivityViews.Date
 			) {
-				document.getElementById<TextElement>('day-of-week')!.parent!.animate('disable');
+				document.getElementById<GroupElement>('day')!.animate('disable');
 			}
 		} else if (e.screenX >= 236 && e.screenY <= 64) {
 			vibration.start('bump');

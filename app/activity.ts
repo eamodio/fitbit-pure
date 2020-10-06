@@ -165,8 +165,8 @@ export class ActivityDisplay implements Disposable {
 
 		if (e?.key == null || e?.key === 'showDayOnDateHide') {
 			document
-				.getElementById<GroupElement>('day-of-week')!
-				.parent!.animate(
+				.getElementById<GroupElement>('day')!
+				.animate(
 					configuration.get('showDayOnDateHide') && this.getView() !== ActivityViews.Date
 						? 'select'
 						: 'unselect',
@@ -231,8 +231,8 @@ export class ActivityDisplay implements Disposable {
 				(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
 		) {
 			document
-				.getElementById<GroupElement>('day-of-week')!
-				.parent!.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
+				.getElementById<GroupElement>('day')!
+				.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
 		}
 
 		appManager.fire(e);

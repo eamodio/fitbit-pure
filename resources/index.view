@@ -23,7 +23,7 @@
 				y="20"
 			/>
 
-			<g opacity="0">
+			<g id="day" opacity="0">
 				<text
 					id="day-of-week"
 					class="text text--sm text--caps secondary"
@@ -456,6 +456,4 @@
 	-->
 
 	<rect id="trigger" x="0" y="0" height="100%" width="100%" layer="100" pointer-events="visible" fill="none" />
-
-	<!-- <use id="donate-popup" href="#donate-popup" layer="200" pointer-events="visible" display="none" overflow="hidden" /> -->
 </svg>
