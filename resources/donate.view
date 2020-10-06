@@ -47,17 +47,25 @@
 		<rect x="0" y="0" height="100%" width="100%" fill="fb-black" />
 
 		<g class="donate-step">
-			<text class="text text--sm-plus" x="50%" y="48" text-anchor="middle" text-buffer="Please donate at" />
-			<text class="text--extra-bold text--xl" x="50%" y="$+11" text-anchor="middle" text-buffer="pure.amod.io" />
-			<textarea class="text text--sm-plus" x="0" y="$-32" width="100%-10" height="140" text-anchor="middle">
-				to get access to PRO features — activity stats, theming, &amp; on-device quick toggles.
+			<text class="text text--sm-plus" x="50%" y="48" text-anchor="middle" text-buffer="Please go to" />
+			<text
+				class="text--extra-bold text--xl"
+				x="50%"
+				y="$+12"
+				text-anchor="middle"
+				text-buffer="pure.amod.io"
+				fill="fb-orange"
+			/>
+			<textarea class="text text--sm-plus" x="0" y="$-40" width="100%-10" height="140" text-anchor="middle">
+				to donate and get access to PRO features — activity stats, theming, &amp; on-device quick toggles.
 			</textarea>
 		</g>
 
 		<g class="donate-step" display="none">
-			<text class="text text--sm-plus" x="50%" y="40" text-anchor="middle" text-buffer="Enter donation code" />
+			<text class="text text--sm text--caps" x="50%" y="22" text-anchor="middle" text-buffer="Enter code from" />
+			<text class="text--extra-bold text--sm" x="50%" y="45" text-anchor="middle" text-buffer="pure.amod.io" />
 
-			<section y="$-10">
+			<section y="$-20">
 				<use href="#tumblerview-digit" x="10" y="0">
 					<set href="code" attributeName="id" to="code1" />
 				</use>
