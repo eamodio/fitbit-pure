@@ -56,7 +56,7 @@
 				text-buffer="pure.amod.io"
 				fill="fb-orange"
 			/>
-			<textarea class="text text--sm-plus" x="0" y="$-40" width="100%-10" height="140" text-anchor="middle">
+			<textarea class="text text--sm-plus" x="0" y="$-40" width="100%" height="140" text-anchor="middle">
 				to donate and get access to PRO features — activity stats, theming, &amp; on-device quick toggles.
 			</textarea>
 		</g>
