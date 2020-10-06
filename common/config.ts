@@ -65,7 +65,7 @@ export const defaultConfig: Config = {
 	showLeadingZero: true,
 	showRestingHeartRate: false,
 	showSeconds: false,
-	currentActivityView: 0
+	currentActivityView: 0,
 };
 
 export interface ConfigIpcMessage {

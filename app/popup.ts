@@ -8,7 +8,7 @@ export class DonatePopup implements Disposable {
 	constructor(private readonly appManager: AppManager) {
 		this._disposable = Disposable.from(
 			this.appManager.onDidTriggerAppEvent(this.onAppEvent, this),
-			addEventListener(this.$button, 'click', () => this.onButtonClick())
+			addEventListener(this.$button, 'click', () => this.onButtonClick()),
 		);
 	}
 
@@ -53,14 +53,11 @@ export class DonatePopup implements Disposable {
 		const $tumblers = [
 			$popup.getElementById<TumblerViewElement>('code1')!,
 			$popup.getElementById<TumblerViewElement>('code2')!,
-			$popup.getElementById<TumblerViewElement>('code3')!
+			$popup.getElementById<TumblerViewElement>('code3')!,
 		];
 
 		const date = new Date();
-		const value = `${date
-			.getUTCFullYear()
-			.toString()
-			.substr(2)}${date.getUTCMonth().toString(16)}`;
+		const value = `${date.getUTCFullYear().toString().substr(2)}${date.getUTCMonth().toString(16)}`;
 		if ($tumblers.every(($, index) => $.value === Number(value[index]))) {
 			this.accept();
 		} else {

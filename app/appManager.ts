@@ -27,7 +27,7 @@ const colors: Colors[] = [
 	'fb-yellow',
 	'fb-lime',
 	'fb-mint',
-	'fb-green'
+	'fb-green',
 ];
 
 const opacities = new Float32Array([
@@ -52,14 +52,14 @@ const opacities = new Float32Array([
 	0.35, // fb-yellow
 	0.35, // fb-lime
 	0.35, // fb-mint
-	0.5 // fb-green
+	0.5, // fb-green
 ]);
 
 export enum ActivityViews {
 	Date = 0,
 	Activity1 = 1,
 	Activity2 = 2,
-	Donate = 3
+	Donate = 3,
 }
 
 export interface ActivityViewChangeEvent {
@@ -337,7 +337,7 @@ export class AppManager {
 		document.getElementById<GroupElement>('editable-overlay')!.animate('enable');
 	}
 
-	private onMouseDown(e: MouseEvent) {
+	private onMouseDown(_e: MouseEvent) {
 		this.clearEditingTimer();
 
 		if (this._mouseClickCancelTimer != null) {
@@ -350,7 +350,7 @@ export class AppManager {
 		// When there is a swipe (up/down/left/right) on the clock face, no mouseup is fired,
 		// but the parent element seems to get a "reload" event when this happens (but only on the device)
 		// So when we get a "reload" cancel any pending timer
-		this._mouseDownDisposable = addEventListener(this.$trigger.parent!, 'reload', e => this.clearEditingTimer());
+		this._mouseDownDisposable = addEventListener(this.$trigger.parent!, 'reload', () => this.clearEditingTimer());
 
 		this._mouseDownTimer = setTimeout(() => {
 			this._mouseDownTimer = undefined;
@@ -365,7 +365,7 @@ export class AppManager {
 		}, 1000);
 	}
 
-	private onMouseUp(e: MouseEvent) {
+	private onMouseUp(_e: MouseEvent) {
 		this.clearEditingTimer();
 	}
 

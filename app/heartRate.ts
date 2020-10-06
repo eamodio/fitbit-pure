@@ -114,14 +114,14 @@ export class HeartRateDisplay {
 				document.getElementById<ImageElement>('hr-icon')!.style.fill = color;
 			} else {
 				document.getElementById<ImageElement>('hr-icon')!.style.fill = configuration.get(
-					'accentForegroundColor'
+					'accentForegroundColor',
 				);
 			}
 		}
 
 		if (e?.key == null || e.key === 'showRestingHeartRate') {
 			document.getElementById<TextElement>('hr-resting')!.style.display = configuration.get(
-				'showRestingHeartRate'
+				'showRestingHeartRate',
 			)
 				? 'inline'
 				: 'none';

@@ -18,7 +18,7 @@ const activityToColor = {
 	steps: 'fb-cyan',
 	calories: 'fb-orange',
 	distance: 'fb-purple',
-	activeMinutes: 'fb-mint'
+	activeMinutes: 'fb-mint',
 };
 
 type Activities = 'activeMinutes' | 'calories' | 'distance' | 'steps';
@@ -30,19 +30,19 @@ interface Activity {
 
 enum Side {
 	Left = 0,
-	Right = 1
+	Right = 1,
 }
 
 export class ActivityDisplay {
 	private readonly activities: Activity[] = [
 		{
 			names: ['steps', 'distance'],
-			goalReached: [false, false]
+			goalReached: [false, false],
 		},
 		{
 			names: ['activeMinutes', 'calories'],
-			goalReached: [false, false]
-		}
+			goalReached: [false, false],
+		},
 	];
 	private readonly $view: GroupElement;
 
@@ -159,7 +159,7 @@ export class ActivityDisplay {
 				.parent!.animate(
 					configuration.get('showDayOnDateHide') && this.getView() !== ActivityViews.Date
 						? 'select'
-						: 'unselect'
+						: 'unselect',
 				);
 
 			if (e?.key === 'showDayOnDateHide') return;
@@ -354,7 +354,7 @@ export class ActivityDisplay {
 
 		this._autoRotateHandle = setInterval(
 			() => this.setView(this.getView() + 1),
-			configuration.get('autoRotateInterval')
+			configuration.get('autoRotateInterval'),
 		);
 	}
 

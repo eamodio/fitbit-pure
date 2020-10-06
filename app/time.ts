@@ -15,7 +15,7 @@ enum Previous {
 	Minutes = 0,
 	Hours = 1,
 	Day = 2,
-	Month = 3
+	Month = 3,
 }
 
 export class TimeDisplay {
@@ -320,7 +320,7 @@ const suffixes = [
 	gettext('ordinal_suffix_0'),
 	gettext('ordinal_suffix_1'),
 	gettext('ordinal_suffix_2'),
-	gettext('ordinal_suffix_3')
+	gettext('ordinal_suffix_3'),
 ];
 
 function getOrdinalSuffix(num: number): string {
@@ -331,7 +331,7 @@ function getOrdinalSuffix(num: number): string {
 const chars = String.fromCharCode(0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19);
 
 function toMonospaceDigits(num: number, pad = true): string {
-	let digits;
+	let digits: string;
 	if (pad && num < 10) {
 		digits = chars[0] + chars[num];
 	} else {

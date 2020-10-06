@@ -1,7 +1,7 @@
 {
 	"name": "fitbit-pure",
 	"displayName": "Pure Fitbit Clock",
-	"description": "A beautifully designed, highly customizable, clean, and simple clock face for Fitbit Versa devices",
+	"description": "A beautifully designed, customizable, clean and simple clock face for Fitbit Sense & Versa devices",
 	"version": "1.1.1",
 	"author": {
 		"name": "Eric Amodio",
@@ -42,27 +42,26 @@
 	},
 	"scripts": {
 		"build": "fitbit-build",
-		"fitbit": "fitbit",
 		"generate-fonts:light": "npx fitfont-generate fonts/SourceSansPro-ExtraLight.ttf 140 \"0123456789:\"",
 		"generate-fonts:normal": "npx fitfont-generate fonts/SourceSansPro-SemiBold.ttf 120 \"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ @$:~%#.,-+?[]\"",
 		"generate-colors": "node scripts/colors.js",
 		"grayscale": "magick mogrify -colorspace gray",
 		"lint": "eslint **/*.ts --fix",
-		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\""
+		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json,gui}\""
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@fitbit/sdk": "4.1.0",
-		"@fitbit/sdk-cli": "1.7.1",
-		"@typescript-eslint/eslint-plugin": "2.22.0",
-		"@typescript-eslint/parser": "2.22.0",
+		"@fitbit/sdk": "4.2.1",
+		"@fitbit/sdk-cli": "1.7.3",
+		"@typescript-eslint/eslint-plugin": "4.4.0",
+		"@typescript-eslint/parser": "4.4.0",
 		"chroma-js": "2.1.0",
-		"eslint": "6.8.0",
+		"eslint": "7.10.0",
 		"eslint-cli": "1.1.1",
-		"eslint-config-prettier": "6.10.0",
-		"eslint-plugin-import": "2.20.1",
-		"fitbit-sdk-types": "4.3.5",
-		"fitfont": "1.3.1",
-		"prettier": "1.19.1"
+		"eslint-config-prettier": "6.12.0",
+		"eslint-plugin-import": "2.22.1",
+		"fitbit-sdk-types": "5.0.0",
+		"fitfont": "1.3.3",
+		"prettier": "2.1.2"
 	}
 }

@@ -28,7 +28,7 @@ export class BatteryDisplay {
 	}
 
 	@debounce(500)
-	private onBatteryChanged(sensor: Battery) {
+	private onBatteryChanged(_sensor: Battery) {
 		this.render();
 	}
 
@@ -47,7 +47,7 @@ export class BatteryDisplay {
 		document.getElementById<TextElement>('bat-level')!.text = `${level > 0 ? level : '--'}%`;
 
 		const $indicator = document.getElementById<LineElement>('bat-indicator')!;
-		$indicator.x2 = $indicator.x1 + Math.round(level * 0.23);
+		$indicator.x2 = ($indicator.x1 as number) + Math.round(level * 0.23);
 
 		if (battery.charging) {
 			$indicator.style.fill = 'fb-black';

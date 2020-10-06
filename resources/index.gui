@@ -10,20 +10,50 @@
 
 	<g id="top-bar">
 		<!-- <section id="bat-disp"> -->
-			<line id="bat-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
-			<image id="bat-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
-			<text id="bat-level" class="text--bold text--sm secondary" text-anchor="start" text-length="4" x="$+10" y="21" />
-			<!-- <text id="bat-until-charged" class="text text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" /> -->
+		<line id="bat-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
+		<image id="bat-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
+		<text
+			id="bat-level"
+			class="text--bold text--sm secondary"
+			text-anchor="start"
+			text-length="4"
+			x="$+10"
+			y="21"
+		/>
+		<!-- <text id="bat-until-charged" class="text text--xs secondary" text-anchor="start" text-length="14" x="10" y="38" /> -->
 		<!-- </section> -->
 
 		<g opacity="0">
-			<text id="day-value" class="text text--lg primary theme-fg-color" text-anchor="middle" text-length="2" x="50%-6" y="25" />
+			<text
+				id="day-value"
+				class="text text--lg primary theme-fg-color"
+				text-anchor="middle"
+				text-length="2"
+				x="50%-6"
+				y="25"
+			/>
 			<text id="day-suffix" class="text text--sm secondary" text-anchor="start" text-length="2" x="$+1" y="25" />
 
-			<animate attributeName="opacity" from="1" to="0" dur="1s" begin="disable" end="select;unselect" easing="ease-in" />
+			<animate
+				attributeName="opacity"
+				from="1"
+				to="0"
+				dur="1s"
+				begin="disable"
+				end="select;unselect"
+				easing="ease-in"
+			/>
 
 			<!-- Animate in -->
-			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="select" end="unselect" easing="ease-in" />
+			<animate
+				attributeName="opacity"
+				from="0"
+				to="1"
+				dur="0.4s"
+				begin="select"
+				end="unselect"
+				easing="ease-in"
+			/>
 
 			<!-- Animate out -->
 			<animate attributeName="opacity" to="0" dur="0s" begin="unselect" end="select" />
@@ -33,10 +63,46 @@
 			<g transform="translate(100%-26,12)">
 				<image id="hr-icon" href="images/heart.png" class="icon primary theme-fg-color" x="-16" y="-16" />
 
-				<animateTransform attributeType="scale" from="1" to="0.9" begin="enable" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
-				<animateTransform attributeType="scale" from="0.9" to="1.2" begin="enable+0.1s" end="disable" dur="0.2s" easing="ease-in" final="freeze" />
-				<animateTransform attributeType="scale" from="1.2" to="0.95" begin="enable+0.3s" end="disable" dur="0.1s" easing="ease-in" final="freeze" />
-				<animateTransform attributeType="scale" from="0.95" to="1" begin="enable+0.4s" end="disable" dur="0.1s" easing="ease-out" final="freeze" />
+				<animateTransform
+					attributeType="scale"
+					from="1"
+					to="0.9"
+					begin="enable"
+					end="disable"
+					dur="0.1s"
+					easing="ease-out"
+					final="freeze"
+				/>
+				<animateTransform
+					attributeType="scale"
+					from="0.9"
+					to="1.2"
+					begin="enable+0.1s"
+					end="disable"
+					dur="0.2s"
+					easing="ease-in"
+					final="freeze"
+				/>
+				<animateTransform
+					attributeType="scale"
+					from="1.2"
+					to="0.95"
+					begin="enable+0.3s"
+					end="disable"
+					dur="0.1s"
+					easing="ease-in"
+					final="freeze"
+				/>
+				<animateTransform
+					attributeType="scale"
+					from="0.95"
+					to="1"
+					begin="enable+0.4s"
+					end="disable"
+					dur="0.1s"
+					easing="ease-out"
+					final="freeze"
+				/>
 
 				<!--
 				Use this once the bug with repeatDur not settable from JS is fixed
@@ -59,37 +125,130 @@
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
 		<animateTransform attributeType="translate" from="0,-30" to="0,8" dur="0.3s" begin="load" easing="ease-in" />
-		<animateTransform attributeType="translate" from="0,8" to="0,6" dur="0.1s" begin="load+0.3s" easing="ease-out" />
+		<animateTransform
+			attributeType="translate"
+			from="0,8"
+			to="0,6"
+			dur="0.1s"
+			begin="load+0.3s"
+			easing="ease-out"
+		/>
 
 		<!-- Animate out -->
 		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
 		<animateTransform attributeType="translate" from="0,6" to="0,8" dur="0.1s" begin="unload" easing="ease-out" />
-		<animateTransform attributeType="translate" from="0,8" to="0,-30" dur="0.3s" begin="unload+0.1s" easing="ease-in" />
+		<animateTransform
+			attributeType="translate"
+			from="0,8"
+			to="0,-30"
+			dur="0.3s"
+			begin="unload+0.1s"
+			easing="ease-in"
+		/>
 	</g>
 
 	<g id="time" transform="translate(0, 34%)" opacity="1">
 		<image id="time-hr0--zero" href="images/0.png" class="digit theme-fg-color" x="1%" y="0" visibility="hidden">
 			<!-- Animate in -->
-			<animate id="aod-in--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
-			<animate id="aod-in--fill-op" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+			<animate
+				id="aod-in--fill"
+				attributeName="fill"
+				to="fb-white"
+				dur="0.4s"
+				begin="enable"
+				end="disable"
+				easing="ease-in"
+			/>
+			<animate
+				id="aod-in--fill-op"
+				attributeName="fill-opacity"
+				to="1"
+				dur="0.4s"
+				begin="enable"
+				end="disable"
+				easing="ease-in"
+			/>
 
 			<!-- Animate out -->
-			<animate id="aod-out--fill" attributeName="fill" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
+			<animate
+				id="aod-out--fill"
+				attributeName="fill"
+				to="fb-white"
+				dur="0.4s"
+				begin="disable"
+				end="enable"
+				easing="ease-in"
+			/>
 			<animate attributeName="fill-opacity" to="0.5" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 		</image>
 		<image id="time-hr0" href="images/0.png" class="digit" x="1%" y="0" />
 		<image id="time-hr1" href="images/0.png" class="digit primary" x="$" y="0" />
 
-		<image id="time-sep" href="images/separator.png" class="digit theme-fg-color" x="50%-6" y="0" fill-opacity="0.6">
-			<animate attributeName="fill-opacity" from="0.6" to="0" dur="0.5s" begin="select" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
-			<animate attributeName="fill-opacity" from="0" to="0.6" dur="0.5s" begin="select+0.5s" end="unselect" easing="ease-out" final="freeze" repeatDur="1" repeatCount="indefinite" />
+		<image
+			id="time-sep"
+			href="images/separator.png"
+			class="digit theme-fg-color"
+			x="50%-6"
+			y="0"
+			fill-opacity="0.6"
+		>
+			<animate
+				attributeName="fill-opacity"
+				from="0.6"
+				to="0"
+				dur="0.5s"
+				begin="select"
+				end="unselect"
+				easing="ease-out"
+				final="freeze"
+				repeatDur="1"
+				repeatCount="indefinite"
+			/>
+			<animate
+				attributeName="fill-opacity"
+				from="0"
+				to="0.6"
+				dur="0.5s"
+				begin="select+0.5s"
+				end="unselect"
+				easing="ease-out"
+				final="freeze"
+				repeatDur="1"
+				repeatCount="indefinite"
+			/>
 
 			<!-- Animate in -->
-			<animate id="aod-in--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
-			<animate id="aod-in--fill-op" attributeName="fill-opacity" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+			<animate
+				id="aod-in--fill"
+				attributeName="fill"
+				from="fb-white"
+				to="fb-white"
+				dur="0.4s"
+				begin="enable"
+				end="disable"
+				easing="ease-in"
+			/>
+			<animate
+				id="aod-in--fill-op"
+				attributeName="fill-opacity"
+				to="1"
+				dur="0.4s"
+				begin="enable"
+				end="disable"
+				easing="ease-in"
+			/>
 
 			<!-- Animate out -->
-			<animate id="aod-out--fill" attributeName="fill" from="fb-white" to="fb-white" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
+			<animate
+				id="aod-out--fill"
+				attributeName="fill"
+				from="fb-white"
+				to="fb-white"
+				dur="0.4s"
+				begin="disable"
+				end="enable"
+				easing="ease-in"
+			/>
 			<animate attributeName="fill-opacity" to="0.6" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 		</image>
 
@@ -107,10 +266,29 @@
 		</g>
 
 		<!-- Animate in -->
-		<animate id="aod-in" attributeName="opacity" from="0.6" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
+		<animate
+			id="aod-in"
+			attributeName="opacity"
+			from="0.6"
+			to="1"
+			dur="0.4s"
+			begin="enable"
+			end="disable"
+			easing="ease-in"
+		/>
 
 		<!-- Animate out -->
-		<animate id="aod-out" attributeName="opacity" from="1" to="0.6" dur="0.4s" begin="disable" end="enable" easing="ease-in" final="freeze" />
+		<animate
+			id="aod-out"
+			attributeName="opacity"
+			from="1"
+			to="0.6"
+			dur="0.4s"
+			begin="disable"
+			end="enable"
+			easing="ease-in"
+			final="freeze"
+		/>
 	</g>
 
 	<section height="80" y="170">
@@ -118,9 +296,22 @@
 			<use id="cycleview" href="#cycleview">
 				<use href="#cycleview-item">
 					<g id="date" transform="translate(0,50%)">
-						<text id="date-value" class="text text--lg secondary" text-anchor="middle" text-length="16" x="50%" y="0" />
-						<rect id="date-day-bg" x="0" y="0" height="0" width="0" fill="fb-black"/>
-						<text id="date-day" class="text text--lg primary theme-fg-color" text-anchor="end" text-length="2" y="0" />
+						<text
+							id="date-value"
+							class="text text--lg secondary"
+							text-anchor="middle"
+							text-length="16"
+							x="50%"
+							y="0"
+						/>
+						<rect id="date-day-bg" x="0" y="0" height="0" width="0" fill="fb-black" />
+						<text
+							id="date-day"
+							class="text text--lg primary theme-fg-color"
+							text-anchor="end"
+							text-length="2"
+							y="0"
+						/>
 					</g>
 				</use>
 				<use href="#cycleview-item">
@@ -156,7 +347,15 @@
 					</g>
 				</use>
 				<use href="#cycleview-item">
-					<use id="donate-button" href="#square-button-icon" fill="fb-green" y="-5" height="60" layer="200" visibility="hidden">
+					<use
+						id="donate-button"
+						href="#square-button-icon"
+						fill="fb-green"
+						y="-5"
+						height="60"
+						layer="200"
+						visibility="hidden"
+					>
 						<set href="#text" attributeName="text-buffer" to="Donate" />
 						<set href="#image" attributeName="href" to="images/heart.png" />
 					</use>
@@ -165,17 +364,52 @@
 
 			<!-- Animate in -->
 			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="load" easing="ease-in" />
-			<animateTransform attributeType="translate" from="0,100%+30" to="0,96%-2" dur="0.3s" begin="load" easing="ease-in" />
-			<animateTransform attributeType="translate" from="0,96%-2" to="0,96%" dur="0.1s" begin="load+0.3s" easing="ease-out" />
+			<animateTransform
+				attributeType="translate"
+				from="0,100%+30"
+				to="0,96%-2"
+				dur="0.3s"
+				begin="load"
+				easing="ease-in"
+			/>
+			<animateTransform
+				attributeType="translate"
+				from="0,96%-2"
+				to="0,96%"
+				dur="0.1s"
+				begin="load+0.3s"
+				easing="ease-out"
+			/>
 
 			<!-- Animate out -->
 			<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="unload" easing="ease-in" />
-			<animateTransform attributeType="translate" from="0,96%" to="0,96%-2" dur="0.1s" begin="unload" easing="ease-out" />
-			<animateTransform attributeType="translate" from="0,96%-2" to="0,100%+30" dur="0.3s" begin="unload+0.1s" easing="ease-in" />
+			<animateTransform
+				attributeType="translate"
+				from="0,96%"
+				to="0,96%-2"
+				dur="0.1s"
+				begin="unload"
+				easing="ease-out"
+			/>
+			<animateTransform
+				attributeType="translate"
+				from="0,96%-2"
+				to="0,100%+30"
+				dur="0.3s"
+				begin="unload+0.1s"
+				easing="ease-in"
+			/>
 		</g>
 	</section>
 
-	<image id="editable-overlay" href="images/editing-overlay.png" class="bg bg--editing-overlay" x="0" y="0" display="none">
+	<image
+		id="editable-overlay"
+		href="images/editing-overlay.png"
+		class="bg bg--editing-overlay"
+		x="0"
+		y="0"
+		display="none"
+	>
 		<animate attributeName="opacity" to="1" dur="0.3s" begin="enable" easing="ease-out" />
 		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="enable+1.7s" easing="ease-in" />
 	</image>

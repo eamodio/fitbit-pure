@@ -104,12 +104,72 @@
 		"import/no-default-export": "error",
 		"import/no-duplicates": "error",
 		"import/no-self-import": "error",
-		"import/no-unresolved": "warn",
+		"import/no-unresolved": [
+			"warn",
+			{
+				"ignore": [
+					"appbit",
+					"body-presence",
+					"clock",
+					"device",
+					"document",
+					"display",
+					"fs",
+					"haptics",
+					"heart-rate",
+					"i18n",
+					"messaging",
+					"peer",
+					"power",
+					"settings",
+					"user-activity",
+					"user-profile",
+					"user-settings"
+				]
+			}
+		],
 		"import/order": [
 			"warn",
 			{
 				"groups": ["builtin", "external", "internal", ["index", "sibling", "parent"]],
 				"newlines-between": "never"
+			}
+		],
+		"@typescript-eslint/ban-types": [
+			"error",
+			{
+				"extendDefaults": false,
+				"types": {
+					"String": {
+						"message": "Use string instead",
+						"fixWith": "string"
+					},
+					"Boolean": {
+						"message": "Use boolean instead",
+						"fixWith": "boolean"
+					},
+					"Number": {
+						"message": "Use number instead",
+						"fixWith": "number"
+					},
+					"Symbol": {
+						"message": "Use symbol instead",
+						"fixWith": "symbol"
+					},
+					// "Function": {
+					// 	"message": "The `Function` type accepts any function-like value.\nIt provides no type safety when calling the function, which can be a common source of bugs.\nIt also accepts things like class declarations, which will throw at runtime as they will not be called with `new`.\nIf you are expecting the function to accept certain arguments, you should explicitly define the function shape."
+					// },
+					"Object": {
+						"message": "The `Object` type actually means \"any non-nullish value\", so it is marginally better than `unknown`.\n- If you want a type meaning \"any object\", you probably want `Record<string, unknown>` instead.\n- If you want a type meaning \"any value\", you probably want `unknown` instead."
+					},
+					"{}": {
+						"message": "`{}` actually means \"any non-nullish value\".\n- If you want a type meaning \"any object\", you probably want `object` or `Record<string, unknown>` instead.\n- If you want a type meaning \"any value\", you probably want `unknown` instead.",
+						"fixWith": "object"
+					}
+					// "object": {
+					// 	"message": "The `object` type is currently hard to use ([see this issue](https://github.com/microsoft/TypeScript/issues/21732)).\nConsider using `Record<string, unknown>` instead, as it allows you to more easily inspect and use the keys."
+					// }
+				}
 			}
 		],
 		"@typescript-eslint/consistent-type-assertions": [
@@ -121,18 +181,97 @@
 		],
 		"@typescript-eslint/explicit-function-return-type": "off",
 		"@typescript-eslint/explicit-member-accessibility": "off",
+		"@typescript-eslint/explicit-module-boundary-types": "off", // TODO@eamodio revisit
+		"@typescript-eslint/naming-convention": [
+			"error",
+			{
+				"selector": "variable",
+				"format": ["camelCase", "PascalCase"],
+				"leadingUnderscore": "allow",
+				"filter": {
+					"regex": "^_$",
+					"match": false
+				}
+			},
+			{
+				"selector": "variableLike",
+				"format": ["camelCase"],
+				"leadingUnderscore": "allow",
+				"filter": {
+					"regex": "^_$",
+					"match": false
+				}
+			},
+			{
+				"selector": "memberLike",
+				"modifiers": ["private"],
+				"format": ["camelCase"],
+				"leadingUnderscore": "allow"
+			},
+			{
+				"selector": "memberLike",
+				"modifiers": ["private", "readonly"],
+				"format": ["camelCase", "PascalCase"],
+				"leadingUnderscore": "allow"
+			},
+			{
+				"selector": "memberLike",
+				"modifiers": ["static", "readonly"],
+				"format": ["camelCase", "PascalCase"]
+			},
+			{
+				"selector": "interface",
+				"format": ["PascalCase"],
+				"custom": {
+					"regex": "^I[A-Z]",
+					"match": false
+				}
+			}
+		],
 		"@typescript-eslint/no-empty-function": ["warn", { "allow": ["constructors"] }],
 		"@typescript-eslint/no-empty-interface": "off",
 		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/no-floating-promises": "error",
 		"@typescript-eslint/no-inferrable-types": ["warn", { "ignoreParameters": true, "ignoreProperties": true }],
 		"@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": false }],
 		"@typescript-eslint/no-namespace": "off",
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"@typescript-eslint/no-parameter-properties": "off",
+		"@typescript-eslint/no-unnecessary-condition": "off",
+		"@typescript-eslint/no-unsafe-assignment": "off", // TODO@eamodio revisit
+		"@typescript-eslint/no-unsafe-call": "off", // TODO@eamodio revisit
+		"@typescript-eslint/no-unsafe-member-access": "off", // TODO@eamodio revisit
+		"@typescript-eslint/no-unsafe-return": "off", // TODO@eamodio revisit
 		"@typescript-eslint/no-unused-expressions": ["warn", { "allowShortCircuit": true }],
-		"@typescript-eslint/no-unused-vars": ["warn", { "args": "none" }],
+		"@typescript-eslint/no-unused-vars": [
+			"warn",
+			{
+				"args": "after-used",
+				"argsIgnorePattern": "^_",
+				"ignoreRestSiblings": true,
+				"varsIgnorePattern": "^_$"
+			}
+		],
 		"@typescript-eslint/no-use-before-define": "off",
+		"@typescript-eslint/prefer-nullish-coalescing": "warn",
+		"@typescript-eslint/prefer-optional-chain": "warn",
 		"@typescript-eslint/prefer-string-starts-ends-with": "off",
+		"@typescript-eslint/restrict-template-expressions": [
+			"error",
+			{ "allowAny": true, "allowBoolean": true, "allowNumber": true, "allowNullish": true }
+		],
+		"@typescript-eslint/strict-boolean-expressions": [
+			"off",
+			{
+				"allowString": true,
+				"allowNumber": true,
+				"allowNullableObject": false,
+				"allowNullableBoolean": true,
+				"allowNullableNumber": true,
+				"allowNullableString": true,
+				"allowAny": false
+			}
+		],
 		"@typescript-eslint/unbound-method": "off" // Too many bugs right now: https://github.com/typescript-eslint/typescript-eslint/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+unbound-method
 	}
 }

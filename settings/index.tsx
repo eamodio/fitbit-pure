@@ -13,6 +13,7 @@ const friendlyInterval = (value: string | undefined) =>
 
 const debug = false;
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function PureSettings(props: SettingsComponentProps) {
 	const donated = props.settings.donated === 'true';
 	const autoRotate = props.settings.autoRotate === 'true';
