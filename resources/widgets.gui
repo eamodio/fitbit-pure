@@ -189,22 +189,46 @@
 		</symbol>
 
 		<symbol id="donate-popup">
-			<svg height="100%" overflow="hidden">
+			<svg>
 				<defs>
 					<symbol id="tumblerview-digit">
 						<use id="code" href="#tumblerview">
-							<use href="#tumbler-item"><text id="content">0</text></use>
-							<use href="#tumbler-item"><text id="content">1</text></use>
-							<use href="#tumbler-item"><text id="content">2</text></use>
-							<use href="#tumbler-item"><text id="content">3</text></use>
-							<use href="#tumbler-item"><text id="content">4</text></use>
-							<use href="#tumbler-item"><text id="content">5</text></use>
-							<use href="#tumbler-item"><text id="content">6</text></use>
-							<use href="#tumbler-item"><text id="content">7</text></use>
-							<use href="#tumbler-item"><text id="content">8</text></use>
-							<use href="#tumbler-item"><text id="content">9</text></use>
-							<use href="#tumbler-item"><text id="content">A</text></use>
-							<use href="#tumbler-item"><text id="content">B</text></use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="0" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="1" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="2" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="3" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="4" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="5" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="6" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="7" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="8" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="9" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="A" />
+							</use>
+							<use id="content" href="#tumbler-item">
+								<set href="value/text" attributeName="text-buffer" to="B" />
+							</use>
 						</use>
 					</symbol>
 				</defs>
@@ -212,80 +236,51 @@
 				<rect x="0" y="0" height="100%" width="100%" fill="fb-black" />
 
 				<g class="donate-step">
-					<text
-						class="text text--bold text--md"
-						x="50%"
-						y="32"
-						text-anchor="middle"
-						text-buffer="Get PRO Features!"
-					/>
-					<text
-						class="text text--sm-plus"
-						x="50%"
-						y="$-4"
-						text-anchor="middle"
-						text-buffer="Please donate at"
-					/>
+					<text class="text text--sm-plus" x="50%" y="48" text-anchor="middle" text-buffer="Please go to" />
 					<text
 						class="text--extra-bold text--xl"
 						x="50%"
-						y="$+11"
+						y="$+12"
 						text-anchor="middle"
 						text-buffer="pure.amod.io"
+						fill="fb-orange"
 					/>
-					<textarea
-						class="text text--sm-plus"
-						x="0"
-						y="$-32"
-						width="100%-10"
-						height="140"
-						text-anchor="middle"
-					>
-						Your donation gives you access to PRO features — activity stats, theming, &amp; on-device quick
-						toggles.
+					<textarea class="text text--sm-plus" x="0" y="$-30" width="100%" height="140" text-anchor="middle">
+						to donate and get access to PRO features — activity stats, theming, & on-device quick toggles.
 					</textarea>
-					<text class="text text--md" x="25" y="$+25" text-anchor="start" text-buffer="&#x2764; Thank you!" />
 				</g>
 
 				<g class="donate-step" display="none">
-					<svg height="210" overflow="hidden">
-						<rect x="0" y="0" height="210" width="100%" fill="fb-dark-gray" fill-opacity="0.6" />
-
-						<use href="#tumblerview-digit" x="25" y="30">
-							<set href="code" attributeName="id" to="code1" />
-						</use>
-						<use href="#tumblerview-digit" x="120" y="30">
-							<set href="code" attributeName="id" to="code2" />
-						</use>
-						<use href="#tumblerview-digit" x="215" y="30">
-							<set href="code" attributeName="id" to="code3" />
-						</use>
-					</svg>
-
+					<text class="text text--sm" x="50%" y="22" text-anchor="middle" text-buffer="ENTER CODE FROM" />
 					<text
-						class="text text--sm-plus"
-						x="10"
-						y="240"
-						text-anchor="start"
-						text-buffer="Enter donation code"
-					/>
-					<text
-						class="text--extra-bold text--lg"
-						x="13"
-						y="$+10"
-						text-anchor="start"
+						class="text--extra-bold text--sm"
+						x="50%"
+						y="45"
+						text-anchor="middle"
 						text-buffer="pure.amod.io"
 					/>
+
+					<section x="-45" y="$-10">
+						<use href="#tumblerview-digit" x="10" y="0">
+							<set href="code" attributeName="id" to="code1" />
+						</use>
+						<use href="#tumblerview-digit" x="105" y="0">
+							<set href="code" attributeName="id" to="code2" />
+						</use>
+						<use href="#tumblerview-digit" x="200" y="0">
+							<set href="code" attributeName="id" to="code3" />
+						</use>
+					</section>
 				</g>
 
-				<use id="donate-button" href="#combo-button-lower-right" fill="fb-green">
+				<use id="donate-button" href="#combo-button-lower-right" fill="fb-orange">
 					<set href="combo-button-icon" attributeName="href" to="images/next.png" />
 					<set href="combo-button-icon-press" attributeName="href" to="images/next-pressed.png" />
 					<set href="combo-button-stroke" attributeName="display" to="inline" />
 					<set href="combo-button-fill" attributeName="display" to="inline" />
 
 					<animate attributeName="fill" to="fb-red" dur="0s" begin="enable" />
-					<animate attributeName="fill" to="fb-green" dur="0.2s" begin="enable+0.5s" easing="ease-out" />
+					<animate attributeName="fill" to="fb-orange" dur="0.2s" begin="enable+0.5s" easing="ease-out" />
 				</use>
 			</svg>
 		</symbol>

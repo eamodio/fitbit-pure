@@ -9,6 +9,19 @@
 	font-size: 110;
 }
 
+#code {
+	width: 120;
+	height: 240;
+	fill: fb-orange;
+	overflow: hidden;
+}
+
+#code #value text {
+	x: 50%;
+	y: 110;
+	text-anchor: middle;
+}
+
 /* My Styles */
 
 .bg {
