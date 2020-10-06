@@ -18,10 +18,10 @@ const activityToColor = {
 	steps: 'fb-cyan',
 	calories: 'fb-orange',
 	distance: 'fb-purple',
-	activeMinutes: 'fb-mint',
+	activeZoneMinutes: 'fb-mint',
 };
 
-type Activities = 'activeMinutes' | 'calories' | 'distance' | 'steps';
+type Activities = 'activeZoneMinutes' | 'calories' | 'distance' | 'steps';
 
 interface Activity {
 	names: [Activities, Activities];
@@ -40,7 +40,7 @@ export class ActivityDisplay {
 			goalReached: [false, false],
 		},
 		{
-			names: ['activeMinutes', 'calories'],
+			names: ['activeZoneMinutes', 'calories'],
 			goalReached: [false, false],
 		},
 	];
@@ -73,7 +73,7 @@ export class ActivityDisplay {
 						document.getElementById<ArcElement>(`rstat${i}-progress`)!.sweepAngle = 0;
 					}
 
-					if (!this._autoRotateOverride && configuration.get('autoRotate')) {
+					if (!this.autoRotateOverride && configuration.get('autoRotate')) {
 						this.setAutoRotate(true);
 					} else {
 						if (this.getView() === ActivityViews.Date) return;
@@ -188,7 +188,8 @@ export class ActivityDisplay {
 			// step or distance goal reached
 			view = ActivityViews.Activity1;
 		} else if (
-			(goals.activeMinutes != null && (today.adjusted.activeMinutes ?? 0) >= goals.activeMinutes) ||
+			(goals.activeZoneMinutes != null &&
+				(today.adjusted.activeZoneMinutes?.total ?? 0) >= goals.activeZoneMinutes.total) ||
 			(goals.calories != null && (today.adjusted.calories ?? 0) >= goals.calories)
 		) {
 			// active minutes or calories goal reached
@@ -200,7 +201,7 @@ export class ActivityDisplay {
 		if (display.on && !display.aodActive) {
 			this.setAutoRotate(false);
 		} else {
-			this._autoRotateOverride = true;
+			this.autoRotateOverride = true;
 		}
 		this.setView(view, 'nudge');
 		display.on = true;
@@ -255,8 +256,12 @@ export class ActivityDisplay {
 	private renderActivity(activity: Activity, side: Side, prefix: string) {
 		const name = activity.names[side];
 
-		const value = appManager.editing ? 0 : today.adjusted[name];
-		const goal = goals[name];
+		const value = appManager.editing
+			? 0
+			: name === 'activeZoneMinutes'
+			? today.adjusted[name]?.total
+			: today.adjusted[name];
+		const goal = name === 'activeZoneMinutes' ? goals[name]?.total : goals[name];
 
 		const color = activityToColor[name];
 
@@ -296,7 +301,7 @@ export class ActivityDisplay {
 					$value.text = value.toLocaleString();
 					unitsLabel = 'steps_units';
 					break;
-				case 'activeMinutes':
+				case 'activeZoneMinutes':
 					$value.text = value.toString();
 					unitsLabel = 'active_minutes_units';
 					break;
@@ -340,19 +345,19 @@ export class ActivityDisplay {
 		$animate.to = goal != null ? 360 : 0;
 	}
 
-	private _autoRotateHandle: number = 0;
-	private _autoRotateOverride = false;
+	private autoRotateHandle: number = 0;
+	private autoRotateOverride = false;
 
 	private setAutoRotate(enabled: boolean) {
-		clearInterval(this._autoRotateHandle);
-		this._autoRotateHandle = 0;
-		this._autoRotateOverride = false;
+		clearInterval(this.autoRotateHandle);
+		this.autoRotateHandle = 0;
+		this.autoRotateOverride = false;
 
 		if (!enabled || !display.on || display.aodActive) return;
 
 		this.setView(ActivityViews.Date);
 
-		this._autoRotateHandle = setInterval(
+		this.autoRotateHandle = setInterval(
 			() => this.setView(this.getView() + 1),
 			configuration.get('autoRotateInterval'),
 		);
