@@ -1,8 +1,8 @@
 {
 	"name": "fitbit-pure",
 	"displayName": "Pure Fitbit Clock",
-	"description": "A beautifully designed, highly customizable, clean, and simple clock face for Fitbit Sense & Versa devices",
-	"version": "2.0.0",
+	"description": "A beautifully designed, customizable, clean and simple clock face for Fitbit Sense & Versa devices",
+	"version": "2.0.1",
 	"author": {
 		"name": "Eric Amodio",
 		"email": "eamodio@gmail.com"
@@ -46,7 +46,7 @@
 		"generate-colors": "node scripts/colors.js",
 		"grayscale": "magick mogrify -colorspace gray",
 		"lint": "eslint **/*.ts --fix",
-		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json}\""
+		"pretty": "prettier --config .prettierrc --loglevel warn --write \"./**/*.{ts,md,json,defs,view}\""
 	},
 	"dependencies": {},
 	"devDependencies": {
