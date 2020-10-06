@@ -282,12 +282,12 @@ export class ActivityDisplay {
 			switch (name) {
 				case 'distance':
 					if (units.distance === 'us') {
-						$value.text = Number((value * meterToMile).toFixed(2)).toLocaleString();
+						$value.text = Number((value * meterToMile).toFixed(1)).toLocaleString();
 						unitsLabel = 'distance_units_miles';
 						break;
 					}
 
-					$value.text = Number((value / 1000).toFixed(2)).toLocaleString();
+					$value.text = Number((value / 1000).toFixed(1)).toLocaleString();
 					unitsLabel = 'distance_units_kilometers';
 					break;
 				case 'calories':
