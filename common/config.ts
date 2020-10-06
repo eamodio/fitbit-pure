@@ -55,7 +55,7 @@ export const defaultConfig: Config = {
 	aodOpacity: 60,
 	autoRotate: false,
 	autoRotateInterval: 3000,
-	colorizeHeartRate: false,
+	colorizeHeartRate: true,
 	donated: false,
 	showActivityUnits: true,
 	showBatteryPercentage: true,
