@@ -58,7 +58,7 @@ export class DonatePopup implements Disposable {
 
 		const date = new Date();
 		const value = `${date.getUTCFullYear().toString().substr(2)}${date.getUTCMonth().toString(16)}`;
-		if ($tumblers.every(($, index) => $.value === Number(value[index]))) {
+		if ($tumblers.every(($, index) => $.value.toString(16) === value[index])) {
 			this.accept();
 		} else {
 			this.reject();
