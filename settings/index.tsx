@@ -222,7 +222,8 @@ function PureSettings(props: SettingsComponentProps) {
 
 			<Section title={<TextImageRow label={<Text align="center">Heart Rate Display</Text>} />}>
 				<Toggle settingsKey="animateHeartRate" label="Animate Heart Rate" />
-				<Toggle settingsKey="colorizeHeartRate" label="Change Color with Heart Rate" />
+				{!donated && <Text>🔒 Change Color with Heart Rate</Text>}
+				{donated && <Toggle settingsKey="colorizeHeartRate" label="Change Color with Heart Rate" />}
 				<Toggle settingsKey="showRestingHeartRate" label="Show Resting Heart Rate" />
 			</Section>
 
