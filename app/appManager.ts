@@ -227,8 +227,8 @@ export class AppManager {
 					$el.style.fillOpacity = separatorOpacity;
 					($el.children[0] as AnimateElement).from = separatorOpacity;
 					($el.children[1] as AnimateElement).to = separatorOpacity;
-				} else if ($el.id === 'time-hr0--zero') {
-					$el.style.fillOpacity = opacity;
+					// } else if ($el.id === 'time-hr0--zero') {
+					// 	$el.style.fillOpacity = opacity;
 				}
 
 				if (display.aodAvailable) {
@@ -294,7 +294,7 @@ export class AppManager {
 				configuration.get('showDayOnDateHide') &&
 				configuration.get('currentActivityView') === ActivityViews.Date
 			) {
-				document.getElementById<TextElement>('day-value')!.parent!.animate('disable');
+				document.getElementById<GroupElement>('day')!.animate('disable');
 			}
 		} else if (e.screenX >= 236 && e.screenY <= 64) {
 			vibration.start('bump');

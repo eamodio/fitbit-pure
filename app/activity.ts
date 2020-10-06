@@ -1,5 +1,4 @@
 import { me as app } from 'appbit';
-import { me as device } from 'device';
 import document from 'document';
 import { vibration, VibrationPatternName } from 'haptics';
 import { gettext } from 'i18n';
@@ -10,8 +9,6 @@ import { ActivityViewChangeEvent, ActivityViews, AppEvent, appManager } from './
 import { defer } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
 
-const arcWidth = 48;
-const screenWidth = device.screen.width;
 const meterToMile = 0.000621371192;
 
 const activityToColor = {
@@ -155,8 +152,8 @@ export class ActivityDisplay {
 
 		if (e?.key == null || e?.key === 'showDayOnDateHide') {
 			document
-				.getElementById<GroupElement>('day-value')!
-				.parent!.animate(
+				.getElementById<GroupElement>('day')!
+				.animate(
 					configuration.get('showDayOnDateHide') && this.getView() !== ActivityViews.Date
 						? 'select'
 						: 'unselect',
@@ -217,8 +214,8 @@ export class ActivityDisplay {
 				(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
 		) {
 			document
-				.getElementById<GroupElement>('day-value')!
-				.parent!.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
+				.getElementById<GroupElement>('day')!
+				.animate(e.view !== ActivityViews.Date ? 'select' : 'unselect');
 		}
 
 		appManager.fire(e);
@@ -317,15 +314,9 @@ export class ActivityDisplay {
 
 		if (configuration.get('showActivityUnits')) {
 			$units.text = unitsLabel != null ? gettext(unitsLabel) : '';
-			$value.y = $units.text.length > 0 ? -12 : -4;
+			$value.y = $units.text.length > 0 ? -12 : 0;
 		} else {
-			$value.y = -4;
-		}
-
-		if (side === Side.Right) {
-			const x = screenWidth - arcWidth - 10;
-			$value.x = x;
-			$units.x = x;
+			$value.y = 0;
 		}
 
 		const angle = goal != null ? Math.min(Math.floor(360 * ((value ?? 0) / goal)), 360) : 0;

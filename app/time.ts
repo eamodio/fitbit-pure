@@ -8,8 +8,11 @@ import { AppEvent, appManager } from './appManager';
 import { ConfigChangeEvent, configuration } from './configuration';
 import { defer } from '../common/system';
 
-const emptyDate = new Date(0, 0, 0, 0, 0, 0, 0);
 const screenWidth = device.screen.width;
+const digitWidth = 66;
+const separatorWidth = 16;
+const fourDigitTimeX = screenWidth / 2 - (digitWidth * 4 + separatorWidth) / 2;
+const threeDigitTimeX = screenWidth / 2 - (digitWidth * 5 + separatorWidth) / 2;
 
 enum Previous {
 	Minutes = 0,
@@ -19,8 +22,8 @@ enum Previous {
 }
 
 export class TimeDisplay {
-	private _date: Date | undefined;
-	private _previous: Int8Array = new Int8Array(4);
+	private date: Date | undefined;
+	private previous: Int8Array = new Int8Array(4);
 	private readonly $seconds: TextElement;
 
 	constructor() {
@@ -86,7 +89,6 @@ export class TimeDisplay {
 			e.key !== 'aodOpacity' &&
 			e.key !== 'showDate' &&
 			e.key !== 'showDayOnDateHide' &&
-			e.key !== 'showDaySuffix' &&
 			e.key !== 'showLeadingZero' &&
 			e.key !== 'showSeconds'
 		) {
@@ -129,7 +131,7 @@ export class TimeDisplay {
 	}
 
 	private onTick({ date }: TickEvent) {
-		this._date = date;
+		this.date = date;
 		this.renderCore();
 	}
 
@@ -139,30 +141,33 @@ export class TimeDisplay {
 	}
 
 	private renderCore(force: boolean = false) {
-		const date = this._date ?? emptyDate;
+		const date = this.date ?? new Date();
 
 		if (configuration.get('showSeconds') && !display.aodActive) {
 			this.$seconds.text = `${toMonospaceDigits(date.getSeconds(), true)}s`;
 		}
 
 		const minutes = appManager.editing ? 0 : date.getMinutes();
-		if (!force && minutes === this._previous[Previous.Minutes]) return;
+		if (!force && minutes === this.previous[Previous.Minutes]) return;
 
-		this._previous[Previous.Minutes] = minutes;
+		this.previous[Previous.Minutes] = minutes;
 
 		const minute = zeroPad(minutes);
 		document.getElementById<ImageElement>('time-min0')!.href = `images/${minute[0] ?? 0}.png`;
 		document.getElementById<ImageElement>('time-min1')!.href = `images/${minute[1] ?? 0}.png`;
 
 		const hours = appManager.editing ? 0 : date.getHours();
-		if (!force && hours === this._previous[Previous.Hours]) return;
+		if (!force && hours === this.previous[Previous.Hours]) return;
 
-		this._previous[Previous.Hours] = hours;
+		this.previous[Previous.Hours] = hours;
 
 		const hour = zeroPad(!appManager.editing && preferences.clockDisplay === '12h' ? hours % 12 || 12 : hours);
+
+		let changed = false;
+		let hidingLeadingZero = false;
+
 		if (hour[0] === '0') {
 			let $hour0 = document.getElementById<ImageElement>('time-hr0')!;
-			let changed = false;
 			if ($hour0.style.visibility !== 'hidden') {
 				$hour0.style.visibility = 'hidden';
 				changed = true;
@@ -172,68 +177,66 @@ export class TimeDisplay {
 
 			if (configuration.get('showLeadingZero')) {
 				if ($hour0.style.visibility !== 'visible') {
-					document.getElementById<GroupElement>('time')!.groupTransform!.translate.x = 0;
 					$hour0.style.visibility = 'visible';
+					changed = true;
 				}
 			} else {
+				hidingLeadingZero = true;
+
 				if ($hour0.style.visibility !== 'hidden') {
 					$hour0.style.visibility = 'hidden';
 					changed = true;
-				}
-
-				if (changed) {
-					document.getElementById<GroupElement>('time')!.groupTransform!.translate.x = -33;
 				}
 			}
 		} else {
 			let $hour0 = document.getElementById<ImageElement>('time-hr0--zero')!;
 			if ($hour0.style.visibility !== 'hidden') {
 				$hour0.style.visibility = 'hidden';
+				changed = true;
 			}
 
 			$hour0 = document.getElementById<ImageElement>('time-hr0')!;
 			$hour0.href = `images/${hour[0] ?? 0}.png`;
 
 			if ($hour0.style.visibility !== 'visible') {
-				document.getElementById<GroupElement>('time')!.groupTransform!.translate.x = 0;
 				$hour0.style.visibility = 'visible';
+				changed = true;
 			}
 		}
+
+		if (changed) {
+			document.getElementById<GroupElement>('time')!.groupTransform!.translate.x = hidingLeadingZero
+				? threeDigitTimeX
+				: fourDigitTimeX;
+		}
+
 		document.getElementById<ImageElement>('time-hr1')!.href = `images/${hour[1] ?? 0}.png`;
 
 		const day = date.getDay();
-		if (!force && day === this._previous[Previous.Day]) return;
+		if (!force && day === this.previous[Previous.Day]) return;
 
-		this._previous[Previous.Day] = day;
+		this.previous[Previous.Day] = day;
 
 		const month = date.getMonth();
-		if (!force && month === this._previous[Previous.Month]) return;
+		if (!force && month === this.previous[Previous.Month]) return;
 
-		this._previous[Previous.Month] = month;
+		this.previous[Previous.Month] = month;
 
 		const dayOfMonth = date.getDate();
-		const dayOfMonthSuffix = getOrdinalSuffix(dayOfMonth);
+
+		const dayName = gettext(`day_short_${day}`);
 
 		if (configuration.get('showDayOnDateHide')) {
-			const $day = document.getElementById<TextElement>('day-value')!;
-			$day.text = dayOfMonth.toString();
+			const $dayOfWeek = document.getElementById<TextElement>('day-of-week')!;
+			$dayOfWeek.text = dayName.toUpperCase();
 
-			const $daySuffix = document.getElementById<TextElement>('day-suffix')!;
-			$daySuffix.text = dayOfMonthSuffix;
-
-			if (configuration.get('showDaySuffix')) {
-				$day.x = screenWidth / 2 + 1 - $daySuffix.getBBox().width / 2;
-				$daySuffix.style.display = 'inline';
-			} else {
-				$day.x = screenWidth / 2 + 1;
-				$daySuffix.style.display = 'none';
-			}
+			const $dayOfMonth = document.getElementById<TextElement>('day-of-month')!;
+			$dayOfMonth.text = dayOfMonth.toString();
 		}
 
 		if (!configuration.get('showDate')) return;
 
 		const monthName = gettext(`month_short_${month}`);
-		const dayName = gettext(`day_short_${day}`);
 		const dayMonthSeparator = gettext('day_month_separator');
 
 		const $date = document.getElementById<TextElement>('date-value')!;
@@ -316,17 +319,17 @@ export class TimeDisplay {
 	}
 }
 
-const suffixes = [
-	gettext('ordinal_suffix_0'),
-	gettext('ordinal_suffix_1'),
-	gettext('ordinal_suffix_2'),
-	gettext('ordinal_suffix_3'),
-];
+// const suffixes = [
+// 	gettext('ordinal_suffix_0'),
+// 	gettext('ordinal_suffix_1'),
+// 	gettext('ordinal_suffix_2'),
+// 	gettext('ordinal_suffix_3'),
+// ];
 
-function getOrdinalSuffix(num: number): string {
-	const index = num % 100;
-	return suffixes[(index - 20) % 10] || suffixes[index] || suffixes[0];
-}
+// function getOrdinalSuffix(num: number): string {
+// 	const index = num % 100;
+// 	return suffixes[(index - 20) % 10] || suffixes[index] || suffixes[0];
+// }
 
 const chars = String.fromCharCode(0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19);
 

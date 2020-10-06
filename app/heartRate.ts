@@ -1,32 +1,23 @@
 import { me as app } from 'appbit';
-import { me as device } from 'device';
 import { display } from 'display';
 import document from 'document';
 import { BodyPresenceSensor } from 'body-presence';
 import { HeartRateSensor } from 'heart-rate';
 import { user } from 'user-profile';
 import { gettext } from 'i18n';
-import { ActivityViews, AppEvent, appManager } from './appManager';
+import { AppEvent, appManager } from './appManager';
 import { ConfigChangeEvent, configuration } from './configuration';
 import { debounce, defer } from '../common/system';
-
-// if (device.screen == null) {
-// 	(device as any).screen = { width: 348, height: 250 };
-// }
-
-const iconWidth = 32;
-const screenWidth = device.screen.width;
 
 export class HeartRateDisplay {
 	private readonly bodyPresenceSensor: BodyPresenceSensor | undefined;
 	private readonly heartRateSensor: HeartRateSensor | undefined;
-
-	private readonly _hasUserProfileAccess: boolean;
-	private _isOnBody: boolean | undefined;
-	private _rate: number | undefined;
+	private readonly hasUserProfileAccess: boolean;
+	private isOnBody: boolean | undefined;
+	private rate: number | undefined;
 
 	constructor() {
-		this._hasUserProfileAccess = app.permissions.granted('access_user_profile');
+		this.hasUserProfileAccess = app.permissions.granted('access_user_profile');
 
 		if (HeartRateSensor == null || !app.permissions.granted('access_heart_rate')) {
 			document.getElementById<ContainerElement>('hr')!.style.display = 'none';
@@ -49,7 +40,7 @@ export class HeartRateDisplay {
 			sensor.addEventListener('activate', () => this.onBodyPresenceChanged(sensor));
 			sensor.addEventListener('reading', () => this.onBodyPresenceChanged(sensor));
 		} else {
-			this._isOnBody = true;
+			this.isOnBody = true;
 		}
 
 		configuration.onDidChange(this.onConfigurationChanged, this);
@@ -60,18 +51,6 @@ export class HeartRateDisplay {
 
 	private onAppEvent(e: AppEvent) {
 		switch (e.type) {
-			case 'activityView': {
-				if (
-					configuration.get('showDayOnDateHide') &&
-					((e.previous === ActivityViews.Date && e.view !== ActivityViews.Date) ||
-						(e.previous !== ActivityViews.Date && e.view === ActivityViews.Date))
-				) {
-					document.getElementById<TextElement>('hr-resting')!.parent!.animate('select');
-
-					this.render();
-				}
-				break;
-			}
 			case 'display': {
 				this.updateState();
 				break;
@@ -85,7 +64,7 @@ export class HeartRateDisplay {
 
 	@debounce(250)
 	private onBodyPresenceChanged(sensor: BodyPresenceSensor) {
-		this._isOnBody = sensor.present ?? undefined;
+		this.isOnBody = sensor.present ?? undefined;
 		this.updateState();
 	}
 
@@ -94,7 +73,7 @@ export class HeartRateDisplay {
 			e?.key != null &&
 			e.key !== 'animateHeartRate' &&
 			e.key !== 'colorizeHeartRate' &&
-			e.key !== 'showDayOnDateHide' &&
+			e.key !== 'donated' &&
 			e.key !== 'showRestingHeartRate'
 		) {
 			return;
@@ -103,14 +82,14 @@ export class HeartRateDisplay {
 		if (e?.key == null || e.key === 'animateHeartRate') {
 			this.stopAnimation();
 
-			if (configuration.get('animateHeartRate') && this._rate != null && this._rate > 0) {
-				this.startAnimation(this._rate);
+			if (configuration.get('animateHeartRate') && this.rate != null && this.rate > 0) {
+				this.startAnimation(this.rate);
 			}
 		}
 
-		if (e?.key == null || e.key === 'colorizeHeartRate') {
-			if (configuration.get('colorizeHeartRate')) {
-				const color = getHeartRateColor(this._rate);
+		if (e?.key == null || e.key === 'colorizeHeartRate' || e.key === 'donated') {
+			if (configuration.get('colorizeHeartRate') && configuration.get('donated')) {
+				const color = getHeartRateColor(this.rate);
 				document.getElementById<ImageElement>('hr-icon')!.style.fill = color;
 			} else {
 				document.getElementById<ImageElement>('hr-icon')!.style.fill = configuration.get(
@@ -134,15 +113,15 @@ export class HeartRateDisplay {
 
 	@debounce(100)
 	private onHeartRateChanged(sensor: HeartRateSensor) {
-		if (this._rate === sensor.heartRate) return;
+		if (this.rate === sensor.heartRate) return;
 
-		this._rate = sensor.heartRate ?? undefined;
+		this.rate = sensor.heartRate ?? undefined;
 		this.render();
 	}
 
 	@defer()
 	private render() {
-		let rate = appManager.editing ? 0 : this._rate;
+		let rate = appManager.editing ? 0 : this.rate;
 		if (rate == null) {
 			const timestamp = this.heartRateSensor?.activated ? this.heartRateSensor?.timestamp ?? 0 : 0;
 			rate = timestamp > 0 ? this.heartRateSensor?.heartRate ?? 0 : 0;
@@ -153,26 +132,13 @@ export class HeartRateDisplay {
 
 		const $restingRate = document.getElementById<TextElement>('hr-resting')!;
 		$restingRate.text = `${
-			this._hasUserProfileAccess ? (appManager.editing ? '00' : user.restingHeartRate) ?? '' : ''
+			this.hasUserProfileAccess ? (appManager.editing ? '00' : user.restingHeartRate) ?? '' : ''
 		}`;
 
-		// const iconWidth = this.$icon.getBBox().width;
 		const rect = $rate.getBBox();
+		$restingRate.x = (rect.x as number) + rect.width / 2;
 
-		const x = screenWidth - iconWidth - rect.width - 20;
-		$rate.x = x;
-
-		if (configuration.get('showDayOnDateHide') && configuration.get('currentActivityView') !== ActivityViews.Date) {
-			$restingRate.textAnchor = 'middle';
-			$restingRate.x = x + rect.width / 2;
-			$restingRate.y = 29 + rect.height / 2;
-		} else {
-			$restingRate.textAnchor = 'end';
-			$restingRate.x = x - 8;
-			$restingRate.y = 21;
-		}
-
-		if (configuration.get('colorizeHeartRate')) {
+		if (configuration.get('colorizeHeartRate') && configuration.get('donated')) {
 			document.getElementById<ImageElement>('hr-icon')!.style.fill = getHeartRateColor(rate);
 		}
 
@@ -183,8 +149,8 @@ export class HeartRateDisplay {
 		}
 	}
 
-	private _animationHandle: number | undefined;
-	private _animationInterval: number | undefined;
+	private animationHandle: number | undefined;
+	private animationInterval: number | undefined;
 
 	private startAnimation(rate: number) {
 		const animate = configuration.get('animateHeartRate');
@@ -193,11 +159,11 @@ export class HeartRateDisplay {
 		// console.log(`HeartRateDisplay.startAnimation: rate=${rate}, animation=${animation}`);
 
 		const interval = Math.round(1000 / (rate / 60) / 50) * 50;
-		if (interval === this._animationInterval) return;
+		if (interval === this.animationInterval) return;
 
-		this._animationInterval = interval;
-		if (this._animationHandle !== undefined) {
-			clearInterval(this._animationHandle);
+		this.animationInterval = interval;
+		if (this.animationHandle != null) {
+			clearInterval(this.animationHandle);
 		}
 
 		const $container = document.getElementById<GraphicsElement>('hr-icon')!.parent!;
@@ -206,20 +172,20 @@ export class HeartRateDisplay {
 		// const repeatDur = interval / 1000;
 		// let i = 5;
 		// while (i-- >= 2) {
-		// 	console.log(i);
+		// 	console.log(`i=${i}, repeatDur=${($container.children[i] as AnimateElement).repeatDur}`);
 		// 	($container.children[i] as AnimateElement).repeatDur = repeatDur;
 		// }
 		// $container.animate('enable');
 
-		this._animationHandle = setInterval(() => $container.animate('enable'), interval);
+		this.animationHandle = setInterval(() => $container.animate('enable'), interval);
 	}
 
 	private stopAnimation() {
-		if (this._animationHandle !== undefined) {
-			clearInterval(this._animationHandle);
-			this._animationHandle = undefined;
+		if (this.animationHandle != null) {
+			clearInterval(this.animationHandle);
+			this.animationHandle = undefined;
 		}
-		this._animationInterval = undefined;
+		this.animationInterval = undefined;
 
 		document.getElementById<GraphicsElement>('hr-icon')!.parent!.animate('disable');
 	}
@@ -235,8 +201,8 @@ export class HeartRateDisplay {
 			this.heartRateSensor?.stop();
 			this.bodyPresenceSensor?.stop();
 
-			this._isOnBody = undefined;
-			this._rate = undefined;
+			this.isOnBody = undefined;
+			this.rate = undefined;
 
 			return;
 		}
@@ -249,7 +215,7 @@ export class HeartRateDisplay {
 			return;
 		}
 
-		if (this._isOnBody) {
+		if (this.isOnBody) {
 			if (!this.heartRateSensor.activated) {
 				// console.log(
 				// 	`HeartRateDisplay.updateState: display.on=${display.on}, onBody=${this._isOnBody}; starting heart rate sensor...`
@@ -270,7 +236,7 @@ export class HeartRateDisplay {
 				// console.log(`HeartRateDisplay.updateState: display.on=${display.on}, onBody=${this._isOnBody}`);
 			}
 
-			this._rate = undefined;
+			this.rate = undefined;
 			if (display.on && !display.aodActive) {
 				this.render();
 			}

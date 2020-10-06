@@ -38,7 +38,6 @@ export interface Config {
 	showBatteryPercentage: boolean | undefined;
 	showDate: boolean | undefined;
 	showDayOnDateHide: boolean | undefined;
-	showDaySuffix: boolean | undefined;
 	showLeadingZero: boolean | undefined;
 	showRestingHeartRate: boolean | undefined;
 	showSeconds: boolean | undefined;
@@ -61,7 +60,6 @@ export const defaultConfig: Config = {
 	showBatteryPercentage: true,
 	showDate: true,
 	showDayOnDateHide: true,
-	showDaySuffix: true,
 	showLeadingZero: true,
 	showRestingHeartRate: false,
 	showSeconds: false,

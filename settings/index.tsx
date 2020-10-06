@@ -204,14 +204,6 @@ function PureSettings(props: SettingsComponentProps) {
 						</Text>
 					}
 				/>
-				<Toggle
-					settingsKey="showDaySuffix"
-					label={
-						<Text>
-							Show Day Suffixes <Text italic>(-st, -nd, -rd, -th)</Text>
-						</Text>
-					}
-				/>
 				<Toggle settingsKey="showLeadingZero" label="Show Leading Zero" />
 				<Toggle settingsKey="showSeconds" label="Show Seconds" />
 			</Section>
