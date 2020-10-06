@@ -7,7 +7,7 @@
 
 #code {
 	width: 120;
-	height: 180;
+	height: 190;
 	fill: fb-orange;
 	overflow: hidden;
 }
@@ -93,12 +93,8 @@
 }
 
 .text--sm {
-	font-size: 20;
+	font-size: 22;
 }
-
-/* .text--xs {
-	font-size: 18;
-} */
 
 .text--caps {
 	text-transform: uppercase;

@@ -88,7 +88,7 @@
 					easing="ease-in"
 				/>
 			</g>
-			<text id="lstat-value" class="text text--md primary" text-anchor="start" text-length="8" x="80" y="0" />
+			<text id="lstat-value" class="text text--lg primary" text-anchor="start" text-length="8" x="80" y="0" />
 			<text id="lstat-units" class="text text--sm secondary" text-anchor="start" text-length="8" x="75" y="20" />
 
 			<g transform="translate(100%-44,-12)">
@@ -170,7 +170,7 @@
 					easing="ease-in"
 				/>
 			</g>
-			<text id="rstat-value" class="text text--md primary" text-anchor="end" text-length="8" x="100%-80" y="0" />
+			<text id="rstat-value" class="text text--lg primary" text-anchor="end" text-length="8" x="100%-80" y="0" />
 			<text
 				id="rstat-units"
 				class="text text--sm secondary"

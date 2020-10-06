@@ -34,11 +34,11 @@
 				/>
 				<text
 					id="day-of-month"
-					class="text text--md primary theme-fg-color"
+					class="text text--lg primary theme-fg-color"
 					text-anchor="middle"
 					text-length="2"
 					x="50%"
-					y="20"
+					y="25"
 				/>
 
 				<animate
@@ -279,7 +279,7 @@
 		<image id="time-min1" href="images/0.png" class="digit primary" x="$" y="0" />
 
 		<g>
-			<text id="time-secs" class="text text--sm primary" text-anchor="middle" text-length="4" x="$-30" y="120" />
+			<text id="time-secs" class="text text--md primary" text-anchor="middle" text-length="4" x="$-30" y="125" />
 
 			<!-- Animate in -->
 			<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
