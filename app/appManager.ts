@@ -258,8 +258,8 @@ export class AppManager {
 					$el.style.fillOpacity = separatorOpacity;
 					($el.children[0] as AnimateElement).from = separatorOpacity;
 					($el.children[1] as AnimateElement).to = separatorOpacity;
-				} else if ($el.id === 'time-hr0--zero') {
-					$el.style.fillOpacity = opacity;
+					// } else if ($el.id === 'time-hr0--zero') {
+					// 	$el.style.fillOpacity = opacity;
 				}
 
 				if (display.aodAvailable) {
