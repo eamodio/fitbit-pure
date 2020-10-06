@@ -63,16 +63,16 @@ export class DonateView implements Disposable {
 			return;
 		}
 
-		const $popup = this.$view;
+		const $view = this.$view;
 		const $tumblers = [
-			$popup.getElementById<TumblerViewElement>('code1')!,
-			$popup.getElementById<TumblerViewElement>('code2')!,
-			$popup.getElementById<TumblerViewElement>('code3')!,
+			$view.getElementById<TumblerViewElement>('code1')!,
+			$view.getElementById<TumblerViewElement>('code2')!,
+			$view.getElementById<TumblerViewElement>('code3')!,
 		];
 
 		const date = new Date();
 		const value = `${date.getUTCFullYear().toString().substr(2)}${date.getUTCMonth().toString(16)}`;
-		if ($tumblers.every(($, index) => $.value === Number(value[index]))) {
+		if ($tumblers.every(($, index) => $.value.toString(16) === value[index])) {
 			this.accept();
 		} else {
 			this.reject();
@@ -85,10 +85,22 @@ export class DonateView implements Disposable {
 			this.resolver = resolve;
 			await document.location.replace('./resources/donate.view');
 
+			const $view = this.$view;
+			const $tumblers = [
+				$view.getElementById<TumblerViewElement>('code1')!,
+				$view.getElementById<TumblerViewElement>('code2')!,
+				$view.getElementById<TumblerViewElement>('code3')!,
+			];
+
+			function onTumblerClick(index: number) {
+				$tumblers[index].value = Number($tumblers[index].value) + 1;
+			}
+
 			this.disposable = Disposable.from(
 				this.appManager.onDidTriggerAppEvent(this.onAppEvent, this),
 				addEventListener(this.$backButton, 'click', () => this.onBackButtonClick()),
 				addEventListener(this.$nextButton, 'click', () => this.onNextButtonClick()),
+				...$tumblers.map(($, index) => addEventListener($, 'click', () => onTumblerClick(index))),
 				addEventListener(document, 'unload', () => this.dispose()),
 			);
 		});
