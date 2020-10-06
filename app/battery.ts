@@ -47,9 +47,9 @@ export class BatteryDisplay implements Disposable {
 		if (this.disposed) return;
 		if (e?.key != null && e.key !== 'showBatteryPercentage') return;
 
-		document.getElementById<TextElement>('bat-level')!.style.display = configuration.get('showBatteryPercentage')
-			? 'inline'
-			: 'none';
+		const display = configuration.get('showBatteryPercentage') ? 'inline' : 'none';
+		document.getElementById<TextElement>('bat-level')!.style.display = display;
+		document.getElementById<TextElement>('bat-level-%')!.style.display = display;
 	}
 
 	@defer()
