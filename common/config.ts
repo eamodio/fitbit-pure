@@ -24,6 +24,8 @@ export type Colors =
 	| 'fb-green';
 
 export interface Config {
+	version: number | undefined;
+
 	accentBackgroundColor: Colors | undefined;
 	accentForegroundColor: Colors | undefined;
 	allowEditing: boolean | undefined;
@@ -46,6 +48,8 @@ export interface Config {
 }
 
 export const defaultConfig: Config = {
+	version: 0,
+
 	accentBackgroundColor: 'fb-black',
 	accentForegroundColor: 'fb-white',
 	allowEditing: true,
@@ -66,19 +70,35 @@ export const defaultConfig: Config = {
 	currentActivityView: 0,
 };
 
-export interface ConfigIpcMessage {
-	type: 'config';
+export interface ConfigChangeIpcMessage {
+	type: 'config-change';
 	data: {
+		version: number;
+		donated: boolean;
 		key: keyof Config | null;
 		value: any;
 	};
 }
 
-export interface DonatedIpcMessage {
-	type: 'donated';
+export interface ConfigSyncIpcMessage {
+	type: 'config-sync';
+	data: Config & { version: number };
+}
+
+export interface ConfigSyncCheckIpcMessage {
+	type: 'config-sync-check';
 	data: {
+		version: number;
 		donated: boolean;
 	};
 }
 
-export type IpcMessage = ConfigIpcMessage | DonatedIpcMessage;
+export interface ConfigSyncRequestIpcMessage {
+	type: 'config-sync-request';
+}
+
+export type IpcMessage =
+	| ConfigChangeIpcMessage
+	| ConfigSyncIpcMessage
+	| ConfigSyncCheckIpcMessage
+	| ConfigSyncRequestIpcMessage;
