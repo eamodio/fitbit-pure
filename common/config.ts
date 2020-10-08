@@ -1,7 +1,6 @@
-export type Backgrounds = 'beams' | 'glow' | 'lines' | 'swirl' | 'swirl-crystalline';
+export type Backgrounds = 'none' | 'beams' | 'glow' | 'lines' | 'swirl' | 'swirl-crystalline';
 
 export type Colors =
-	| 'fb-black'
 	| 'fb-dark-gray'
 	| 'fb-light-gray'
 	| 'fb-white'
@@ -54,7 +53,7 @@ export interface Config {
 export const defaultConfig: Config = {
 	version: 0,
 
-	accentBackgroundColor: 'fb-black',
+	accentBackgroundColor: 'fb-light-gray',
 	accentForegroundColor: 'fb-white',
 	allowEditing: true,
 	animateHeartRate: true,
@@ -63,7 +62,7 @@ export const defaultConfig: Config = {
 	autoRotate: false,
 	autoRotateInterval: 3000,
 	background: 'glow',
-	backgroundOpacity: 65,
+	backgroundOpacity: 80,
 	colorizeHeartRate: true,
 	donated: false,
 	showActivityUnits: true,

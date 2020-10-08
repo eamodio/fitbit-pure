@@ -1,6 +1,6 @@
 <svg class="theme--pure">
 	<image id="editing" href="images/editing.png" class="bg bg--editing" x="0" y="0" display="none" />
-	<image id="background" href="images/bg-glow_336.png" class="bg theme-bg-color">
+	<image id="background" href="images/bg-glow_336.png" class="bg theme-bg-color" visibility="hidden">
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 

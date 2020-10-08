@@ -56,7 +56,7 @@ Customizable — choose whether to show the units, or auto-rotate between the da
 
 Choose colors that suit your style
 
-Customizable — choose a background and foreground accent color
+Customizable — choose a background style, background brightness, background color, or accent color
 
 ### On-Device Quick Toggles (**PRO**)
 

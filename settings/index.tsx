@@ -1,39 +1,36 @@
-function friendlyColor(color: string | undefined) {
-	const name = color?.replace(/"/g, '')?.substr(3) ?? '';
-	if (!name) return name;
-
-	if (name === 'black') return 'None';
-	if (name === 'light-gray') return 'Gray';
-	return `${name[0].toUpperCase()}${name.substr(1)}`;
-}
-
-function friendlyOpacity(value: string | undefined) {
-	return `${Number(value ?? 100)}%`;
-}
-
-function friendlyInterval(value: string | undefined) {
-	return Number(value) === 1000 ? '1 second' : `${Number(value) / 1000} seconds`;
-}
+const colors = [
+	{ value: 'fb-dark-gray', color: '#505050' },
+	{ value: 'fb-light-gray', color: '#A0A0A0' },
+	{ value: 'fb-white', color: '#FFFFFF' },
+	{ value: 'fb-lavender', color: '#8173FF' },
+	{ value: 'fb-slate', color: '#7090B5' },
+	{ value: 'fb-blue', color: '#4D86FF' },
+	{ value: 'fb-cyan', color: '#15B9ED' },
+	{ value: 'fb-aqua', color: '#3BF7DE' },
+	{ value: 'fb-cerulean', color: '#8080FF' },
+	{ value: 'fb-indigo', color: '#5B4CFF' },
+	{ value: 'fb-purple', color: '#C658FB' },
+	{ value: 'fb-violet', color: '#D828B8' },
+	{ value: 'fb-plum', color: '#A51E7C' },
+	{ value: 'fb-magenta', color: '#F1247C' },
+	{ value: 'fb-pink', color: '#FF78B7' },
+	{ value: 'fb-red', color: '#FA4D61' },
+	{ value: 'fb-orange', color: '#FF752D' },
+	{ value: 'fb-peach', color: '#FFCC33' },
+	{ value: 'fb-yellow', color: '#F0A500' },
+	{ value: 'fb-lime', color: '#72B314' },
+	{ value: 'fb-mint', color: '#5BE37D' },
+	{ value: 'fb-green', color: '#2CB574' },
+];
 
 const backgroundOptions = [
+	{ name: 'None', description: '', value: 'none' },
 	{ name: 'Beams', description: '', value: 'beams' },
 	{ name: 'Glow', description: '', value: 'glow' },
 	{ name: 'Lines', description: '', value: 'lines' },
 	{ name: 'Swirl', description: '', value: 'swirl' },
 	{ name: 'Swirl (Crystalline)', description: '', value: 'swirl-crystalline' },
 ];
-
-function getBackgroundIndex(value: string | undefined) {
-	let count = 0;
-	for (const option of backgroundOptions) {
-		if (value === `"${option.value}"`) {
-			return count;
-		}
-		count++;
-	}
-
-	return 1;
-}
 
 const debug = false;
 
@@ -59,7 +56,7 @@ function PureSettings(props: SettingsComponentProps) {
 				}
 			>
 				<Text align="center">
-					A beautifully designed, highly customizable, clean, and simple clock face for Fitbit Versa devices.
+					A beautifully designed, customizable, clean and simple clock face for Fitbit Sense & Versa devices.
 				</Text>
 			</Section>
 
@@ -87,7 +84,7 @@ function PureSettings(props: SettingsComponentProps) {
 						label="🔒 Activity Stats"
 						sublabel="See your steps, distance, active minutes, and calories"
 					/>
-					<TextImageRow label="🔒 Theming" sublabel="Choose colors that suit your style" />
+					<TextImageRow label="🔒 Theming" sublabel="Choose a background and colors that suit your style" />
 					<TextImageRow
 						label="🔒 On-device Quick Toggles"
 						sublabel="Change the look and feel, right on your wrist"
@@ -135,16 +132,16 @@ function PureSettings(props: SettingsComponentProps) {
 								Theming<Text> (PRO)</Text>
 							</Text>
 						}
-						sublabel={<Text align="center">Choose a background & colors that suit your style</Text>}
+						sublabel={<Text align="center">Choose a background and colors that suit your style</Text>}
 					/>
 				}
 			>
-				{!donated && <Text>🔒 Background Style</Text>}
+				{!donated && <Text>🔒 Background</Text>}
 				{donated && (
 					<Select
-						label={'Background Style'}
+						label={'Background'}
 						selected={[getBackgroundIndex(props.settings.background)]}
-						selectViewTitle="Background Style"
+						selectViewTitle="Background"
 						options={backgroundOptions}
 						renderItem={option => <TextImageRow label={option.name} sublabel={option.description} />}
 						onSelection={selection =>
@@ -177,38 +174,10 @@ function PureSettings(props: SettingsComponentProps) {
 						</Text>
 					)}
 				</Text>
-				{donated && (
-					<ColorSelect
-						settingsKey="accentBackgroundColor"
-						colors={[
-							{ value: 'fb-black', color: '#000000' },
-							{ value: 'fb-light-gray', color: '#A0A0A0' },
-							{ value: 'fb-white', color: '#FFFFFF' },
-							{ value: 'fb-lavender', color: '#BCD8F8' },
-							{ value: 'fb-slate', color: '#7090B5' },
-							{ value: 'fb-blue', color: '#3182DE' },
-							{ value: 'fb-cyan', color: '#14D3F5' },
-							{ value: 'fb-aqua', color: '#3BF7DE' },
-							{ value: 'fb-cerulean', color: '#8080FF' },
-							{ value: 'fb-indigo', color: '#5B4CFF' },
-							{ value: 'fb-purple', color: '#BD4EFC' },
-							{ value: 'fb-violet', color: '#D828B8' },
-							{ value: 'fb-plum', color: '#A51E7C' },
-							{ value: 'fb-magenta', color: '#F80070' },
-							{ value: 'fb-pink', color: '#F83478' },
-							{ value: 'fb-red', color: '#F83C40' },
-							{ value: 'fb-orange', color: '#FC6B3A' },
-							{ value: 'fb-peach', color: '#FFCC33' },
-							{ value: 'fb-yellow', color: '#E4FA3C' },
-							{ value: 'fb-lime', color: '#B8FC68' },
-							{ value: 'fb-mint', color: '#5BE37D' },
-							{ value: 'fb-green', color: '#00A629' },
-						]}
-					/>
-				)}
+				{donated && <ColorSelect settingsKey="accentBackgroundColor" colors={colors} />}
 
 				<Text>
-					{donated ? '' : '🔒 '}Accent Color
+					{donated ? '' : '🔒 '}Text Accent Color
 					{donated && (
 						<Text bold>
 							<Text>: </Text>
@@ -216,34 +185,7 @@ function PureSettings(props: SettingsComponentProps) {
 						</Text>
 					)}
 				</Text>
-				{donated && (
-					<ColorSelect
-						settingsKey="accentForegroundColor"
-						colors={[
-							{ value: 'fb-light-gray', color: '#A0A0A0' },
-							{ value: 'fb-white', color: '#FFFFFF' },
-							{ value: 'fb-lavender', color: '#BCD8F8' },
-							{ value: 'fb-slate', color: '#7090B5' },
-							{ value: 'fb-blue', color: '#3182DE' },
-							{ value: 'fb-cyan', color: '#14D3F5' },
-							{ value: 'fb-aqua', color: '#3BF7DE' },
-							{ value: 'fb-cerulean', color: '#8080FF' },
-							{ value: 'fb-indigo', color: '#5B4CFF' },
-							{ value: 'fb-purple', color: '#BD4EFC' },
-							{ value: 'fb-violet', color: '#D828B8' },
-							{ value: 'fb-plum', color: '#A51E7C' },
-							{ value: 'fb-magenta', color: '#F80070' },
-							{ value: 'fb-pink', color: '#F83478' },
-							{ value: 'fb-red', color: '#F83C40' },
-							{ value: 'fb-orange', color: '#FC6B3A' },
-							{ value: 'fb-peach', color: '#FFCC33' },
-							{ value: 'fb-yellow', color: '#E4FA3C' },
-							{ value: 'fb-lime', color: '#B8FC68' },
-							{ value: 'fb-mint', color: '#5BE37D' },
-							{ value: 'fb-green', color: '#00A629' },
-						]}
-					/>
-				)}
+				{donated && <ColorSelect settingsKey="accentForegroundColor" colors={colors} />}
 			</Section>
 
 			<Section title={<TextImageRow label={<Text align="center">Date &amp; Time Display</Text>} />}>
@@ -322,3 +264,32 @@ function PureSettings(props: SettingsComponentProps) {
 }
 
 registerSettingsPage(PureSettings);
+
+function friendlyColor(color: string | undefined) {
+	const name = color?.replace(/"/g, '')?.substr(3) ?? '';
+	if (!name) return name;
+
+	if (name === 'dark-gray') return 'Dark Gray';
+	if (name === 'light-gray') return 'Gray';
+	return `${name[0].toUpperCase()}${name.substr(1)}`;
+}
+
+function friendlyInterval(value: string | undefined) {
+	return Number(value) === 1000 ? '1 second' : `${Number(value) / 1000} seconds`;
+}
+
+function friendlyOpacity(value: string | undefined) {
+	return `${Number(value ?? 100)}%`;
+}
+
+function getBackgroundIndex(value: string | undefined) {
+	let count = 0;
+	for (const option of backgroundOptions) {
+		if (value === `"${option.value}"`) {
+			return count;
+		}
+		count++;
+	}
+
+	return 1;
+}

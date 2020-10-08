@@ -14,7 +14,7 @@ const screenHeight = device.screen.height;
 const screenWidth = device.screen.width;
 
 const colors: Colors[] = [
-	'fb-black',
+	'fb-dark-gray',
 	'fb-light-gray',
 	'fb-white',
 	'fb-lavender',
@@ -235,7 +235,6 @@ export class AppManager {
 			let $el: StyledElement;
 			while (i--) {
 				$el = $els[i];
-				$el.style.visibility = color === 'fb-black' ? 'hidden' : 'visible';
 				$el.style.fill = color;
 			}
 		}
@@ -287,13 +286,21 @@ export class AppManager {
 		}
 
 		if (e?.key == null || e?.key === 'background') {
-			const background = configuration.get('background');
-			document.getElementById<ImageElement>('background')!.href = `images/bg-${background}_336.png`;
+			const $background = document.getElementById<ImageElement>('background')!;
+
+			const background = configuration.get('donated') ? configuration.get('background') : 'none';
+			if (background === 'none') {
+				$background.style.visibility = 'hidden';
+			} else {
+				$background.href = `images/bg-${background}_336.png`;
+				$background.style.visibility = 'visible';
+			}
 		}
 
 		if (e?.key == null || e?.key === 'backgroundOpacity') {
-			const opacity = configuration.get('backgroundOpacity') / 100;
 			const $background = document.getElementById<ImageElement>('background')!;
+
+			const opacity = configuration.get('backgroundOpacity') / 100;
 			$background.style.opacity = opacity;
 			($background.children[0] as AnimateElement).to = opacity;
 			($background.children[1] as AnimateElement).from = opacity;
@@ -361,10 +368,6 @@ export class AppManager {
 			vibration.start('bump');
 
 			let color = configuration.get('accentBackgroundColor');
-			// if (color === 'fb-dark-gray') {
-			// 	color = 'fb-black';
-			// }
-
 			let index = colors.indexOf(color) + 1;
 			if (index >= colors.length) {
 				index = 0;
@@ -372,7 +375,7 @@ export class AppManager {
 
 			color = colors[index];
 			configuration.set('accentBackgroundColor', color);
-			configuration.set('accentForegroundColor', color === 'fb-black' ? 'fb-white' : color);
+			configuration.set('accentForegroundColor', color);
 		} else if (e.screenX >= 236 && e.screenY >= 108 && e.screenY <= 188) {
 			vibration.start('bump');
 			configuration.set('showSeconds', !configuration.get('showSeconds'));
@@ -470,7 +473,7 @@ export class AppManager {
 	// DEMO MODE
 	// demo() {
 	// 	display.on = false;
-	// 	configuration.set('accentBackgroundColor', 'fb-black');
+	// 	configuration.set('accentBackgroundColor', 'fb-light-gray');
 	// 	configuration.set('accentForegroundColor', 'fb-white');
 	// 	configuration.set('currentActivityView', 0);
 
