@@ -301,15 +301,15 @@ export class TimeDisplay implements Disposable {
 		$dateHighlight.x = x;
 		$dateHighlight.text = dayOfMonth.toString();
 
-		const rect = $dateHighlight.getBBox();
+		// const rect = $dateHighlight.getBBox();
 
-		// Required because there seems to be an off-by-1 pixel calc with certain characters
-		// So instead of relying on exact overlay, paint a black rect below the highlight
-		const $dateHighlightBg = document.getElementById<RectElement>('date-day-bg')!;
-		$dateHighlightBg.x = rect.x;
-		$dateHighlightBg.y = -rect.height;
-		$dateHighlightBg.height = rect.height;
-		$dateHighlightBg.width = rect.width;
+		// // Required because there seems to be an off-by-1 pixel calc with certain characters
+		// // So instead of relying on exact overlay, paint a black rect below the highlight
+		// const $dateHighlightBg = document.getElementById<RectElement>('date-day-bg')!;
+		// $dateHighlightBg.x = rect.x;
+		// $dateHighlightBg.y = -rect.height;
+		// $dateHighlightBg.height = rect.height;
+		// $dateHighlightBg.width = rect.width;
 	}
 
 	private updateAlwaysOnOpacity(aodOpacity: number) {

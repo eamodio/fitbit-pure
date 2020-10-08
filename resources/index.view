@@ -327,7 +327,7 @@
 							x="50%"
 							y="0"
 						/>
-						<rect id="date-day-bg" x="0" y="0" height="0" width="0" fill="fb-black" />
+						<!-- <rect id="date-day-bg" x="0" y="0" height="0" width="0" fill="fb-black" fill-opacity="0" /> -->
 						<text
 							id="date-day"
 							class="text text--lg primary theme-fg-color"

@@ -60,6 +60,10 @@
 	fill-opacity: 1;
 }
 
+#date-day.primary {
+	font-family: System-Regular;
+}
+
 .secondary {
 	fill-opacity: 0.7;
 }
