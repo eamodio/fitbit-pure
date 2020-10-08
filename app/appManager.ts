@@ -254,14 +254,17 @@ export class AppManager {
 			let $el: StyledElement;
 			while (i--) {
 				$el = $els[i];
+
+				if ($el.id === 'hr-icon' && configuration.get('colorizeHeartRate')) {
+					continue;
+				}
+
 				$el.style.fill = color;
 
 				if ($el.id === 'time-sep') {
 					$el.style.fillOpacity = separatorOpacity;
 					($el.children[0] as AnimateElement).from = separatorOpacity;
 					($el.children[1] as AnimateElement).to = separatorOpacity;
-					// } else if ($el.id === 'time-hr0--zero') {
-					// 	$el.style.fillOpacity = opacity;
 				}
 
 				if (display.aodAvailable) {
