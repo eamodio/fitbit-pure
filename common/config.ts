@@ -1,3 +1,5 @@
+export type Backgrounds = 'beams' | 'glow' | 'lines' | 'swirl' | 'swirl-crystalline';
+
 export type Colors =
 	| 'fb-black'
 	| 'fb-dark-gray'
@@ -34,6 +36,8 @@ export interface Config {
 	aodOpacity: number | undefined;
 	autoRotate: boolean | undefined;
 	autoRotateInterval: number | undefined;
+	background: Backgrounds | undefined;
+	backgroundOpacity: number | undefined;
 	colorizeHeartRate: boolean | undefined;
 	donated: boolean | undefined;
 	showActivityUnits: boolean | undefined;
@@ -58,6 +62,8 @@ export const defaultConfig: Config = {
 	aodOpacity: 60,
 	autoRotate: false,
 	autoRotateInterval: 3000,
+	background: 'glow',
+	backgroundOpacity: 65,
 	colorizeHeartRate: true,
 	donated: false,
 	showActivityUnits: true,

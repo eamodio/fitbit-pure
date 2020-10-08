@@ -189,9 +189,11 @@ export class AppManager {
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
-			e?.key !== 'accentBackgroundColor' &&
-			e?.key !== 'accentForegroundColor' &&
-			e?.key !== 'allowEditing' &&
+			e.key !== 'accentBackgroundColor' &&
+			e.key !== 'accentForegroundColor' &&
+			e.key !== 'allowEditing' &&
+			e.key !== 'background' &&
+			e.key !== 'backgroundOpacity' &&
 			e.key !== 'donated'
 		) {
 			return;
@@ -279,6 +281,19 @@ export class AppManager {
 					}
 				}
 			}
+		}
+
+		if (e?.key == null || e?.key === 'background') {
+			const background = configuration.get('background');
+			document.getElementById<ImageElement>('background')!.href = `images/bg-${background}_336.png`;
+		}
+
+		if (e?.key == null || e?.key === 'backgroundOpacity') {
+			const opacity = configuration.get('backgroundOpacity') / 100;
+			const $background = document.getElementById<ImageElement>('background')!;
+			$background.style.opacity = opacity;
+			($background.children[0] as AnimateElement).to = opacity;
+			($background.children[1] as AnimateElement).from = opacity;
 		}
 	}
 

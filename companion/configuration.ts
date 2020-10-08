@@ -137,7 +137,7 @@ export class Configuration {
 		}
 	}
 
-	get<T extends keyof Config>(key: T): NonNullable<Config[T]> {
+	get<T extends keyof Config>(key: T): Config[T] {
 		const value = settingsStorage.getItem(key);
 		return value != null ? JSON.parse(value) : value ?? undefined;
 	}
@@ -208,16 +208,6 @@ export class Configuration {
 		}
 	}
 
-	private updateVersion(version: number) {
-		try {
-			this.disposable?.dispose();
-
-			settingsStorage.setItem('version', JSON.stringify(version));
-		} finally {
-			this.disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
-		}
-	}
-
 	private send(key: keyof Config | null, value: string | null): boolean {
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);
@@ -227,25 +217,13 @@ export class Configuration {
 
 		// console.log(`Configuration.send(${key}, ${value})`);
 
-		if (key != null && typeof defaultConfig[key] === 'object') {
-			if (value != null && value[0] === '{' && value[value.length - 1] === '}') {
-				try {
-					const selected = JSON.parse(value);
-					if (Array.isArray(selected.values) && Array.isArray(selected.selected)) {
-						value = JSON.stringify(selected.values[0].value);
-						// console.log(`Configuration.send(${key}, ${value}): massaged value`);
-					}
-				} catch {}
-			}
-		}
-
 		const msg: ConfigChangeIpcMessage = {
 			type: 'config-change',
 			data: {
 				version: this.version,
 				donated: this.donated,
 				key: key,
-				value: value != null ? JSON.parse(value) : value,
+				value: value != null ? JSON.parse(value) : value ?? undefined,
 			},
 		};
 		peerSocket.send(msg);
@@ -317,5 +295,15 @@ export class Configuration {
 		peerSocket.send(msg);
 
 		return true;
+	}
+
+	private updateVersion(version: number) {
+		try {
+			this.disposable?.dispose();
+
+			settingsStorage.setItem('version', JSON.stringify(version));
+		} finally {
+			this.disposable = addEventListener(settingsStorage, 'change', e => this.onSettingsStorageChanged(e));
+		}
 	}
 }

@@ -1,14 +1,39 @@
-const friendlyColor = (color: string | undefined) => {
+function friendlyColor(color: string | undefined) {
 	const name = color?.replace(/"/g, '')?.substr(3) ?? '';
 	if (!name) return name;
 
 	if (name === 'black') return 'None';
 	if (name === 'light-gray') return 'Gray';
 	return `${name[0].toUpperCase()}${name.substr(1)}`;
-};
-const friendlyOpacity = (value: string | undefined) => `${Number(value ?? 100)}%`;
-const friendlyInterval = (value: string | undefined) =>
-	Number(value) === 1000 ? '1 second' : `${Number(value) / 1000} seconds`;
+}
+
+function friendlyOpacity(value: string | undefined) {
+	return `${Number(value ?? 100)}%`;
+}
+
+function friendlyInterval(value: string | undefined) {
+	return Number(value) === 1000 ? '1 second' : `${Number(value) / 1000} seconds`;
+}
+
+const backgroundOptions = [
+	{ name: 'Beams', description: '', value: 'beams' },
+	{ name: 'Glow', description: '', value: 'glow' },
+	{ name: 'Lines', description: '', value: 'lines' },
+	{ name: 'Swirl', description: '', value: 'swirl' },
+	{ name: 'Swirl (Crystalline)', description: '', value: 'swirl-crystalline' },
+];
+
+function getBackgroundIndex(value: string | undefined) {
+	let count = 0;
+	for (const option of backgroundOptions) {
+		if (value === `"${option.value}"`) {
+			return count;
+		}
+		count++;
+	}
+
+	return 1;
+}
 
 const debug = false;
 
@@ -110,12 +135,41 @@ function PureSettings(props: SettingsComponentProps) {
 								Theming<Text> (PRO)</Text>
 							</Text>
 						}
-						sublabel={<Text align="center">Choose colors that suit your style</Text>}
+						sublabel={<Text align="center">Choose a background & colors that suit your style</Text>}
 					/>
 				}
 			>
+				{!donated && <Text>🔒 Background Style</Text>}
+				{donated && (
+					<Select
+						label={'Background Style'}
+						selected={[getBackgroundIndex(props.settings.background)]}
+						selectViewTitle="Background Style"
+						options={backgroundOptions}
+						renderItem={option => <TextImageRow label={option.name} sublabel={option.description} />}
+						onSelection={selection =>
+							props.settingsStorage.setItem('background', `"${selection.values[0].value}"`)
+						}
+					/>
+				)}
+				{!donated && <Text>🔒 Background Brightness</Text>}
+				{donated && (
+					<Slider
+						label={
+							<Text>
+								Background Brightness:{' '}
+								<Text bold>{friendlyOpacity(props.settings.backgroundOpacity)}</Text>
+							</Text>
+						}
+						settingsKey="backgroundOpacity"
+						min="0"
+						max="100"
+						step="5"
+					/>
+				)}
+
 				<Text>
-					{donated ? '' : '🔒 '}Accent Color (Background)
+					{donated ? '' : '🔒 '}Background Color
 					{donated && (
 						<Text bold>
 							<Text>: </Text>
@@ -148,13 +202,13 @@ function PureSettings(props: SettingsComponentProps) {
 							{ value: 'fb-yellow', color: '#E4FA3C' },
 							{ value: 'fb-lime', color: '#B8FC68' },
 							{ value: 'fb-mint', color: '#5BE37D' },
-							{ value: 'fb-green', color: '#00A629' }
+							{ value: 'fb-green', color: '#00A629' },
 						]}
 					/>
 				)}
 
 				<Text>
-					{donated ? '' : '🔒 '}Accent Color (Foreground)
+					{donated ? '' : '🔒 '}Accent Color
 					{donated && (
 						<Text bold>
 							<Text>: </Text>
@@ -186,7 +240,7 @@ function PureSettings(props: SettingsComponentProps) {
 							{ value: 'fb-yellow', color: '#E4FA3C' },
 							{ value: 'fb-lime', color: '#B8FC68' },
 							{ value: 'fb-mint', color: '#5BE37D' },
-							{ value: 'fb-green', color: '#00A629' }
+							{ value: 'fb-green', color: '#00A629' },
 						]}
 					/>
 				)}
