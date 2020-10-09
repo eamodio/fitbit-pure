@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { display } from 'display';
 import { peerSocket } from 'messaging';
 import {
 	Config,
@@ -105,6 +106,10 @@ class Configuration {
 					this.config[key] = defaultConfig[key] === value ? undefined : value;
 				}
 
+				if (key !== 'aodOpacity') {
+					display.poke();
+				}
+
 				this.save(version > msg.data.version ? version + 1 : msg.data.version);
 
 				// If there is a discrepancy in the donation flag, trust whoever is true
@@ -202,6 +207,8 @@ class Configuration {
 		this._onDidChange.fire({ key: key });
 
 		if (isLocal) return true;
+
+		display.poke();
 
 		// Send the modified setting to the companion
 		this.send(key, value);
