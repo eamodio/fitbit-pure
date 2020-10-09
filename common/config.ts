@@ -1,28 +1,41 @@
-export type Backgrounds = 'none' | 'beams' | 'glow' | 'lines' | 'swirl' | 'swirl-crystalline';
+export type Backgrounds =
+	| 'none'
+	| 'beams'
+	| 'bubbles'
+	| 'clouds'
+	| 'drops'
+	| 'geometric'
+	| 'glow'
+	| 'lines'
+	| 'oil'
+	| 'rings'
+	| 'smoke'
+	| 'snake'
+	| 'swirl';
 
 export type Colors =
-	| 'fb-dark-gray'
-	| 'fb-light-gray'
 	| 'fb-white'
-	| 'fb-lavender'
-	| 'fb-slate'
-	| 'fb-blue'
-	| 'fb-cyan'
-	| 'fb-aqua'
+	| 'fb-light-gray'
+	| 'fb-dark-gray'
 	| 'fb-cerulean'
+	| 'fb-lavender'
 	| 'fb-indigo'
 	| 'fb-purple'
-	| 'fb-violet'
 	| 'fb-plum'
-	| 'fb-magenta'
+	| 'fb-violet'
 	| 'fb-pink'
+	| 'fb-magenta'
 	| 'fb-red'
 	| 'fb-orange'
 	| 'fb-peach'
 	| 'fb-yellow'
 	| 'fb-lime'
+	| 'fb-green'
 	| 'fb-mint'
-	| 'fb-green';
+	| 'fb-aqua'
+	| 'fb-cyan'
+	| 'fb-slate'
+	| 'fb-blue';
 
 export interface Config {
 	version: number | undefined;
