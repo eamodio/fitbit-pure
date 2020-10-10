@@ -112,7 +112,7 @@ export class ActivityDisplay implements Disposable {
 				this.setAutoRotate(false);
 
 				if (e.editing) {
-					this.setView(ActivityViews.Date);
+					this.setView(ActivityViews.Activity1);
 				}
 
 				this.render();

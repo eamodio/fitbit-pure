@@ -4,7 +4,7 @@ import document from 'document';
 import { vibration } from 'haptics';
 import { ActivityDisplay } from './activity';
 import { BatteryDisplay } from './battery';
-import { Colors, ConfigChangeEvent, configuration } from './configuration';
+import { Backgrounds, Colors, ConfigChangeEvent, configuration } from './configuration';
 import { DonateView } from './donateView';
 import { HeartRateDisplay } from './heartRate';
 import { TimeDisplay } from './time';
@@ -13,54 +13,70 @@ import { addEventListener, Disposable, Event, EventEmitter } from '../common/sys
 const screenHeight = device.screen.height;
 const screenWidth = device.screen.width;
 
+const backgrounds: Backgrounds[] = [
+	'none',
+	'beams',
+	'bubbles',
+	'clouds',
+	'drops',
+	'geometric',
+	'glow',
+	'lines',
+	'oil',
+	'rings',
+	'smoke',
+	'snake',
+	'swirl',
+];
+
 const colors: Colors[] = [
-	'fb-dark-gray',
-	'fb-light-gray',
 	'fb-white',
-	'fb-lavender',
-	'fb-slate',
-	'fb-blue',
-	'fb-cyan',
-	'fb-aqua',
+	'fb-light-gray',
+	'fb-dark-gray',
 	'fb-cerulean',
+	'fb-lavender',
 	'fb-indigo',
 	'fb-purple',
-	'fb-violet',
 	'fb-plum',
-	'fb-magenta',
+	'fb-violet',
 	'fb-pink',
+	'fb-magenta',
 	'fb-red',
 	'fb-orange',
 	'fb-peach',
 	'fb-yellow',
 	'fb-lime',
-	'fb-mint',
 	'fb-green',
+	'fb-mint',
+	'fb-aqua',
+	'fb-cyan',
+	'fb-slate',
+	'fb-blue',
 ];
 
 const opacities = new Float32Array([
-	0.35, // fb-black
-	0.35, // fb-light-gray
 	0.35, // fb-white
-	0.4, // fb-lavender
-	0.55, // fb-slate
-	0.55, // fb-blue
-	0.4, // fb-cyan
-	0.35, // fb-aqua
+	0.35, // fb-light-gray
+	0.35, // fb-dark-gray
 	0.5, // fb-cerulean
+	0.4, // fb-lavender
 	0.65, // fb-indigo
 	0.5, // fb-purple
-	0.45, // fb-violet
 	0.55, // fb-plum
-	0.4, // fb-magenta
+	0.45, // fb-violet
 	0.4, // fb-pink
+	0.4, // fb-magenta
 	0.4, // fb-red
 	0.4, // fb-orange
 	0.35, // fb-peach
 	0.35, // fb-yellow
 	0.35, // fb-lime
-	0.35, // fb-mint
 	0.5, // fb-green
+	0.35, // fb-mint
+	0.35, // fb-aqua
+	0.4, // fb-cyan
+	0.55, // fb-slate
+	0.55, // fb-blue
 ]);
 
 export enum ActivityViews {
@@ -138,7 +154,7 @@ export class AppManager {
 			requestAnimationFrame(() => $overlay.animate('enable'));
 		}
 
-		this._onDidTriggerAppEvent.fire({ type: 'editing', editing: value });
+		this.fire({ type: 'editing', editing: value });
 	}
 
 	fire(e: AppEvent) {
@@ -318,7 +334,7 @@ export class AppManager {
 			});
 		}
 
-		this._onDidTriggerAppEvent.fire({ type: 'display', display: sensor });
+		this.fire({ type: 'display', display: sensor });
 	}
 
 	private onDonateClicked() {
@@ -340,55 +356,59 @@ export class AppManager {
 		}
 
 		if (!this.editing) {
-			this._onDidTriggerAppEvent.fire({ type: 'click' });
+			this.fire({ type: 'click' });
 
 			return;
 		}
 
-		if (e.screenX <= 64 && e.screenY <= 64) {
-			vibration.start('bump');
-			configuration.set('showBatteryPercentage', !configuration.get('showBatteryPercentage'));
-		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY <= 64) {
-			vibration.start('bump');
-			configuration.set('showDayOnDateHide', !configuration.get('showDayOnDateHide'));
+		// points: [[2, 2], [130, 2], [254, 2], [66, 128], [192, 128], [2, 254], [130, 254], [254, 254]];
 
-			if (
-				configuration.get('showDayOnDateHide') &&
-				configuration.get('currentActivityView') === ActivityViews.Date
-			) {
-				document.getElementById<GroupElement>('day')!.animate('disable');
-			}
-		} else if (e.screenX >= 236 && e.screenY <= 64) {
-			vibration.start('bump');
-			configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
-		} else if (e.screenX <= 64 && e.screenY >= 108 && e.screenY <= 188) {
-			vibration.start('bump');
-			configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
-		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY >= 108 && e.screenY <= 188) {
-			vibration.start('bump');
-
-			let color = configuration.get('accentBackgroundColor');
-			let index = colors.indexOf(color) + 1;
-			if (index >= colors.length) {
-				index = 0;
-			}
-
-			color = colors[index];
-			configuration.set('accentBackgroundColor', color);
-			configuration.set('accentForegroundColor', color);
-		} else if (e.screenX >= 236 && e.screenY >= 108 && e.screenY <= 188) {
-			vibration.start('bump');
-			configuration.set('showSeconds', !configuration.get('showSeconds'));
-		} else if (e.screenY >= 236) {
-			if (e.screenX >= 112 && e.screenX <= 192) {
+		if (e.screenY <= 2 + 80) {
+			if (e.screenX <= 2 + 80) {
 				vibration.start('bump');
-				if (configuration.get('currentActivityView') === ActivityViews.Date) {
-					configuration.set('showDate', !configuration.get('showDate'));
-				} else {
-					configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
+				configuration.set('showBatteryPercentage', !configuration.get('showBatteryPercentage'));
+			} else if (e.screenX >= 130 && e.screenX <= 130 + 80) {
+				vibration.start('bump');
+				configuration.set('showDayOnDateHide', !configuration.get('showDayOnDateHide'));
+			} else if (e.screenX >= 254) {
+				vibration.start('bump');
+				configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
+			}
+		} else if (e.screenY >= 128 && e.screenY <= 128 + 80) {
+			if (e.screenX >= 66 && e.screenX <= 66 + 80) {
+				vibration.start('bump');
+
+				let color = configuration.get('accentBackgroundColor');
+				let index = colors.indexOf(color) + 1;
+				if (index >= colors.length) {
+					index = 0;
 				}
-			} else {
-				this._onDidTriggerAppEvent.fire({ type: 'click' });
+
+				color = colors[index];
+				configuration.set('accentBackgroundColor', color);
+				configuration.set('accentForegroundColor', color);
+			} else if (e.screenX >= 192 && e.screenX <= 192 + 80) {
+				vibration.start('bump');
+
+				let background = configuration.get('background');
+				let index = backgrounds.indexOf(background) + 1;
+				if (index >= backgrounds.length) {
+					index = 0;
+				}
+
+				background = backgrounds[index];
+				configuration.set('background', background);
+			}
+		} else if (e.screenY >= 254) {
+			if (e.screenX <= 2 + 80) {
+				vibration.start('bump');
+				configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
+			} else if (e.screenX >= 130 && e.screenX <= 130 + 80) {
+				vibration.start('bump');
+				configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
+			} else if (e.screenX >= 254) {
+				vibration.start('bump');
+				configuration.set('showSeconds', !configuration.get('showSeconds'));
 			}
 		}
 

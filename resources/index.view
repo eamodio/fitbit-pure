@@ -429,7 +429,7 @@
 
 	<image
 		id="editable-overlay"
-		href="images/editing-overlay.png"
+		href="images/editing-overlay_336.png"
 		class="bg bg--editing-overlay"
 		x="0"
 		y="0"

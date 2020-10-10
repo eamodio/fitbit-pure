@@ -11,7 +11,7 @@ import {
 } from '../common/config';
 import { debounce, Event, EventEmitter } from '../common/system';
 
-export { Colors } from '../common/config';
+export { Backgrounds, Colors } from '../common/config';
 
 export interface ConfigChangeEvent {
 	key: keyof Config | null;
