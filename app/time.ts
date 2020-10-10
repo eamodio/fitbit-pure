@@ -130,6 +130,10 @@ export class TimeDisplay implements Disposable {
 			if (configuration.get('showSeconds')) {
 				this.$seconds.style.display = 'inline';
 				this.updateClock(true);
+
+				if (e?.key === 'showSeconds') {
+					this.render();
+				}
 			} else {
 				this.$seconds.style.display = 'none';
 				this.updateClock(false);
