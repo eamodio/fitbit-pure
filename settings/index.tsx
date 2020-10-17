@@ -25,13 +25,13 @@ const colors = [
 
 const backgroundOptions = [
 	{ name: 'None', description: '', value: 'none' },
+	{ name: 'Arcs', description: '', value: 'lines' },
 	{ name: 'Beams', description: '', value: 'beams' },
 	{ name: 'Bubbles', description: '', value: 'bubbles' },
 	{ name: 'Clouds', description: '', value: 'clouds' },
 	{ name: 'Drops', description: '', value: 'drops' },
 	{ name: 'Geometric', description: '', value: 'geometric' },
 	{ name: 'Glow', description: '', value: 'glow' },
-	{ name: 'Lines', description: '', value: 'lines' },
 	{ name: 'Oil', description: '', value: 'oil' },
 	{ name: 'Rings', description: '', value: 'rings' },
 	{ name: 'Smoke', description: '', value: 'smoke' },
