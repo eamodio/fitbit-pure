@@ -29,7 +29,7 @@
 					class="text text--sm text--caps secondary"
 					text-anchor="middle"
 					text-length="3"
-					x="50%"
+					x="50%+1"
 					y="-7"
 				/>
 				<text
@@ -63,7 +63,7 @@
 				/>
 
 				<!-- Animate out -->
-				<animate attributeName="opacity" to="0" dur="0s" begin="unselect" end="select" />
+				<animate attributeName="opacity" to="0" dur="0.4s" begin="unselect" end="select" easing="ease-in" />
 			</g>
 
 			<section id="hr">
@@ -208,7 +208,7 @@
 				repeatCount="indefinite"
 			/>
 
-			<!-- Animate in -->
+			<!-- Animate AOD in -->
 			<animate
 				id="aod-in--fill"
 				attributeName="fill"
@@ -229,7 +229,7 @@
 				easing="ease-in"
 			/>
 
-			<!-- Animate out -->
+			<!-- Animate AOD out -->
 			<animate
 				id="aod-out--fill"
 				attributeName="fill"
@@ -279,6 +279,57 @@
 			end="enable"
 			easing="ease-in"
 			final="freeze"
+		/>
+	</g>
+
+	<g id="aod-day" opacity="0">
+		<text
+			id="aod-day-of-week"
+			class="text text--sm text--caps secondary"
+			text-anchor="middle"
+			text-length="3"
+			x="50%+1"
+			y="-7"
+		/>
+		<text id="aod-day-of-month" class="text text--lg primary" text-anchor="middle" text-length="2" x="50%" y="25" />
+
+		<!-- Animate AOD in -->
+		<animate
+			id="aod-in"
+			attributeName="opacity"
+			from="0"
+			to="0.6"
+			dur="0.2s"
+			begin="disable+0.3s"
+			end="enable"
+			easing="ease-out"
+		/>
+		<animateTransform
+			attributeType="translate"
+			from="0,260"
+			to="0,282"
+			dur="0.3s"
+			begin="disable+0.2s"
+			easing="ease-in"
+		/>
+		<animateTransform
+			attributeType="translate"
+			from="0,282"
+			to="0,280"
+			dur="0.1s"
+			begin="disable+0.6s"
+			easing="ease-out"
+		/>
+
+		<!-- Animate AOD out -->
+		<animate attributeName="opacity" to="0" dur="0.2s" begin="enable" end="disable" easing="ease-in" />
+		<animateTransform
+			attributeType="translate"
+			from="0,280"
+			to="0,200"
+			dur="0.4s"
+			begin="enable"
+			easing="ease-in"
 		/>
 	</g>
 

@@ -69,6 +69,12 @@ export class TimeDisplay implements Disposable {
 
 				requestAnimationFrame(() => {
 					if (e.display.aodEnabled || (e.display.on && e.display.aodAvailable)) {
+						if (configuration.get('aodShowDay')) {
+							document
+								.getElementById<GroupElement>('aod-day')!
+								.animate(e.display.aodActive ? 'disable' : 'enable');
+						}
+
 						document
 							.getElementById<GroupElement>('time')!
 							.animate(e.display.aodActive ? 'disable' : 'enable');
@@ -98,6 +104,7 @@ export class TimeDisplay implements Disposable {
 			e?.key != null &&
 			e.key !== 'animateSeparator' &&
 			e.key !== 'aodOpacity' &&
+			e.key !== 'aodShowDay' &&
 			e.key !== 'showDate' &&
 			e.key !== 'showDayOnDateHide' &&
 			e.key !== 'showLeadingZero' &&
@@ -118,6 +125,21 @@ export class TimeDisplay implements Disposable {
 			this.updateAlwaysOnOpacity(configuration.get('aodOpacity'));
 
 			if (e?.key === 'aodOpacity') return;
+		}
+
+		if (e?.key == null || e?.key === 'aodShowDay') {
+			const $aodDay = document.getElementById<ImageElement>('aod-day')!;
+			if (configuration.get('aodShowDay')) {
+				$aodDay.style.display = 'inline';
+
+				if (display.aodEnabled && display.on) {
+					$aodDay.animate(display.aodActive ? 'disable' : 'enable');
+				}
+			} else {
+				$aodDay.style.display = 'none';
+			}
+
+			if (e?.key === 'aodShowDay') return;
 		}
 
 		if (e?.key == null || e?.key === 'showDate') {
@@ -246,10 +268,16 @@ export class TimeDisplay implements Disposable {
 		const dayName = gettext(`day_short_${day}`);
 
 		if (configuration.get('showDayOnDateHide')) {
-			const $dayOfWeek = document.getElementById<TextElement>('day-of-week')!;
+			let $dayOfWeek = document.getElementById<TextElement>('day-of-week')!;
 			$dayOfWeek.text = dayName;
 
-			const $dayOfMonth = document.getElementById<TextElement>('day-of-month')!;
+			$dayOfWeek = document.getElementById<TextElement>('aod-day-of-week')!;
+			$dayOfWeek.text = dayName;
+
+			let $dayOfMonth = document.getElementById<TextElement>('day-of-month')!;
+			$dayOfMonth.text = dayOfMonth.toString();
+
+			$dayOfMonth = document.getElementById<TextElement>('aod-day-of-month')!;
 			$dayOfMonth.text = dayOfMonth.toString();
 		}
 
@@ -319,15 +347,26 @@ export class TimeDisplay implements Disposable {
 	private updateAlwaysOnOpacity(aodOpacity: number) {
 		if (!display.aodAvailable) return;
 
-		const $timeContainer = document.getElementById<GroupElement>('time')!;
 		const opacity = aodOpacity / 100;
 
+		const $timeContainer = document.getElementById<GroupElement>('time')!;
 		let $animate = $timeContainer.getElementById<AnimateElement>('aod-in');
 		if ($animate != null) {
 			$animate.from = opacity;
 		}
 
 		$animate = $timeContainer.getElementById<AnimateElement>('aod-out');
+		if ($animate != null) {
+			$animate.to = opacity;
+		}
+
+		const $aodDay = document.getElementById<GroupElement>('aod-day')!;
+		// Only update the opacity if it isn't currently hidden
+		if ($aodDay.style.opacity !== 0) {
+			$aodDay.style.opacity = opacity;
+		}
+
+		$animate = $aodDay.getElementById<AnimateElement>('aod-in');
 		if ($animate != null) {
 			$animate.to = opacity;
 		}

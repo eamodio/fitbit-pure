@@ -46,6 +46,7 @@ export interface Config {
 	animateHeartRate: boolean | undefined;
 	animateSeparator: boolean | undefined;
 	aodOpacity: number | undefined;
+	aodShowDay: boolean | undefined;
 	autoRotate: boolean | undefined;
 	autoRotateInterval: number | undefined;
 	background: Backgrounds | undefined;
@@ -72,6 +73,7 @@ export const defaultConfig: Config = {
 	animateHeartRate: true,
 	animateSeparator: true,
 	aodOpacity: 60,
+	aodShowDay: true,
 	autoRotate: false,
 	autoRotateInterval: 3000,
 	background: 'glow',

@@ -242,6 +242,7 @@ function PureSettings(props: SettingsComponentProps) {
 			</Section>
 
 			<Section title={<TextImageRow label={<Text align="center">Always-on Display</Text>} />}>
+				<Toggle settingsKey="aodShowDay" label="Show Day" />
 				<Slider
 					label={
 						<Text>

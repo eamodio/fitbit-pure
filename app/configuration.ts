@@ -106,7 +106,7 @@ class Configuration {
 					this.config[key] = defaultConfig[key] === value ? undefined : value;
 				}
 
-				if (key !== 'aodOpacity') {
+				if (key?.indexOf('aod') !== 0) {
 					display.poke();
 				}
 
