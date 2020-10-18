@@ -176,41 +176,9 @@
 			class="digit"
 			x="0"
 			y="0"
-			fill-opacity="0.35"
+			fill-opacity="0.5"
 			visibility="hidden"
-		>
-			<!-- Animate in -->
-			<!-- <animate
-				id="aod-in--fill"
-				attributeName="fill"
-				to="fb-white"
-				dur="0.4s"
-				begin="enable"
-				end="disable"
-				easing="ease-in"
-			/>
-			<animate
-				id="aod-in--fill-op"
-				attributeName="fill-opacity"
-				to="1"
-				dur="0.4s"
-				begin="enable"
-				end="disable"
-				easing="ease-in"
-			/> -->
-
-			<!-- Animate out -->
-			<!-- <animate
-				id="aod-out--fill"
-				attributeName="fill"
-				to="fb-white"
-				dur="0.4s"
-				begin="disable"
-				end="enable"
-				easing="ease-in"
-			/>
-			<animate attributeName="fill-opacity" to="0.5" dur="0.4s" begin="disable" end="enable" easing="ease-in" /> -->
-		</image>
+		/>
 		<image id="time-hr0" href="images/0.png" class="digit" x="0" y="0" />
 		<image id="time-hr1" href="images/0.png" class="digit primary" x="$" y="0" />
 
