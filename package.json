@@ -52,8 +52,8 @@
 	"devDependencies": {
 		"@fitbit/sdk": "5.0.1",
 		"@fitbit/sdk-cli": "1.7.3",
-		"@typescript-eslint/eslint-plugin": "4.4.1",
-		"@typescript-eslint/parser": "4.4.1",
+		"@typescript-eslint/eslint-plugin": "4.5.0",
+		"@typescript-eslint/parser": "4.5.0",
 		"chroma-js": "2.1.0",
 		"eslint": "7.11.0",
 		"eslint-cli": "1.1.1",
