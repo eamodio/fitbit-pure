@@ -38,7 +38,7 @@
 					text-anchor="middle"
 					text-length="2"
 					x="50%"
-					y="25"
+					y="$+8"
 				/>
 
 				<animate
@@ -291,7 +291,14 @@
 			x="50%+1"
 			y="-7"
 		/>
-		<text id="aod-day-of-month" class="text text--lg primary" text-anchor="middle" text-length="2" x="50%" y="25" />
+		<text
+			id="aod-day-of-month"
+			class="text text--lg primary"
+			text-anchor="middle"
+			text-length="2"
+			x="50%"
+			y="$+8"
+		/>
 
 		<!-- Animate AOD in -->
 		<animate

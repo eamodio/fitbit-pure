@@ -13,21 +13,7 @@ import { addEventListener, Disposable, Event, EventEmitter } from '../common/sys
 const screenHeight = device.screen.height;
 const screenWidth = device.screen.width;
 
-const backgrounds: Backgrounds[] = [
-	'none',
-	'beams',
-	'bubbles',
-	'clouds',
-	'drops',
-	'geometric',
-	'glow',
-	'lines',
-	'oil',
-	'rings',
-	'smoke',
-	'snake',
-	'swirl',
-];
+let backgrounds: Backgrounds[] | undefined;
 
 const colors: Colors[] = [
 	'fb-white',
@@ -78,6 +64,14 @@ const opacities = new Float32Array([
 	0.55, // fb-slate
 	0.55, // fb-blue
 ]);
+
+let points:
+	| [
+			{ y: number; x1: number; x2: number; x3: number },
+			{ y: number; x1: number; x2: number },
+			{ y: number; x1: number; x2: number; x3: number },
+	  ]
+	| undefined;
 
 export enum ActivityViews {
 	Date = 0,
@@ -143,6 +137,9 @@ export class AppManager {
 
 			return;
 		}
+
+		backgrounds = undefined;
+		points = undefined;
 
 		this._editing = value;
 
@@ -361,21 +358,53 @@ export class AppManager {
 			return;
 		}
 
-		// points: [[2, 2], [130, 2], [254, 2], [66, 128], [192, 128], [2, 254], [130, 254], [254, 254]];
+		if (backgrounds == null) {
+			backgrounds = [
+				'none',
+				'beams',
+				'bubbles',
+				'clouds',
+				'drops',
+				'geometric',
+				'glow',
+				'lines',
+				'oil',
+				'rings',
+				'smoke',
+				'snake',
+				'swirl',
+			];
+		}
 
-		if (e.screenY <= 2 + 80) {
-			if (e.screenX <= 2 + 80) {
+		if (points == null) {
+			// 336x336 points
+			points = [
+				{ y: 2, x1: 2, x2: 130, x3: 254 },
+				{ y: 128, x1: 66, x2: 192 },
+				{ y: 254, x1: 2, x2: 130, x3: 254 },
+			];
+
+			// 300x300 points
+			// points = [
+			// 	{ y: -16, x1: -16, x2: 112, x3: 236 },
+			// 	{ y: 110, x1: 48, x2: 174 },
+			// 	{ y: 236, x1: -16, x2: 112, x3: 236 },
+			// ];
+		}
+
+		if (e.screenY <= points[0].y + 80) {
+			if (e.screenX <= points[0].x1 + 80) {
 				vibration.start('bump');
 				configuration.set('showBatteryPercentage', !configuration.get('showBatteryPercentage'));
-			} else if (e.screenX >= 130 && e.screenX <= 130 + 80) {
+			} else if (e.screenX >= points[0].x2 && e.screenX <= points[0].x2 + 80) {
 				vibration.start('bump');
 				configuration.set('showDayOnDateHide', !configuration.get('showDayOnDateHide'));
-			} else if (e.screenX >= 254) {
+			} else if (e.screenX >= points[0].x3) {
 				vibration.start('bump');
 				configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
 			}
-		} else if (e.screenY >= 128 && e.screenY <= 128 + 80) {
-			if (e.screenX >= 66 && e.screenX <= 66 + 80) {
+		} else if (e.screenY >= points[1].y && e.screenY <= points[1].y + 80) {
+			if (e.screenX >= points[1].x1 && e.screenX <= points[1].x1 + 80) {
 				vibration.start('bump');
 
 				let color = configuration.get('accentBackgroundColor');
@@ -387,7 +416,7 @@ export class AppManager {
 				color = colors[index];
 				configuration.set('accentBackgroundColor', color);
 				configuration.set('accentForegroundColor', color);
-			} else if (e.screenX >= 192 && e.screenX <= 192 + 80) {
+			} else if (e.screenX >= points[1].x2 && e.screenX <= points[1].x2 + 80) {
 				vibration.start('bump');
 
 				let background = configuration.get('background');
@@ -399,14 +428,14 @@ export class AppManager {
 				background = backgrounds[index];
 				configuration.set('background', background);
 			}
-		} else if (e.screenY >= 254) {
-			if (e.screenX <= 2 + 80) {
+		} else if (e.screenY >= points[2].y) {
+			if (e.screenX <= points[2].x1 + 80) {
 				vibration.start('bump');
 				configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
-			} else if (e.screenX >= 130 && e.screenX <= 130 + 80) {
+			} else if (e.screenX >= points[2].x2 && e.screenX <= points[2].x2 + 80) {
 				vibration.start('bump');
 				configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
-			} else if (e.screenX >= 254) {
+			} else if (e.screenX >= points[2].x3) {
 				vibration.start('bump');
 				configuration.set('showSeconds', !configuration.get('showSeconds'));
 			}
