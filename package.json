@@ -2,7 +2,7 @@
 	"name": "fitbit-pure",
 	"displayName": "Pure Fitbit Clock",
 	"description": "A beautifully designed, customizable, clean and simple clock face for Fitbit Sense & Versa devices",
-	"version": "2.0.0",
+	"version": "2.2.0",
 	"author": {
 		"name": "Eric Amodio",
 		"email": "eamodio@gmail.com"
