@@ -110,6 +110,7 @@
 				"ignore": [
 					"appbit",
 					"body-presence",
+					"companion",
 					"clock",
 					"device",
 					"document",

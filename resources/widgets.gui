@@ -9,22 +9,22 @@
 		<link rel="import" href="/mnt/sysassets/widgets/combo_button_widget.gui" />
 
 		<symbol id="stats">
-			<g transform="translate(24,-14)">
+			<g transform="translate(24,-12)">
 				<arc
 					id="lstat-goal"
-					x="-22"
-					y="-24"
-					width="48"
-					height="48"
-					arc-width="2"
+					x="-20"
+					y="-26"
+					width="54"
+					height="54"
+					arc-width="3"
 					start-angle="0"
 					sweep-angle="360"
 					fill-opacity="0.5"
 				>
-					<animate attributeName="arc-width" to="2" dur="0s" begin="select;unselect" />
+					<animate attributeName="arc-width" to="3" dur="0s" begin="select;unselect" />
 					<animate attributeName="fill-opacity" to="0.5" dur="0s" begin="select;unselect" />
 
-					<animate attributeName="arc-width" to="48" dur="0s" begin="enable+2s" />
+					<animate attributeName="arc-width" to="54" dur="0s" begin="enable+2s" />
 					<animate
 						attributeName="fill-opacity"
 						from="0"
@@ -36,10 +36,10 @@
 				</arc>
 				<arc
 					id="lstat-progress"
-					x="-22"
-					y="-24"
-					width="48"
-					height="48"
+					x="-20"
+					y="-26"
+					width="54"
+					height="54"
 					arc-width="3"
 					start-angle="0"
 					sweep-angle="0"
@@ -57,7 +57,7 @@
 						easing="ease-in"
 					/>
 				</arc>
-				<image id="lstat-icon" class="icon--activity primary" x="$-47" y="-23" fill-opacity="0.8">
+				<image id="lstat-icon" class="icon--activity primary" x="$-52" y="-22" fill-opacity="0.8">
 					<animate attributeName="fill" dur="0s" begin="select;unselect" />
 
 					<animate attributeName="fill" to="fb-black" dur="0.4s" begin="enable+2s" easing="ease-in-out" />
@@ -88,29 +88,29 @@
 					easing="ease-in"
 				/>
 			</g>
-			<text id="lstat-value" class="text text--lg primary" text-anchor="start" text-length="8" x="58" y="0" />
+			<text id="lstat-value" class="text text--lg primary" text-anchor="start" text-length="8" x="65" y="2" />
 			<text
 				id="lstat-units"
 				class="text text--sm secondary"
 				text-anchor="start"
 				text-length="8"
-				x="58"
+				x="60"
 				y="$-20"
 			/>
 
-			<g transform="translate(100%-24,-14)">
+			<g transform="translate(100%-24,-12)">
 				<arc
 					id="rstat-goal"
-					x="-26"
-					y="-24"
-					width="48"
-					height="48"
-					arc-width="2"
+					x="-34"
+					y="-26"
+					width="54"
+					height="54"
+					arc-width="3"
 					start-angle="0"
 					sweep-angle="360"
 					fill-opacity="0.5"
 				>
-					<animate attributeName="arc-width" to="2" dur="0s" begin="select;unselect" />
+					<animate attributeName="arc-width" to="3" dur="0s" begin="select;unselect" />
 					<animate attributeName="fill-opacity" to="0.5" dur="0s" begin="select;unselect" />
 
 					<animate attributeName="arc-width" to="48" dur="0s" begin="enable+2s" />
@@ -125,10 +125,10 @@
 				</arc>
 				<arc
 					id="rstat-progress"
-					x="-26"
-					y="-24"
-					width="48"
-					height="48"
+					x="-34"
+					y="-26"
+					width="54"
+					height="54"
 					arc-width="3"
 					start-angle="0"
 					sweep-angle="0"
@@ -146,7 +146,7 @@
 						easing="ease-in"
 					/>
 				</arc>
-				<image id="rstat-icon" class="icon--activity primary" x="$-47" y="-23" fill-opacity="0.8">
+				<image id="rstat-icon" class="icon--activity primary" x="$-52" y="-22" fill-opacity="0.8">
 					<animate attributeName="fill" dur="0s" begin="select;unselect" />
 
 					<animate attributeName="fill" to="fb-black" dur="0.4s" begin="enable+2s" easing="ease-in-out" />
@@ -177,13 +177,13 @@
 					easing="ease-in"
 				/>
 			</g>
-			<text id="rstat-value" class="text text--lg primary" text-anchor="end" text-length="8" x="100%-58" y="0" />
+			<text id="rstat-value" class="text text--lg primary" text-anchor="end" text-length="8" x="100%-65" y="2" />
 			<text
 				id="rstat-units"
 				class="text text--sm secondary"
 				text-anchor="end"
 				text-length="8"
-				x="100%-58"
+				x="100%-60"
 				y="$-20"
 			/>
 		</symbol>

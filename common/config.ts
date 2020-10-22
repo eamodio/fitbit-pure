@@ -1,37 +1,56 @@
+export type Backgrounds =
+	| 'none'
+	| 'beams'
+	| 'bubbles'
+	| 'clouds'
+	| 'drops'
+	| 'geometric'
+	| 'glow'
+	| 'lines'
+	| 'oil'
+	| 'rings'
+	| 'smoke'
+	| 'snake'
+	| 'swirl';
+
 export type Colors =
-	| 'fb-black'
-	| 'fb-dark-gray'
-	| 'fb-light-gray'
 	| 'fb-white'
-	| 'fb-lavender'
-	| 'fb-slate'
-	| 'fb-blue'
-	| 'fb-cyan'
-	| 'fb-aqua'
+	| 'fb-light-gray'
+	| 'fb-dark-gray'
 	| 'fb-cerulean'
+	| 'fb-lavender'
 	| 'fb-indigo'
 	| 'fb-purple'
-	| 'fb-violet'
 	| 'fb-plum'
-	| 'fb-magenta'
+	| 'fb-violet'
 	| 'fb-pink'
+	| 'fb-magenta'
 	| 'fb-red'
 	| 'fb-orange'
 	| 'fb-peach'
 	| 'fb-yellow'
 	| 'fb-lime'
+	| 'fb-green'
 	| 'fb-mint'
-	| 'fb-green';
+	| 'fb-aqua'
+	| 'fb-cyan'
+	| 'fb-slate'
+	| 'fb-blue';
 
 export interface Config {
+	version: number | undefined;
+
 	accentBackgroundColor: Colors | undefined;
 	accentForegroundColor: Colors | undefined;
 	allowEditing: boolean | undefined;
 	animateHeartRate: boolean | undefined;
 	animateSeparator: boolean | undefined;
 	aodOpacity: number | undefined;
+	aodShowDay: boolean | undefined;
 	autoRotate: boolean | undefined;
 	autoRotateInterval: number | undefined;
+	background: Backgrounds | undefined;
+	backgroundOpacity: number | undefined;
 	colorizeHeartRate: boolean | undefined;
 	donated: boolean | undefined;
 	showActivityUnits: boolean | undefined;
@@ -46,14 +65,19 @@ export interface Config {
 }
 
 export const defaultConfig: Config = {
-	accentBackgroundColor: 'fb-black',
+	version: 0,
+
+	accentBackgroundColor: 'fb-light-gray',
 	accentForegroundColor: 'fb-white',
 	allowEditing: true,
 	animateHeartRate: true,
 	animateSeparator: true,
 	aodOpacity: 60,
+	aodShowDay: true,
 	autoRotate: false,
 	autoRotateInterval: 3000,
+	background: 'glow',
+	backgroundOpacity: 80,
 	colorizeHeartRate: true,
 	donated: false,
 	showActivityUnits: true,
@@ -66,19 +90,35 @@ export const defaultConfig: Config = {
 	currentActivityView: 0,
 };
 
-export interface ConfigIpcMessage {
-	type: 'config';
+export interface ConfigChangeIpcMessage {
+	type: 'config-change';
 	data: {
+		version: number;
+		donated: boolean;
 		key: keyof Config | null;
 		value: any;
 	};
 }
 
-export interface DonatedIpcMessage {
-	type: 'donated';
+export interface ConfigSyncIpcMessage {
+	type: 'config-sync';
+	data: Config & { version: number };
+}
+
+export interface ConfigSyncCheckIpcMessage {
+	type: 'config-sync-check';
 	data: {
+		version: number;
 		donated: boolean;
 	};
 }
 
-export type IpcMessage = ConfigIpcMessage | DonatedIpcMessage;
+export interface ConfigSyncRequestIpcMessage {
+	type: 'config-sync-request';
+}
+
+export type IpcMessage =
+	| ConfigChangeIpcMessage
+	| ConfigSyncIpcMessage
+	| ConfigSyncCheckIpcMessage
+	| ConfigSyncRequestIpcMessage;

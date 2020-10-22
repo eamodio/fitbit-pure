@@ -1,9 +1,17 @@
 import * as fs from 'fs';
+import { display } from 'display';
 import { peerSocket } from 'messaging';
-import { Config, ConfigIpcMessage, defaultConfig, DonatedIpcMessage, IpcMessage } from '../common/config';
+import {
+	Config,
+	ConfigChangeIpcMessage,
+	ConfigSyncIpcMessage,
+	ConfigSyncRequestIpcMessage,
+	defaultConfig,
+	IpcMessage,
+} from '../common/config';
 import { debounce, Event, EventEmitter } from '../common/system';
 
-export { Colors } from '../common/config';
+export { Backgrounds, Colors } from '../common/config';
 
 export interface ConfigChangeEvent {
 	key: keyof Config | null;
@@ -21,7 +29,7 @@ class Configuration {
 		let donated = false;
 		try {
 			this.config = fs.readFileSync('pure.settings', 'json') as Config;
-			donated = this.config.donated ?? false;
+			donated = this.donated;
 
 			// Migrate settings
 			let migrated = false;
@@ -42,7 +50,7 @@ class Configuration {
 			}
 
 			if (migrated) {
-				setTimeout(() => this.save(), 0);
+				setTimeout(() => this.save(0), 0);
 			}
 
 			// console.log(`Configuration.load: loaded; json=${JSON.stringify(config)}`);
@@ -51,70 +59,177 @@ class Configuration {
 
 			// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 			this.config = { donated: donated } as Config;
+
+			this.sendSyncRequest();
 		}
 
 		peerSocket.addEventListener('message', ({ data }) => this.onMessageReceived(data));
 
-		// Send a message to ensure the companion has the correct donation state
-		setTimeout(() => this.ensureCompanionState(), 500);
+		// Send a message to ensure the watch/companion are in sync
+		// setTimeout(() => this.sendSyncCheck(), 500);
+	}
+
+	get donated(): boolean {
+		return this.config.donated ?? false;
+	}
+
+	get version(): number {
+		return this.config.version ?? 0;
 	}
 
 	private onMessageReceived(msg: IpcMessage) {
-		if (msg.type !== 'config') return;
+		switch (msg.type) {
+			case 'config-change': {
+				const version = this.version;
 
-		const { key, value } = msg.data;
-		if (key != null && this.config[key] === value) return;
+				// console.log(`${msg.type}(${msg.data.version} <- ${version}): ${msg.data.key}=${msg.data.value}`);
 
-		// If the key is `null` assume a reset
-		if (key == null) {
-			// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-			this.config = {
-				donated: this.config.donated,
-			} as Config;
-		} else {
-			this.config[key] = defaultConfig[key] === value ? undefined : value;
+				// If we are more than 1 version out of date, request a sync
+				if (version < msg.data.version - 1) {
+					// console.log(`${msg.type}(${msg.data.version} <- ${version}): watch is out of date`);
+
+					this.sendSyncRequest();
+
+					return;
+				}
+
+				const { key, value } = msg.data;
+				if (key != null && this.config[key] === value) return;
+
+				// If the key is `null` assume a reset
+				if (key == null) {
+					// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+					this.config = {
+						donated: this.donated,
+					} as Config;
+				} else {
+					this.config[key] = defaultConfig[key] === value ? undefined : value;
+				}
+
+				if (key?.indexOf('aod') !== 0) {
+					display.poke();
+				}
+
+				this.save(version > msg.data.version ? version + 1 : msg.data.version);
+
+				// If there is a discrepancy in the donation flag, trust whoever is true
+				if (this.donated !== msg.data.donated) {
+					if (this.donated) {
+						// console.log(`${msg.type}(${msg.data.version}): companion(donated) is out of date`);
+
+						this.sendSync();
+					} else {
+						// console.log(`${msg.type}(${msg.data.version}): watch(donated) is out of date`);
+
+						this.sendSyncRequest();
+					}
+				}
+
+				// If the companion is out of date, send a sync (after saving the changed value)
+				if (version > msg.data.version) {
+					// console.log(`${msg.type}(${msg.data.version}): companion is out of date`);
+
+					this.sendSync();
+				}
+
+				this._onDidChange.fire({ key: key });
+
+				break;
+			}
+
+			case 'config-sync': {
+				// console.log(`${msg.type}(${msg.data.version})`);
+
+				let changed = false;
+				for (const key in msg.data) {
+					if (this.set(key as keyof Config, msg.data[key], true)) {
+						changed = true;
+					}
+				}
+
+				if (changed) {
+					this.save(msg.data.version);
+					this._onDidChange.fire({ key: null });
+				}
+				break;
+			}
+
+			case 'config-sync-check': {
+				if ((this.donated && !msg.data.donated) || this.version > msg.data.version) {
+					// console.log(`${msg.type}(${msg.data.version}): sending sync`);
+
+					this.sendSync();
+				} else if (this.version < msg.data.version) {
+					// console.log(`${msg.type}(${msg.data.version}): requesting sync`);
+
+					this.sendSyncRequest();
+				} else {
+					// console.log(`${msg.type}(${msg.data.version}): sync'd`);
+				}
+				break;
+			}
+
+			case 'config-sync-request': {
+				// console.log(`${msg.type}`);
+
+				this.sendSync();
+
+				break;
+			}
 		}
-
-		this.save();
-		this._onDidChange.fire({ key: key });
 	}
 
 	get<T extends keyof Config>(key: T): NonNullable<Config[T]> {
 		return (this.config[key] ?? defaultConfig[key]) as NonNullable<Config[T]>;
 	}
 
-	set<T extends keyof Config>(key: T, value: NonNullable<Config[T]>): void {
+	set<T extends keyof Config>(key: T, value: NonNullable<Config[T]>, silent: boolean = false): boolean {
+		if (key === 'version') return false;
+
+		// Don't allow turning the donated flag off
+		if (key === 'donated' && value !== true) {
+			return false;
+		}
+
 		// Only save, non-default values
 		if (defaultConfig[key] === value) {
 			value = undefined!;
 		}
-		if (this.config[key] === value) return;
+		if (this.config[key] === value) return false;
 
 		this.config[key] = value;
 
-		this.save();
+		if (silent) return true;
+
+		const isLocal = this.isLocalSetting(key);
+		this.save(isLocal ? this.version : this.version + 1);
+
 		this._onDidChange.fire({ key: key });
 
-		if (key !== 'currentActivityView') {
-			// Send the modified setting to the companion
-			this.send(key, value);
-		}
+		if (isLocal) return true;
+
+		display.poke();
+
+		// Send the modified setting to the companion
+		this.send(key, value);
+
+		return true;
 	}
 
-	private ensureCompanionState() {
-		if (peerSocket.readyState !== peerSocket.OPEN) return;
+	private isLocalSetting(key: keyof Config): boolean {
+		// 'currentActivityView' is a local only setting
+		return key === 'currentActivityView';
+	}
 
-		const msg: DonatedIpcMessage = {
-			type: 'donated',
-			data: {
-				donated: this.config.donated ?? false,
-			},
-		};
-		peerSocket.send(msg);
+	private save(version: number) {
+		if (version > this.version) {
+			this.config.version = version;
+		}
+		this.saveCore();
 	}
 
 	@debounce(500)
-	private save() {
+	private saveCore() {
 		try {
 			fs.writeFileSync('pure.settings', this.config, 'json');
 			// console.log(`Configuration.save: saved; json=${JSON.stringify(this._config)}`);
@@ -130,16 +245,80 @@ class Configuration {
 			return false;
 		}
 
-		if (value === undefined) {
+		// console.log(`Configuration.send(${key}, ${value})`);
+
+		if (value == null) {
 			value = defaultConfig[key];
 		}
 
-		const msg: ConfigIpcMessage = {
-			type: 'config',
+		const msg: ConfigChangeIpcMessage = {
+			type: 'config-change',
 			data: {
+				version: this.version,
+				donated: this.donated,
 				key: key,
-				value: value !== null ? JSON.stringify(value) : value,
+				value: value,
 			},
+		};
+		peerSocket.send(msg);
+
+		return true;
+	}
+
+	private sendSync(): boolean {
+		if (peerSocket.readyState !== peerSocket.OPEN) {
+			console.log(`Configuration.sendSync: failed readyState=${peerSocket.readyState}`);
+
+			return false;
+		}
+
+		// console.log('Configuration.sendSync()');
+
+		const msg: ConfigSyncIpcMessage = {
+			type: 'config-sync',
+			data: {
+				...defaultConfig,
+				...this.config,
+				version: this.version,
+			},
+		};
+		peerSocket.send(msg);
+
+		return true;
+	}
+
+	// private sendSyncCheck() {
+	// 	if (peerSocket.readyState !== peerSocket.OPEN) {
+	// 		console.log(`Configuration.sendSyncCheck: failed readyState=${peerSocket.readyState}`);
+
+	// 		return false;
+	// 	}
+
+	// 	console.log('Configuration.sendSyncCheck');
+
+	// 	const msg: ConfigSyncCheckIpcMessage = {
+	// 		type: 'config-sync-check',
+	// 		data: {
+	// 			timestamp: this.config.timestamp ?? 0,
+	// 			donated: this.config.donated ?? false,
+	// 		},
+	// 	};
+	// 	peerSocket.send(msg);
+
+	// 	return true;
+	// }
+
+	private sendSyncRequest(): boolean {
+		if (peerSocket.readyState !== peerSocket.OPEN) {
+			console.log(`Configuration.sendSyncRequest: failed readyState=${peerSocket.readyState}`);
+
+			return false;
+		}
+
+		// console.log('Configuration.sendSyncRequest()');
+
+		const msg: ConfigSyncRequestIpcMessage = {
+			type: 'config-sync-request',
 		};
 		peerSocket.send(msg);
 

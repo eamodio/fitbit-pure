@@ -2,62 +2,72 @@ import { me as device } from 'device';
 import { display, Display } from 'display';
 import document from 'document';
 import { vibration } from 'haptics';
-import { Colors, ConfigChangeEvent, configuration } from './configuration';
+import { Backgrounds, Colors, ConfigChangeEvent, configuration } from './configuration';
 import { DonatePopup } from './popup';
 import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
 
 const screenHeight = device.screen.height;
 const screenWidth = device.screen.width;
 
+let backgrounds: Backgrounds[] | undefined;
+
 const colors: Colors[] = [
-	'fb-black',
-	'fb-light-gray',
 	'fb-white',
-	'fb-lavender',
-	'fb-slate',
-	'fb-blue',
-	'fb-cyan',
-	'fb-aqua',
+	'fb-light-gray',
+	'fb-dark-gray',
 	'fb-cerulean',
+	'fb-lavender',
 	'fb-indigo',
 	'fb-purple',
-	'fb-violet',
 	'fb-plum',
-	'fb-magenta',
+	'fb-violet',
 	'fb-pink',
+	'fb-magenta',
 	'fb-red',
 	'fb-orange',
 	'fb-peach',
 	'fb-yellow',
 	'fb-lime',
-	'fb-mint',
 	'fb-green',
+	'fb-mint',
+	'fb-aqua',
+	'fb-cyan',
+	'fb-slate',
+	'fb-blue',
 ];
 
 const opacities = new Float32Array([
-	0.35, // fb-black
-	0.35, // fb-light-gray
 	0.35, // fb-white
-	0.4, // fb-lavender
-	0.55, // fb-slate
-	0.55, // fb-blue
-	0.4, // fb-cyan
-	0.35, // fb-aqua
+	0.35, // fb-light-gray
+	0.35, // fb-dark-gray
 	0.5, // fb-cerulean
+	0.4, // fb-lavender
 	0.65, // fb-indigo
 	0.5, // fb-purple
-	0.45, // fb-violet
 	0.55, // fb-plum
-	0.4, // fb-magenta
+	0.45, // fb-violet
 	0.4, // fb-pink
+	0.4, // fb-magenta
 	0.4, // fb-red
 	0.4, // fb-orange
 	0.35, // fb-peach
 	0.35, // fb-yellow
 	0.35, // fb-lime
-	0.35, // fb-mint
 	0.5, // fb-green
+	0.35, // fb-mint
+	0.35, // fb-aqua
+	0.4, // fb-cyan
+	0.55, // fb-slate
+	0.55, // fb-blue
 ]);
+
+let points:
+	| [
+			{ y: number; x1: number; x2: number; x3: number },
+			{ y: number; x1: number; x2: number },
+			{ y: number; x1: number; x2: number; x3: number },
+	  ]
+	| undefined;
 
 export enum ActivityViews {
 	Date = 0,
@@ -135,6 +145,9 @@ export class AppManager {
 			return;
 		}
 
+		backgrounds = undefined;
+		points = undefined;
+
 		this._editing = value;
 
 		document.getElementById<ImageElement>('editing')!.style.display = value ? 'inline' : 'none';
@@ -145,7 +158,7 @@ export class AppManager {
 			requestAnimationFrame(() => $overlay.animate('enable'));
 		}
 
-		this._onDidTriggerAppEvent.fire({ type: 'editing', editing: value });
+		this.fire({ type: 'editing', editing: value });
 	}
 
 	fire(e: AppEvent) {
@@ -162,9 +175,11 @@ export class AppManager {
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
 		if (
 			e?.key != null &&
-			e?.key !== 'accentBackgroundColor' &&
-			e?.key !== 'accentForegroundColor' &&
-			e?.key !== 'allowEditing' &&
+			e.key !== 'accentBackgroundColor' &&
+			e.key !== 'accentForegroundColor' &&
+			e.key !== 'allowEditing' &&
+			e.key !== 'background' &&
+			e.key !== 'backgroundOpacity' &&
 			e.key !== 'donated'
 		) {
 			return;
@@ -206,7 +221,6 @@ export class AppManager {
 			let $el: StyledElement;
 			while (i--) {
 				$el = $els[i];
-				$el.style.visibility = color === 'fb-black' ? 'hidden' : 'visible';
 				$el.style.fill = color;
 			}
 		}
@@ -225,14 +239,17 @@ export class AppManager {
 			let $el: StyledElement;
 			while (i--) {
 				$el = $els[i];
+
+				if ($el.id === 'hr-icon' && configuration.get('colorizeHeartRate')) {
+					continue;
+				}
+
 				$el.style.fill = color;
 
 				if ($el.id === 'time-sep') {
 					$el.style.fillOpacity = separatorOpacity;
 					($el.children[0] as AnimateElement).from = separatorOpacity;
 					($el.children[1] as AnimateElement).to = separatorOpacity;
-					// } else if ($el.id === 'time-hr0--zero') {
-					// 	$el.style.fillOpacity = opacity;
 				}
 
 				if (display.aodAvailable) {
@@ -253,6 +270,27 @@ export class AppManager {
 				}
 			}
 		}
+
+		if (e?.key == null || e?.key === 'background') {
+			const $background = document.getElementById<ImageElement>('background')!;
+
+			const background = configuration.get('donated') ? configuration.get('background') : 'none';
+			if (background === 'none') {
+				$background.style.visibility = 'hidden';
+			} else {
+				$background.href = `images/bg-${background}_300.png`;
+				$background.style.visibility = 'visible';
+			}
+		}
+
+		if (e?.key == null || e?.key === 'backgroundOpacity') {
+			const $background = document.getElementById<ImageElement>('background')!;
+
+			const opacity = configuration.get('backgroundOpacity') / 100;
+			$background.style.opacity = opacity;
+			($background.children[0] as AnimateElement).to = opacity;
+			($background.children[1] as AnimateElement).from = opacity;
+		}
 	}
 
 	private onDisplayChanged(sensor: Display) {
@@ -266,7 +304,7 @@ export class AppManager {
 			});
 		}
 
-		this._onDidTriggerAppEvent.fire({ type: 'display', display: sensor });
+		this.fire({ type: 'display', display: sensor });
 	}
 
 	private onDonateClicked() {
@@ -288,59 +326,91 @@ export class AppManager {
 		}
 
 		if (!this.editing) {
-			this._onDidTriggerAppEvent.fire({ type: 'click' });
+			this.fire({ type: 'click' });
 
 			return;
 		}
 
-		if (e.screenX <= 64 && e.screenY <= 64) {
-			vibration.start('bump');
-			configuration.set('showBatteryPercentage', !configuration.get('showBatteryPercentage'));
-		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY <= 64) {
-			vibration.start('bump');
-			configuration.set('showDayOnDateHide', !configuration.get('showDayOnDateHide'));
+		if (backgrounds == null) {
+			backgrounds = [
+				'none',
+				'beams',
+				'bubbles',
+				'clouds',
+				'drops',
+				'geometric',
+				'glow',
+				'lines',
+				'oil',
+				'rings',
+				'smoke',
+				'snake',
+				'swirl',
+			];
+		}
 
-			if (
-				configuration.get('showDayOnDateHide') &&
-				configuration.get('currentActivityView') === ActivityViews.Date
-			) {
-				document.getElementById<GroupElement>('day')!.animate('disable');
-			}
-		} else if (e.screenX >= 236 && e.screenY <= 64) {
-			vibration.start('bump');
-			configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
-		} else if (e.screenX <= 64 && e.screenY >= 108 && e.screenY <= 188) {
-			vibration.start('bump');
-			configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
-		} else if (e.screenX >= 112 && e.screenX <= 192 && e.screenY >= 108 && e.screenY <= 188) {
-			vibration.start('bump');
+		if (points == null) {
+			// 336x336 points
+			// points = [
+			// 	{ y: 2, x1: 2, x2: 130, x3: 254 },
+			// 	{ y: 128, x1: 66, x2: 192 },
+			// 	{ y: 254, x1: 2, x2: 130, x3: 254 },
+			// ];
 
-			let color = configuration.get('accentBackgroundColor');
-			// if (color === 'fb-dark-gray') {
-			// 	color = 'fb-black';
-			// }
+			// 300x300 points
+			points = [
+				{ y: -16, x1: -16, x2: 112, x3: 236 },
+				{ y: 110, x1: 48, x2: 174 },
+				{ y: 236, x1: -16, x2: 112, x3: 236 },
+			];
+		}
 
-			let index = colors.indexOf(color) + 1;
-			if (index >= colors.length) {
-				index = 0;
-			}
-
-			color = colors[index];
-			configuration.set('accentBackgroundColor', color);
-			configuration.set('accentForegroundColor', color === 'fb-black' ? 'fb-white' : color);
-		} else if (e.screenX >= 236 && e.screenY >= 108 && e.screenY <= 188) {
-			vibration.start('bump');
-			configuration.set('showSeconds', !configuration.get('showSeconds'));
-		} else if (e.screenY >= 236) {
-			if (e.screenX >= 112 && e.screenX <= 192) {
+		if (e.screenY <= points[0].y + 80) {
+			if (e.screenX <= points[0].x1 + 80) {
 				vibration.start('bump');
-				if (configuration.get('currentActivityView') === ActivityViews.Date) {
-					configuration.set('showDate', !configuration.get('showDate'));
-				} else {
-					configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
+				configuration.set('showBatteryPercentage', !configuration.get('showBatteryPercentage'));
+			} else if (e.screenX >= points[0].x2 && e.screenX <= points[0].x2 + 80) {
+				vibration.start('bump');
+				configuration.set('showDayOnDateHide', !configuration.get('showDayOnDateHide'));
+			} else if (e.screenX >= points[0].x3) {
+				vibration.start('bump');
+				configuration.set('showRestingHeartRate', !configuration.get('showRestingHeartRate'));
+			}
+		} else if (e.screenY >= points[1].y && e.screenY <= points[1].y + 80) {
+			if (e.screenX >= points[1].x1 && e.screenX <= points[1].x1 + 80) {
+				vibration.start('bump');
+
+				let color = configuration.get('accentBackgroundColor');
+				let index = colors.indexOf(color) + 1;
+				if (index >= colors.length) {
+					index = 0;
 				}
-			} else {
-				this._onDidTriggerAppEvent.fire({ type: 'click' });
+
+				color = colors[index];
+				configuration.set('accentBackgroundColor', color);
+				configuration.set('accentForegroundColor', color);
+			} else if (e.screenX >= points[1].x2 && e.screenX <= points[1].x2 + 80) {
+				vibration.start('bump');
+
+				let background = configuration.get('background');
+				let index = backgrounds.indexOf(background) + 1;
+				if (index >= backgrounds.length) {
+					index = 0;
+				}
+
+				background = backgrounds[index];
+				configuration.set('background', background);
+			}
+		} else if (e.screenY >= points[2].y) {
+			if (e.screenX <= points[2].x1 + 80) {
+				vibration.start('bump');
+				configuration.set('showLeadingZero', !configuration.get('showLeadingZero'));
+			} else if (e.screenX >= points[2].x2 && e.screenX <= points[2].x2 + 80) {
+				vibration.start('bump');
+				configuration.set('showActivityUnits', !configuration.get('showActivityUnits'));
+			} else if (e.screenX >= points[2].x3) {
+				vibration.start('bump');
+				configuration.set('showSeconds', !configuration.get('showSeconds'));
 			}
 		}
 
@@ -425,7 +495,7 @@ export class AppManager {
 	// DEMO MODE
 	// demo() {
 	// 	display.on = false;
-	// 	configuration.set('accentBackgroundColor', 'fb-black');
+	// 	configuration.set('accentBackgroundColor', 'fb-light-gray');
 	// 	configuration.set('accentForegroundColor', 'fb-white');
 	// 	configuration.set('currentActivityView', 0);
 

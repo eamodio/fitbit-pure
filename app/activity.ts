@@ -100,7 +100,7 @@ export class ActivityDisplay {
 				this.setAutoRotate(false);
 
 				if (e.editing) {
-					this.setView(ActivityViews.Date);
+					this.setView(ActivityViews.Activity1);
 				}
 
 				this.render();
@@ -314,7 +314,7 @@ export class ActivityDisplay {
 
 		if (configuration.get('showActivityUnits')) {
 			$units.text = unitsLabel != null ? gettext(unitsLabel) : '';
-			$value.y = $units.text.length > 0 ? -12 : 0;
+			$value.y = $units.text.length > 0 ? -5 : 0;
 		} else {
 			$value.y = 0;
 		}

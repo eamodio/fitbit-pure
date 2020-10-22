@@ -1,6 +1,6 @@
 <svg class="theme--pure">
 	<image id="editing" href="images/editing.png" class="bg bg--editing" x="0" y="0" display="none" />
-	<image id="background" href="images/background.png" class="bg theme-bg-color">
+	<image id="background" href="images/bg-glow_300.png" class="bg theme-bg-color" visibility="hidden">
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
@@ -8,7 +8,7 @@
 		<animate attributeName="opacity" from="1" to="0" dur="0.4s" begin="disable" end="enable" easing="ease-in" />
 	</image>
 
-	<section id="top-bar-section" y="20">
+	<section id="top-bar-section" y="18">
 		<g id="top-bar">
 			<image id="bat-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
 			<line id="bat-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
@@ -26,10 +26,10 @@
 			<g id="day" opacity="0">
 				<text
 					id="day-of-week"
-					class="text text--sm secondary"
+					class="text text--sm text--caps secondary"
 					text-anchor="middle"
 					text-length="3"
-					x="50%"
+					x="50%+1"
 					y="-7"
 				/>
 				<text
@@ -38,7 +38,7 @@
 					text-anchor="middle"
 					text-length="2"
 					x="50%"
-					y="25"
+					y="$+8"
 				/>
 
 				<animate
@@ -63,7 +63,7 @@
 				/>
 
 				<!-- Animate out -->
-				<animate attributeName="opacity" to="0" dur="0s" begin="unselect" end="select" />
+				<animate attributeName="opacity" to="0" dur="0.4s" begin="unselect" end="select" easing="ease-in" />
 			</g>
 
 			<section id="hr">
@@ -176,41 +176,9 @@
 			class="digit"
 			x="0"
 			y="0"
-			fill-opacity="0.35"
+			fill-opacity="0.5"
 			visibility="hidden"
-		>
-			<!-- Animate in -->
-			<!-- <animate
-				id="aod-in--fill"
-				attributeName="fill"
-				to="fb-white"
-				dur="0.4s"
-				begin="enable"
-				end="disable"
-				easing="ease-in"
-			/>
-			<animate
-				id="aod-in--fill-op"
-				attributeName="fill-opacity"
-				to="1"
-				dur="0.4s"
-				begin="enable"
-				end="disable"
-				easing="ease-in"
-			/> -->
-
-			<!-- Animate out -->
-			<!-- <animate
-				id="aod-out--fill"
-				attributeName="fill"
-				to="fb-white"
-				dur="0.4s"
-				begin="disable"
-				end="enable"
-				easing="ease-in"
-			/>
-			<animate attributeName="fill-opacity" to="0.5" dur="0.4s" begin="disable" end="enable" easing="ease-in" /> -->
-		</image>
+		/>
 		<image id="time-hr0" href="images/0.png" class="digit" x="0" y="0" />
 		<image id="time-hr1" href="images/0.png" class="digit primary" x="$" y="0" />
 
@@ -240,7 +208,7 @@
 				repeatCount="indefinite"
 			/>
 
-			<!-- Animate in -->
+			<!-- Animate AOD in -->
 			<animate
 				id="aod-in--fill"
 				attributeName="fill"
@@ -261,7 +229,7 @@
 				easing="ease-in"
 			/>
 
-			<!-- Animate out -->
+			<!-- Animate AOD out -->
 			<animate
 				id="aod-out--fill"
 				attributeName="fill"
@@ -314,7 +282,65 @@
 		/>
 	</g>
 
-	<section height="80" y="170">
+	<g id="aod-day" opacity="0">
+		<text
+			id="aod-day-of-week"
+			class="text text--sm text--caps secondary"
+			text-anchor="middle"
+			text-length="3"
+			x="50%+1"
+			y="-27"
+		/>
+		<text
+			id="aod-day-of-month"
+			class="text text--lg primary"
+			text-anchor="middle"
+			text-length="2"
+			x="50%"
+			y="$+8"
+		/>
+
+		<!-- Animate AOD in -->
+		<animate
+			id="aod-in"
+			attributeName="opacity"
+			from="0"
+			to="0.6"
+			dur="0.2s"
+			begin="disable+0.3s"
+			end="enable"
+			easing="ease-out"
+		/>
+		<animateTransform
+			attributeType="translate"
+			from="0,260"
+			to="0,282"
+			dur="0.3s"
+			begin="disable+0.2s"
+			easing="ease-in"
+		/>
+		<animateTransform
+			attributeType="translate"
+			from="0,282"
+			to="0,280"
+			dur="0.1s"
+			begin="disable+0.6s"
+			easing="ease-out"
+		/>
+
+		<!-- Animate AOD out -->
+		<animate attributeName="opacity" to="0" dur="0.2s" begin="enable" end="disable" easing="ease-in" />
+		<animateTransform
+			attributeType="translate"
+			from="0,280"
+			to="0,200"
+			dur="0.4s"
+			begin="enable"
+			easing="ease-in"
+		/>
+	</g>
+
+	<section height="80" y="165">
 		<g id="bottom-bar">
 			<use id="cycleview" href="#cycleview">
 				<use href="#cycleview-item">
@@ -327,7 +353,7 @@
 							x="50%"
 							y="0"
 						/>
-						<rect id="date-day-bg" x="0" y="0" height="0" width="0" fill="fb-black" />
+						<!-- <rect id="date-day-bg" x="0" y="0" height="0" width="0" fill="fb-black" /> -->
 						<text
 							id="date-day"
 							class="text text--lg primary theme-fg-color"
@@ -373,15 +399,18 @@
 					<use
 						id="donate-button"
 						href="#square-button-icon"
-						fill="fb-green"
+						class="text--caps"
+						fill="fb-orange"
 						y="-5"
 						height="60"
 						layer="200"
 						visibility="hidden"
 					>
 						<set href="#text" attributeName="text-buffer" to="DONATE" />
+						<set href="#text" attributeName="fill" to="fb-orange" />
+
 						<set href="#image" attributeName="href" to="images/heart-hollow.png" />
-						<set href="#image" attributeName="fill" to="fb-red" />
+						<set href="#image" attributeName="fill" to="fb-orange" />
 					</use>
 				</use>
 			</use>
@@ -428,7 +457,7 @@
 
 	<image
 		id="editable-overlay"
-		href="images/editing-overlay.png"
+		href="images/editing-overlay_300.png"
 		class="bg bg--editing-overlay"
 		x="0"
 		y="0"
