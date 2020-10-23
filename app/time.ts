@@ -252,15 +252,19 @@ export class TimeDisplay {
 
 		const dayName = gettext(`day_short_${day}`);
 
+		let $dayOfWeek;
+		let $dayOfMonth;
 		if (configuration.get('showDayOnDateHide')) {
-			let $dayOfWeek = document.getElementById<TextElement>('day-of-week')!;
+			$dayOfWeek = document.getElementById<TextElement>('day-of-week')!;
 			$dayOfWeek.text = dayName.toLocaleUpperCase();
 
+			$dayOfMonth = document.getElementById<TextElement>('day-of-month')!;
+			$dayOfMonth.text = dayOfMonth.toString().toLocaleUpperCase();
+		}
+
+		if (configuration.get('aodShowDay')) {
 			$dayOfWeek = document.getElementById<TextElement>('aod-day-of-week')!;
 			$dayOfWeek.text = dayName.toLocaleUpperCase();
-
-			let $dayOfMonth = document.getElementById<TextElement>('day-of-month')!;
-			$dayOfMonth.text = dayOfMonth.toString().toLocaleUpperCase();
 
 			$dayOfMonth = document.getElementById<TextElement>('aod-day-of-month')!;
 			$dayOfMonth.text = dayOfMonth.toString().toLocaleUpperCase();
