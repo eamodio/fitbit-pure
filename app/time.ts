@@ -267,15 +267,19 @@ export class TimeDisplay implements Disposable {
 
 		const dayName = gettext(`day_short_${day}`);
 
+		let $dayOfWeek;
+		let $dayOfMonth;
 		if (configuration.get('showDayOnDateHide')) {
-			let $dayOfWeek = document.getElementById<TextElement>('day-of-week')!;
+			$dayOfWeek = document.getElementById<TextElement>('day-of-week')!;
 			$dayOfWeek.text = dayName;
 
+			$dayOfMonth = document.getElementById<TextElement>('day-of-month')!;
+			$dayOfMonth.text = dayOfMonth.toString();
+		}
+
+		if (configuration.get('aodShowDay')) {
 			$dayOfWeek = document.getElementById<TextElement>('aod-day-of-week')!;
 			$dayOfWeek.text = dayName;
-
-			let $dayOfMonth = document.getElementById<TextElement>('day-of-month')!;
-			$dayOfMonth.text = dayOfMonth.toString();
 
 			$dayOfMonth = document.getElementById<TextElement>('aod-day-of-month')!;
 			$dayOfMonth.text = dayOfMonth.toString();
