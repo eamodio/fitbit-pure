@@ -50,12 +50,18 @@ export class BatteryDisplay {
 		$indicator.x2 = ($indicator.x1 as number) + Math.round(level * 0.23);
 
 		if (battery.charging) {
-			$indicator.style.fill = 'fb-black';
+			document.getElementById<LineElement>('bat-icon')!.style.visibility = 'hidden';
+			$indicator.style.visibility = 'hidden';
 		} else if (level <= 16) {
-			$indicator.style.fill = 'fb-black';
+			document.getElementById<LineElement>('bat-icon')!.style.visibility = 'hidden';
+			$indicator.style.visibility = 'hidden';
 		} else if (level <= 30) {
+			document.getElementById<LineElement>('bat-icon')!.style.visibility = 'visible';
+			$indicator.style.visibility = 'visible';
 			$indicator.style.fill = 'fb-peach';
 		} else {
+			document.getElementById<LineElement>('bat-icon')!.style.visibility = 'visible';
+			$indicator.style.visibility = 'visible';
 			$indicator.style.fill = 'fb-white';
 		}
 	}
