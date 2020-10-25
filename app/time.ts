@@ -319,7 +319,10 @@ export class TimeDisplay {
 		}
 
 		const $dateHighlight = document.getElementById<TextElement>('date-day')!;
-		$dateHighlight.x = x;
+		$dateHighlight.x =
+			x +
+			// For some reason the Fitbit is off by a single pixel for these numbers
+			(dayOfMonth == 4 || dayOfMonth == 8 || dayOfMonth == 10 || dayOfMonth == 14 || dayOfMonth == 18 ? 1 : 0);
 		$dateHighlight.text = dayOfMonth.toString();
 
 		// const rect = $dateHighlight.getBBox();
