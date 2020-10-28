@@ -12,7 +12,7 @@
 		<g id="top-bar">
 			<image id="bat-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
 			<line id="bat-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
-			<text id="bat-level" class="text text--lg primary" text-anchor="start" text-length="4" x="$+18" y="25" />
+			<text id="bat-level" class="text text--lg primary" text-anchor="start" text-length="4" x="48" y="25" />
 			<text
 				id="bat-level-%"
 				class="text text--sm secondary"
