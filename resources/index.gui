@@ -1,6 +1,6 @@
 <svg class="theme--pure">
 	<image id="editing" href="images/editing.png" class="bg bg--editing" x="0" y="0" display="none" />
-	<image id="background" href="images/bg-glow_300.png" class="bg theme-bg-color" visibility="hidden">
+	<image id="background" class="bg theme-bg-color" visibility="hidden">
 		<!-- Animate in -->
 		<animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="enable" end="disable" easing="ease-in" />
 
@@ -485,5 +485,5 @@
 
 	<rect id="trigger" x="0" y="0" height="100%" width="100%" layer="100" pointer-events="visible" fill="none" />
 
-	<use id="donate-popup" href="#donate-popup" layer="200" pointer-events="visible" display="none" overflow="hidden" />
+	<!-- <use id="donate-popup" href="#donate-popup" layer="200" pointer-events="visible" display="none" overflow="hidden" /> -->
 </svg>

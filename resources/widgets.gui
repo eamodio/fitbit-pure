@@ -5,8 +5,6 @@
 		<link rel="import" href="/mnt/sysassets/widgets/baseview_widget.gui" />
 		<link rel="import" href="/mnt/sysassets/widgets/cycleview_widget.gui" />
 		<link rel="import" href="/mnt/sysassets/widgets/square_button_widget.gui" />
-		<link rel="import" href="/mnt/sysassets/widgets/tumblerview_widget.gui" />
-		<link rel="import" href="/mnt/sysassets/widgets/combo_button_widget.gui" />
 
 		<symbol id="stats">
 			<g transform="translate(24,-12)">
@@ -186,109 +184,6 @@
 				x="100%-60"
 				y="$-19"
 			/>
-		</symbol>
-
-		<symbol id="donate-popup">
-			<svg>
-				<defs>
-					<symbol id="tumblerview-digit">
-						<use id="code" href="#tumblerview">
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="0" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="1" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="2" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="3" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="4" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="5" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="6" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="7" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="8" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="9" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="A" />
-							</use>
-							<use id="content" href="#tumbler-item">
-								<set href="value/text" attributeName="text-buffer" to="B" />
-							</use>
-						</use>
-					</symbol>
-				</defs>
-
-				<rect x="0" y="0" height="100%" width="100%" fill="fb-black" />
-
-				<g class="donate-step">
-					<text class="text text--sm-plus" x="50%" y="48" text-anchor="middle" text-buffer="Please go to" />
-					<text
-						class="text--extra-bold text--xl"
-						x="50%"
-						y="$+12"
-						text-anchor="middle"
-						text-buffer="pure.amod.io"
-						fill="fb-orange"
-					/>
-					<textarea class="text text--sm-plus" x="0" y="$-30" width="100%" height="140" text-anchor="middle">
-						to donate and get access to PRO features — activity stats, theming, & on-device quick toggles.
-					</textarea>
-				</g>
-
-				<g class="donate-step" display="none">
-					<text
-						class="text text--sm-plus"
-						x="50%"
-						y="22"
-						text-anchor="middle"
-						text-buffer="ENTER CODE FROM"
-					/>
-					<text
-						class="text--extra-bold text--sm-plus"
-						x="50%"
-						y="45"
-						text-anchor="middle"
-						text-buffer="pure.amod.io"
-					/>
-
-					<section x="15" y="$-10">
-						<use href="#tumblerview-digit" x="10" y="0">
-							<set href="code" attributeName="id" to="code1" />
-						</use>
-						<use href="#tumblerview-digit" x="105" y="0">
-							<set href="code" attributeName="id" to="code2" />
-						</use>
-						<use href="#tumblerview-digit" x="200" y="0">
-							<set href="code" attributeName="id" to="code3" />
-						</use>
-					</section>
-				</g>
-
-				<use id="donate-button" href="#combo-button-lower-right" fill="fb-orange">
-					<set href="combo-button-icon" attributeName="href" to="images/next.png" />
-					<set href="combo-button-icon-press" attributeName="href" to="images/next-pressed.png" />
-					<set href="combo-button-stroke" attributeName="display" to="inline" />
-					<set href="combo-button-fill" attributeName="display" to="inline" />
-
-					<animate attributeName="fill" to="fb-red" dur="0s" begin="enable" />
-					<animate attributeName="fill" to="fb-orange" dur="0.2s" begin="enable+0.5s" easing="ease-out" />
-				</use>
-			</svg>
 		</symbol>
 	</defs>
 </svg>

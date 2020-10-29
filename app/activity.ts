@@ -41,18 +41,15 @@ export class ActivityDisplay {
 			goalReached: [false, false],
 		},
 	];
-	private readonly $view: GroupElement;
 
 	constructor() {
-		this.$view = document.getElementById<GroupElement>('cycleview')!;
-
 		if (!app.permissions.granted('access_activity')) return;
+
+		configuration.onDidChange(this.onConfigurationChanged, this);
+		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 
 		// Don't bother listening for cycleview updates, as they are somewhat unreliable -- e.g. won't fire if a view is cycled back to itself
 		// this.$view.addEventListener('select', () => this.onViewChanged(this.getView()));
-
-		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
-		configuration.onDidChange(this.onConfigurationChanged, this);
 
 		goals.addEventListener('reachgoal', () => this.onGoalReached(goals));
 
@@ -60,7 +57,33 @@ export class ActivityDisplay {
 		this.onConfigurationChanged();
 	}
 
+	private _paused: boolean = false;
+	get paused(): boolean {
+		return this._paused;
+	}
+	set paused(value: boolean) {
+		this._paused = value;
+
+		this._$view = undefined;
+
+		if (value) {
+			clearInterval(this.autoRotateHandle);
+		} else {
+			this.onConfigurationChanged();
+		}
+	}
+
+	private _$view: GroupElement | undefined;
+	private get $view(): GroupElement {
+		if (this._$view == null) {
+			this._$view = document.getElementById<GroupElement>('cycleview')!;
+		}
+		return this._$view;
+	}
+
 	private onAppEvent(e: AppEvent) {
+		if (this.paused) return;
+
 		switch (e.type) {
 			case 'display': {
 				if (e.display.on && !e.display.aodActive) {
@@ -110,6 +133,7 @@ export class ActivityDisplay {
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
+		if (this.paused) return;
 		if (
 			e?.key != null &&
 			e.key !== 'autoRotate' &&
@@ -176,6 +200,8 @@ export class ActivityDisplay {
 	}
 
 	private onGoalReached(goals: Goals) {
+		if (this.paused) return;
+
 		let view: ActivityViews;
 
 		if (
@@ -205,6 +231,8 @@ export class ActivityDisplay {
 	}
 
 	private onViewChanged(e: ActivityViewChangeEvent, initializing: boolean = false) {
+		if (this.paused) return;
+
 		configuration.set('currentActivityView', e.view);
 
 		if (
@@ -226,6 +254,8 @@ export class ActivityDisplay {
 
 	@defer()
 	private render() {
+		if (this.paused) return;
+
 		const view = this.getView() - 1;
 		if (view === -1) return;
 
@@ -314,7 +344,7 @@ export class ActivityDisplay {
 
 		if (configuration.get('showActivityUnits')) {
 			$units.text = unitsLabel != null ? gettext(unitsLabel) : '';
-			$value.y = $units.text.length > 0 ? -3 : 0;
+			$value.y = $units.text.length > 0 ? -5 : 0;
 		} else {
 			$value.y = 0;
 		}
@@ -344,7 +374,7 @@ export class ActivityDisplay {
 		this.autoRotateHandle = 0;
 		this.autoRotateOverride = false;
 
-		if (!enabled || !display.on || display.aodActive) return;
+		if (this.paused || !enabled || !display.on || display.aodActive) return;
 
 		this.setView(ActivityViews.Date);
 

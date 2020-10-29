@@ -28,10 +28,10 @@ export class HeartRateDisplay {
 		const sensor = new HeartRateSensor({ frequency: 5 });
 		this.heartRateSensor = sensor;
 
+		configuration.onDidChange(this.onConfigurationChanged, this);
+		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 		sensor.addEventListener('activate', () => this.onHeartRateChanged(sensor));
 		sensor.addEventListener('reading', () => this.onHeartRateChanged(sensor));
-
-		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 
 		if (BodyPresenceSensor && app.permissions.granted('access_activity')) {
 			const sensor = new BodyPresenceSensor();
@@ -43,13 +43,27 @@ export class HeartRateDisplay {
 			this.isOnBody = true;
 		}
 
-		configuration.onDidChange(this.onConfigurationChanged, this);
-
 		this.onConfigurationChanged();
 		this.updateState();
 	}
 
+	private _paused: boolean = false;
+	get paused(): boolean {
+		return this._paused;
+	}
+	set paused(value: boolean) {
+		this._paused = value;
+
+		if (value) {
+			this.stopAnimation();
+		} else {
+			this.onConfigurationChanged();
+		}
+	}
+
 	private onAppEvent(e: AppEvent) {
+		if (this.paused) return;
+
 		switch (e.type) {
 			case 'display': {
 				this.updateState();
@@ -64,11 +78,14 @@ export class HeartRateDisplay {
 
 	@debounce(250)
 	private onBodyPresenceChanged(sensor: BodyPresenceSensor) {
+		if (this.paused) return;
+
 		this.isOnBody = sensor.present ?? undefined;
 		this.updateState();
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
+		if (this.paused) return;
 		if (
 			e?.key != null &&
 			e.key !== 'animateHeartRate' &&
@@ -113,7 +130,7 @@ export class HeartRateDisplay {
 
 	@debounce(100)
 	private onHeartRateChanged(sensor: HeartRateSensor) {
-		if (this.rate === sensor.heartRate) return;
+		if (this.paused || this.rate === sensor.heartRate) return;
 
 		this.rate = sensor.heartRate ?? undefined;
 		this.render();
@@ -121,6 +138,8 @@ export class HeartRateDisplay {
 
 	@defer()
 	private render() {
+		if (this.paused) return;
+
 		let rate = appManager.editing ? 0 : this.rate;
 		if (rate == null) {
 			const timestamp = this.heartRateSensor?.activated ? this.heartRateSensor?.timestamp ?? 0 : 0;
@@ -153,6 +172,8 @@ export class HeartRateDisplay {
 	private animationInterval: number | undefined;
 
 	private startAnimation(rate: number) {
+		if (this.paused) return;
+
 		const animate = configuration.get('animateHeartRate');
 		if (!animate) return;
 
@@ -187,11 +208,13 @@ export class HeartRateDisplay {
 		}
 		this.animationInterval = undefined;
 
+		if (this.paused) return;
+
 		document.getElementById<GraphicsElement>('hr-icon')!.parent!.animate('disable');
 	}
 
 	private updateState() {
-		if (this.heartRateSensor == null) return;
+		if (this.paused || this.heartRateSensor == null) return;
 
 		if (!display.on || display.aodActive) {
 			// console.log(`HeartRateDisplay.updateState: display.on=${display.on}; stopping sensors...`);

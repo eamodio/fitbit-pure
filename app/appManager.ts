@@ -2,9 +2,12 @@ import { me as device } from 'device';
 import { display, Display } from 'display';
 import document from 'document';
 import { vibration } from 'haptics';
-import { Backgrounds, Colors, ConfigChangeEvent, configuration } from './configuration';
-import { DonatePopup } from './popup';
+import { ActivityDisplay } from './activity';
+import { BatteryDisplay } from './battery';
 import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
+import { Backgrounds, Colors, ConfigChangeEvent, configuration } from './configuration';
+import { HeartRateDisplay } from './heartRate';
+import { TimeDisplay } from './time';
 
 const screenHeight = device.screen.height;
 const screenWidth = device.screen.width;
@@ -108,19 +111,12 @@ export class AppManager {
 	private mouseClickCancelTimer: number | undefined;
 	private mouseDownDisposable: Disposable | undefined;
 	private mouseDownTimer: number | undefined;
+	private $trigger!: RectElement;
 
-	constructor(private readonly $trigger: RectElement) {
-		display.addEventListener('change', () => this.onDisplayChanged(display));
+	constructor() {
 		configuration.onDidChange(this.onConfigurationChanged, this);
 
-		this.$trigger.addEventListener('click', e => this.onMouseClick(e));
-		this.$trigger.addEventListener('mousedown', e => this.onMouseDown(e));
-		this.$trigger.addEventListener('mouseup', e => this.onMouseUp(e));
-
-		this.onConfigurationChanged();
-
-		// DEMO MODE
-		// this.demo();
+		display.addEventListener('change', () => this.onDisplayChanged(display));
 	}
 
 	get donated(): boolean {
@@ -140,7 +136,7 @@ export class AppManager {
 		if (this._editing === value) return;
 
 		if (value && !this.donated) {
-			this.showDonatePopup();
+			void this.showDonateView();
 
 			return;
 		}
@@ -165,11 +161,98 @@ export class AppManager {
 		this._onDidTriggerAppEvent.fire(e);
 	}
 
-	showDonatePopup() {
-		requestAnimationFrame(() => {
-			const popup = new DonatePopup(this);
-			popup.show();
-		});
+	private views: [TimeDisplay, BatteryDisplay, HeartRateDisplay, ActivityDisplay] | undefined;
+
+	load() {
+		this.$trigger = document.getElementById<RectElement>('trigger')!;
+		this.$trigger.addEventListener('click', this.onMouseClick.bind(this));
+		this.$trigger.addEventListener('mousedown', this.onMouseDown.bind(this));
+		this.$trigger.addEventListener('mouseup', this.onMouseUp.bind(this));
+
+		this.views = [new TimeDisplay(), new BatteryDisplay(), new HeartRateDisplay(), new ActivityDisplay()];
+
+		this.onConfigurationChanged();
+
+		// DEMO MODE
+		// this.demo();
+	}
+
+	reload(donated: boolean) {
+		document.replaceSync('./resources/index.gui');
+
+		this.$trigger = document.getElementById<RectElement>('trigger')!;
+		this.$trigger.addEventListener('click', this.onMouseClick.bind(this));
+		this.$trigger.addEventListener('mousedown', this.onMouseDown.bind(this));
+		this.$trigger.addEventListener('mouseup', this.onMouseUp.bind(this));
+
+		const views = this.views!;
+		let i = views.length;
+		while (i--) {
+			views[i].paused = false;
+		}
+
+		if (donated) {
+			this.donated = true;
+		}
+
+		this.onConfigurationChanged();
+	}
+
+	async showDonateView() {
+		const views = this.views!;
+		let i = views.length;
+		while (i--) {
+			views[i].paused = true;
+		}
+
+		let donated = false;
+		try {
+			donated = await new Promise<boolean>(resolve => {
+				document.replaceSync('./resources/donate.gui');
+
+				const disposable = this.onDidTriggerAppEvent(e => {
+					if (e.type === 'display' && (!e.display.on || e.display.aodActive)) {
+						disposable.dispose();
+
+						resolve(false);
+					}
+				});
+
+				const $nextButton = document.getElementById<ComboButtonElement>('next-button')!;
+				$nextButton.addEventListener('click', () => {
+					const $steps = document.getElementsByClassName<GroupElement>('donate-step')!;
+					if ($steps[0].style.display !== 'none') {
+						$steps[0].style.display = 'none';
+						$steps[1].style.display = 'inline';
+
+						$nextButton.getElementById<ImageElement>('combo-button-icon')!.href = 'images/check.png';
+						$nextButton.getElementById<ImageElement>('combo-button-icon-press')!.href =
+							'images/check-pressed.png';
+
+						return;
+					}
+
+					const $tumblers = [
+						document.getElementById<TumblerViewElement>('code1')!,
+						document.getElementById<TumblerViewElement>('code2')!,
+						document.getElementById<TumblerViewElement>('code3')!,
+					];
+
+					const date = new Date();
+					const value = `${date.getUTCFullYear().toString().substr(2)}${date.getUTCMonth().toString(16)}`;
+					if ($tumblers.every(($, index) => $.value.toString(16) === value[index])) {
+						disposable.dispose();
+
+						resolve(true);
+					} else {
+						// Show an error state on the button for a short time
+						$nextButton.animate('enable');
+					}
+				});
+			});
+		} finally {
+			this.reload(donated);
+		}
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
@@ -196,18 +279,14 @@ export class AppManager {
 		if (e?.key == null || e?.key === 'donated') {
 			const $donateButton = document.getElementById<SquareButtonElement>('donate-button')!;
 
+			this.donateDisposable?.dispose();
+
 			if (this.donated) {
 				$donateButton.style.visibility = 'hidden';
-
-				if (this.donateDisposable != null) {
-					this.donateDisposable.dispose();
-					this.donateDisposable = undefined;
-				}
 			} else {
 				$donateButton.style.visibility = 'visible';
 
-				this.donateDisposable?.dispose();
-				this.donateDisposable = addEventListener($donateButton, 'click', () => this.onDonateClicked());
+				this.donateDisposable = addEventListener($donateButton, 'click', this.onDonateClicked.bind(this));
 			}
 
 			if (e?.key === 'donated') return;
@@ -308,7 +387,7 @@ export class AppManager {
 	}
 
 	private onDonateClicked() {
-		this.showDonatePopup();
+		setTimeout(() => void this.showDonateView(), 0);
 	}
 
 	private onMouseClick(e: MouseEvent) {
@@ -636,4 +715,4 @@ function isWithinBounds(
 	);
 }
 
-export const appManager = new AppManager(document.getElementById<RectElement>('trigger')!);
+export const appManager = new AppManager();

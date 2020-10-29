@@ -24,15 +24,11 @@ enum Previous {
 export class TimeDisplay {
 	private date: Date | undefined;
 	private previous: Int8Array = new Int8Array(4);
-	private readonly $seconds: TextElement;
 
 	constructor() {
-		this.$seconds = document.getElementById<TextElement>('time-secs')!;
-
-		clock.addEventListener('tick', e => this.onTick(e));
-
-		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 		configuration.onDidChange(this.onConfigurationChanged, this);
+		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
+		clock.addEventListener('tick', this.onTick.bind(this));
 
 		if (display.aodAvailable) {
 			const aodOpacity = configuration.get('aodOpacity');
@@ -45,7 +41,31 @@ export class TimeDisplay {
 		this.onConfigurationChanged();
 	}
 
+	private _paused: boolean = false;
+	get paused(): boolean {
+		return this._paused;
+	}
+	set paused(value: boolean) {
+		this._paused = value;
+
+		this._$seconds = undefined;
+
+		if (!value) {
+			this.onConfigurationChanged();
+		}
+	}
+
+	private _$seconds: TextElement | undefined;
+	private get $seconds(): TextElement {
+		if (this._$seconds == null) {
+			this._$seconds = document.getElementById<TextElement>('time-secs')!;
+		}
+		return this._$seconds;
+	}
+
 	private onAppEvent(e: AppEvent) {
+		if (this.paused) return;
+
 		switch (e.type) {
 			case 'display': {
 				if (
@@ -89,6 +109,7 @@ export class TimeDisplay {
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
+		if (this.paused) return;
 		if (
 			e?.key != null &&
 			e.key !== 'animateSeparator' &&
@@ -146,7 +167,9 @@ export class TimeDisplay {
 					this.render();
 				}
 			} else {
-				this.$seconds.style.display = 'none';
+				if (this._$seconds != null) {
+					this.$seconds.style.display = 'none';
+				}
 				this.updateClock(false);
 			}
 
@@ -157,6 +180,8 @@ export class TimeDisplay {
 	}
 
 	private onTick({ date }: TickEvent) {
+		if (this.paused) return;
+
 		this.date = date;
 		this.renderCore();
 	}
@@ -167,6 +192,8 @@ export class TimeDisplay {
 	}
 
 	private renderCore(force: boolean = false) {
+		if (this.paused) return;
+
 		const date = this.date ?? new Date();
 
 		if (configuration.get('showSeconds') && !display.aodActive) {
