@@ -10,9 +10,9 @@
 
 	<section id="top-bar-section" y="20">
 		<g id="top-bar">
-			<image id="bat-icon" href="images/battery.png" class="icon primary" x="10" y="-2" />
-			<line id="bat-indicator" x1="12" y1="13" x2="50" y2="13" stroke-width="12" stroke-linecap="butt" />
-			<text id="bat-level" class="text text--lg primary" text-anchor="start" text-length="4" x="48" y="25" />
+			<image id="bat-icon" href="images/battery.png" class="icon primary" x="10" y="-3" />
+			<line id="bat-indicator" x1="12" y1="12" x2="50" y2="12" stroke-width="12" stroke-linecap="butt" />
+			<text id="bat-level" class="text text--lg primary" text-anchor="start" text-length="4" x="48" y="23" />
 			<text
 				id="bat-level-%"
 				class="text text--sm secondary"
@@ -38,7 +38,7 @@
 					text-anchor="middle"
 					text-length="2"
 					x="50%"
-					y="$+8"
+					y="$+7"
 				/>
 
 				<animate
@@ -126,7 +126,7 @@
 					<animate attributeName="opacity" to="0" dur="0s" begin="select" />
 					<animate attributeName="opacity" to="1" dur="0.4s" begin="select" easing="ease-in" />
 				</g>
-				<text id="hr-rate" class="text text--lg primary" text-anchor="end" text-length="3" x="100%-48" y="25" />
+				<text id="hr-rate" class="text text--lg primary" text-anchor="end" text-length="3" x="100%-48" y="23" />
 			</section>
 
 			<!-- Animate in -->

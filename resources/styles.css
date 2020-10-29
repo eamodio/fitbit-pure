@@ -10,9 +10,8 @@
 }
 
 #code {
-	width: 120;
+	width: 60;
 	height: 240;
-	/* height: 190; */
 	fill: fb-orange;
 	overflow: hidden;
 }
@@ -86,11 +85,11 @@
 }
 
 .text--lg {
-	font-size: 36;
+	font-size: 33;
 }
 
 .text--md {
-	font-size: 32;
+	font-size: 29;
 }
 
 .text--sm-plus {
@@ -98,7 +97,7 @@
 }
 
 .text--sm {
-	font-size: 22;
+	font-size: 21;
 }
 
 .text--caps {

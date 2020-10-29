@@ -314,7 +314,7 @@ export class ActivityDisplay {
 
 		if (configuration.get('showActivityUnits')) {
 			$units.text = unitsLabel != null ? gettext(unitsLabel) : '';
-			$value.y = $units.text.length > 0 ? -5 : 0;
+			$value.y = $units.text.length > 0 ? -3 : 0;
 		} else {
 			$value.y = 0;
 		}

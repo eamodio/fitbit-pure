@@ -95,7 +95,7 @@
 				text-anchor="start"
 				text-length="8"
 				x="60"
-				y="$-20"
+				y="$-19"
 			/>
 
 			<g transform="translate(100%-24,-12)">
@@ -184,7 +184,7 @@
 				text-anchor="end"
 				text-length="8"
 				x="100%-60"
-				y="$-20"
+				y="$-19"
 			/>
 		</symbol>
 
@@ -251,16 +251,22 @@
 				</g>
 
 				<g class="donate-step" display="none">
-					<text class="text text--sm" x="50%" y="22" text-anchor="middle" text-buffer="ENTER CODE FROM" />
 					<text
-						class="text--extra-bold text--sm"
+						class="text text--sm-plus"
+						x="50%"
+						y="22"
+						text-anchor="middle"
+						text-buffer="ENTER CODE FROM"
+					/>
+					<text
+						class="text--extra-bold text--sm-plus"
 						x="50%"
 						y="45"
 						text-anchor="middle"
 						text-buffer="pure.amod.io"
 					/>
 
-					<section x="-45" y="$-10">
+					<section x="15" y="$-10">
 						<use href="#tumblerview-digit" x="10" y="0">
 							<set href="code" attributeName="id" to="code1" />
 						</use>
