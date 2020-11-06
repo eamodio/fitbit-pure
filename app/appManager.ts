@@ -4,11 +4,10 @@ import document from 'document';
 import { vibration } from 'haptics';
 import { ActivityDisplay } from './activity';
 import { BatteryDisplay } from './battery';
+import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
 import { Backgrounds, Colors, ConfigChangeEvent, configuration } from './configuration';
-import { DonateView } from './donateView';
 import { HeartRateDisplay } from './heartRate';
 import { TimeDisplay } from './time';
-import { addEventListener, Disposable, Event, EventEmitter } from '../common/system';
 
 const screenHeight = device.screen.height;
 const screenWidth = device.screen.width;
@@ -114,7 +113,11 @@ export class AppManager {
 	private mouseDownTimer: number | undefined;
 	private $trigger!: RectElement;
 
-	constructor() {}
+	constructor() {
+		configuration.onDidChange(this.onConfigurationChanged, this);
+
+		display.addEventListener('change', () => this.onDisplayChanged(display));
+	}
 
 	get donated(): boolean {
 		return configuration.get('donated');
@@ -158,26 +161,15 @@ export class AppManager {
 		this._onDidTriggerAppEvent.fire(e);
 	}
 
-	private disposable: Disposable | undefined;
-	start() {
-		this.disposable?.dispose();
+	private views: [TimeDisplay, BatteryDisplay, HeartRateDisplay, ActivityDisplay] | undefined;
 
+	load() {
 		this.$trigger = document.getElementById<RectElement>('trigger')!;
+		this.$trigger.addEventListener('click', this.onMouseClick.bind(this));
+		this.$trigger.addEventListener('mousedown', this.onMouseDown.bind(this));
+		this.$trigger.addEventListener('mouseup', this.onMouseUp.bind(this));
 
-		this.disposable = Disposable.from(
-			configuration.onDidChange(this.onConfigurationChanged, this),
-
-			addEventListener(display, 'change', () => this.onDisplayChanged(display)),
-
-			addEventListener(this.$trigger, 'click', e => this.onMouseClick(e)),
-			addEventListener(this.$trigger, 'mousedown', e => this.onMouseDown(e)),
-			addEventListener(this.$trigger, 'mouseup', e => this.onMouseUp(e)),
-
-			new TimeDisplay(),
-			new BatteryDisplay(),
-			new HeartRateDisplay(),
-			new ActivityDisplay(),
-		);
+		this.views = [new TimeDisplay(), new BatteryDisplay(), new HeartRateDisplay(), new ActivityDisplay()];
 
 		this.onConfigurationChanged();
 
@@ -185,17 +177,100 @@ export class AppManager {
 		// this.demo();
 	}
 
+	async reload(donated: boolean) {
+		await document.location.replace('./resources/index.view');
+
+		this.$trigger = document.getElementById<RectElement>('trigger')!;
+		this.$trigger.addEventListener('click', this.onMouseClick.bind(this));
+		this.$trigger.addEventListener('mousedown', this.onMouseDown.bind(this));
+		this.$trigger.addEventListener('mouseup', this.onMouseUp.bind(this));
+
+		const views = this.views!;
+		let i = views.length;
+		while (i--) {
+			views[i].paused = false;
+		}
+
+		if (donated) {
+			this.donated = true;
+		}
+
+		this.onConfigurationChanged();
+	}
+
 	async showDonateView() {
-		this.disposable?.dispose();
-		const view = new DonateView(this);
+		const views = this.views!;
+		let i = views.length;
+		while (i--) {
+			views[i].paused = true;
+		}
+
+		let donated = false;
 		try {
-			const donated = await view.show();
-			if (donated) {
-				appManager.donated = true;
-			}
+			// eslint-disable-next-line no-async-promise-executor
+			donated = await new Promise<boolean>(async resolve => {
+				await document.location.replace('./resources/donate.view');
+
+				const disposable = this.onDidTriggerAppEvent(e => {
+					if (e.type === 'display' && (!e.display.on || e.display.aodActive)) {
+						disposable.dispose();
+
+						resolve(false);
+					}
+				});
+
+				const $backButton = document.getElementById<TextButtonElement>('back-button')!;
+				const $nextButton = document.getElementById<TextButtonElement>('next-button')!;
+
+				const $tumblers = [
+					document.getElementById<TumblerViewElement>('code1')!,
+					document.getElementById<TumblerViewElement>('code2')!,
+					document.getElementById<TumblerViewElement>('code3')!,
+				];
+
+				$backButton.addEventListener('click', () => {
+					const $steps = document.getElementsByClassName<GroupElement>('donate-step')!;
+					if ($steps[0].style.display === 'none') {
+						$steps[0].style.display = 'inline';
+						$steps[1].style.display = 'none';
+
+						$nextButton.text = 'Next';
+
+						return;
+					}
+
+					resolve(false);
+				});
+
+				$nextButton.addEventListener('click', () => {
+					const $steps = document.getElementsByClassName<GroupElement>('donate-step')!;
+					if ($steps[0].style.display !== 'none') {
+						$steps[0].style.display = 'none';
+						$steps[1].style.display = 'inline';
+
+						$nextButton.text = 'Done';
+
+						return;
+					}
+
+					const date = new Date();
+					const value = `${date.getUTCFullYear().toString().substr(2)}${date.getUTCMonth().toString(16)}`;
+					if ($tumblers.every(($, index) => $.value.toString(16) === value[index])) {
+						disposable.dispose();
+
+						resolve(true);
+					} else {
+						// Show an error state on the button for a short time
+						$nextButton.animate('enable');
+					}
+				});
+
+				$tumblers.forEach(($, index) =>
+					addEventListener($, 'click', () => ($tumblers[index].value = Number($tumblers[index].value) + 1)),
+				);
+			});
 		} finally {
-			await document.location.replace('./resources/index.view');
-			this.start();
+			void this.reload(donated);
 		}
 	}
 
@@ -223,18 +298,14 @@ export class AppManager {
 		if (e?.key == null || e?.key === 'donated') {
 			const $donateButton = document.getElementById<TextButtonElement>('donate-button')!;
 
+			this.donateDisposable?.dispose();
+
 			if (this.donated) {
 				$donateButton.style.visibility = 'hidden';
-
-				if (this.donateDisposable != null) {
-					this.donateDisposable.dispose();
-					this.donateDisposable = undefined;
-				}
 			} else {
 				$donateButton.style.visibility = 'visible';
 
-				this.donateDisposable?.dispose();
-				this.donateDisposable = addEventListener($donateButton, 'click', () => this.onDonateClicked());
+				this.donateDisposable = addEventListener($donateButton, 'click', this.onDonateClicked.bind(this));
 			}
 
 			if (e?.key === 'donated') return;
@@ -335,7 +406,7 @@ export class AppManager {
 	}
 
 	private onDonateClicked() {
-		void this.showDonateView();
+		setTimeout(() => void this.showDonateView(), 0);
 	}
 
 	private onMouseClick(e: MouseEvent) {

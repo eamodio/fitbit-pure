@@ -1,35 +1,33 @@
-import { battery, Battery } from 'power';
+import { battery } from 'power';
 import document from 'document';
 import { display } from 'display';
-import { ConfigChangeEvent, configuration } from './configuration';
-import { addEventListener, debounce, defer, Disposable } from '../common/system';
 import { AppEvent, appManager } from './appManager';
+import { ConfigChangeEvent, configuration } from './configuration';
+import { debounce, defer } from '../common/system';
 
-export class BatteryDisplay implements Disposable {
-	private disposed: boolean = false;
-	private readonly disposable: Disposable;
-
+export class BatteryDisplay {
 	constructor() {
-		this.disposable = Disposable.from(
-			configuration.onDidChange(this.onConfigurationChanged, this),
-			appManager.onDidTriggerAppEvent(this.onAppEvent, this),
-			addEventListener(battery, 'change', () => this.onBatteryChanged(battery)),
-		);
+		configuration.onDidChange(this.onConfigurationChanged, this);
+		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
+		battery.addEventListener('change', this.onBatteryChanged.bind(this));
 
 		this.onConfigurationChanged();
+	}
 
-		if (display.on && !display.aodActive) {
-			this.render();
+	private _paused: boolean = false;
+	get paused(): boolean {
+		return this._paused;
+	}
+	set paused(value: boolean) {
+		this._paused = value;
+
+		if (!value) {
+			this.onConfigurationChanged();
 		}
 	}
 
-	dispose(): void {
-		this.disposed = true;
-		this.disposable.dispose();
-	}
-
 	private onAppEvent(e: AppEvent) {
-		if (this.disposed || e.type !== 'display') return;
+		if (this.paused || e.type !== 'display') return;
 
 		if (e.display.on && !e.display.aodActive) {
 			this.render();
@@ -37,24 +35,28 @@ export class BatteryDisplay implements Disposable {
 	}
 
 	@debounce(500)
-	private onBatteryChanged(_sensor: Battery) {
-		if (this.disposed) return;
+	private onBatteryChanged() {
+		if (this.paused) return;
 
 		this.render();
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
-		if (this.disposed) return;
+		if (this.paused) return;
 		if (e?.key != null && e.key !== 'showBatteryPercentage') return;
 
-		const display = configuration.get('showBatteryPercentage') ? 'inline' : 'none';
-		document.getElementById<TextElement>('bat-level')!.style.display = display;
-		document.getElementById<TextElement>('bat-level-%')!.style.display = display;
+		const percentageDisplay = configuration.get('showBatteryPercentage') ? 'inline' : 'none';
+		document.getElementById<TextElement>('bat-level')!.style.display = percentageDisplay;
+		document.getElementById<TextElement>('bat-level-%')!.style.display = percentageDisplay;
+
+		if (e?.key == null && display.on && !display.aodActive) {
+			this.render();
+		}
 	}
 
 	@defer()
 	private render() {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		const level = Math.floor(battery.chargeLevel) ?? 0;
 

@@ -6,7 +6,7 @@ import { goals, Goals, today } from 'user-activity';
 import { units } from 'user-settings';
 import { display } from 'display';
 import { ActivityViewChangeEvent, ActivityViews, AppEvent, appManager } from './appManager';
-import { addEventListener, defer, Disposable } from '../common/system';
+import { defer } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
 
 const meterToMile = 0.000621371192;
@@ -30,9 +30,7 @@ enum Side {
 	Right = 1,
 }
 
-export class ActivityDisplay implements Disposable {
-	private disposed: boolean = false;
-	private readonly disposable: Disposable | undefined;
+export class ActivityDisplay {
 	private readonly activities: Activity[] = [
 		{
 			names: ['steps', 'distance'],
@@ -43,35 +41,48 @@ export class ActivityDisplay implements Disposable {
 			goalReached: [false, false],
 		},
 	];
-	private readonly $view: GroupElement;
 
 	constructor() {
-		this.$view = document.getElementById<GroupElement>('cycleview')!;
-
 		if (!app.permissions.granted('access_activity')) return;
 
-		this.disposable = Disposable.from(
-			configuration.onDidChange(this.onConfigurationChanged, this),
-			appManager.onDidTriggerAppEvent(this.onAppEvent, this),
+		configuration.onDidChange(this.onConfigurationChanged, this);
+		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
 
-			// Don't bother listening for cycleview updates, as they are somewhat unreliable -- e.g. won't fire if a view is cycled back to itself
-			// addEventListener(this.$view, 'select', () => this.onViewChanged(this.getView())),
+		// Don't bother listening for cycleview updates, as they are somewhat unreliable -- e.g. won't fire if a view is cycled back to itself
+		// this.$view.addEventListener('select', () => this.onViewChanged(this.getView()));
 
-			addEventListener(goals, 'reachgoal', () => this.onGoalReached(goals)),
-		);
+		goals.addEventListener('reachgoal', () => this.onGoalReached(goals));
 
 		this.setView(configuration.get('currentActivityView'), undefined, true);
 		this.onConfigurationChanged();
 	}
 
-	dispose(): void {
-		this.disposed = true;
-		this.disposable?.dispose();
-		clearInterval(this.autoRotateHandle);
+	private _paused: boolean = false;
+	get paused(): boolean {
+		return this._paused;
+	}
+	set paused(value: boolean) {
+		this._paused = value;
+
+		this._$view = undefined;
+
+		if (value) {
+			clearInterval(this.autoRotateHandle);
+		} else {
+			this.onConfigurationChanged();
+		}
+	}
+
+	private _$view: GroupElement | undefined;
+	private get $view(): GroupElement {
+		if (this._$view == null) {
+			this._$view = document.getElementById<GroupElement>('cycleview')!;
+		}
+		return this._$view;
 	}
 
 	private onAppEvent(e: AppEvent) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		switch (e.type) {
 			case 'display': {
@@ -122,7 +133,7 @@ export class ActivityDisplay implements Disposable {
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
-		if (this.disposed) return;
+		if (this.paused) return;
 		if (
 			e?.key != null &&
 			e.key !== 'autoRotate' &&
@@ -189,7 +200,7 @@ export class ActivityDisplay implements Disposable {
 	}
 
 	private onGoalReached(goals: Goals) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		let view: ActivityViews;
 
@@ -220,7 +231,7 @@ export class ActivityDisplay implements Disposable {
 	}
 
 	private onViewChanged(e: ActivityViewChangeEvent, initializing: boolean = false) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		configuration.set('currentActivityView', e.view);
 
@@ -243,7 +254,7 @@ export class ActivityDisplay implements Disposable {
 
 	@defer()
 	private render() {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		const view = this.getView() - 1;
 		if (view === -1) return;
@@ -360,7 +371,7 @@ export class ActivityDisplay implements Disposable {
 		this.autoRotateHandle = 0;
 		this.autoRotateOverride = false;
 
-		if (this.disposed || !enabled || !display.on || display.aodActive) return;
+		if (this.paused || !enabled || !display.on || display.aodActive) return;
 
 		this.setView(ActivityViews.Date);
 

@@ -55,6 +55,8 @@ export function addEventListener<T extends EventTarget<EventMap<T>>, TEventName 
 ): Disposable {
 	element.addEventListener(eventName, eventListener);
 	return {
-		dispose: () => element.removeEventListener(eventName, eventListener),
+		dispose: function () {
+			element.removeEventListener(eventName, eventListener);
+		},
 	};
 }

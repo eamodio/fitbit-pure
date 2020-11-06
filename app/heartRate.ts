@@ -6,12 +6,10 @@ import { HeartRateSensor } from 'heart-rate';
 import { user } from 'user-profile';
 import { gettext } from 'i18n';
 import { AppEvent, appManager } from './appManager';
+import { debounce, defer } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
-import { addEventListener, debounce, defer, Disposable } from '../common/system';
 
-export class HeartRateDisplay implements Disposable {
-	private disposed: boolean = false;
-	private readonly disposable: Disposable | undefined;
+export class HeartRateDisplay {
 	private readonly bodyPresenceSensor: BodyPresenceSensor | undefined;
 	private readonly heartRateSensor: HeartRateSensor | undefined;
 	private readonly hasUserProfileAccess: boolean;
@@ -30,41 +28,41 @@ export class HeartRateDisplay implements Disposable {
 		const sensor = new HeartRateSensor({ frequency: 5 });
 		this.heartRateSensor = sensor;
 
-		const disposables = [
-			configuration.onDidChange(this.onConfigurationChanged, this),
-			addEventListener(sensor, 'activate', () => this.onHeartRateChanged(sensor)),
-			addEventListener(sensor, 'reading', () => this.onHeartRateChanged(sensor)),
-		];
-
+		configuration.onDidChange(this.onConfigurationChanged, this);
 		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
+		sensor.addEventListener('activate', () => this.onHeartRateChanged(sensor));
+		sensor.addEventListener('reading', () => this.onHeartRateChanged(sensor));
 
 		if (BodyPresenceSensor && app.permissions.granted('access_activity')) {
 			const sensor = new BodyPresenceSensor();
 			this.bodyPresenceSensor = sensor;
 
-			disposables.push(
-				addEventListener(sensor, 'activate', () => this.onBodyPresenceChanged(sensor)),
-				addEventListener(sensor, 'reading', () => this.onBodyPresenceChanged(sensor)),
-			);
+			sensor.addEventListener('activate', () => this.onBodyPresenceChanged(sensor));
+			sensor.addEventListener('reading', () => this.onBodyPresenceChanged(sensor));
 		} else {
 			this.isOnBody = true;
 		}
-
-		this.disposable = Disposable.from(...disposables);
 
 		this.onConfigurationChanged();
 		this.updateState();
 	}
 
-	dispose(): void {
-		this.disposed = true;
-		this.disposable?.dispose();
+	private _paused: boolean = false;
+	get paused(): boolean {
+		return this._paused;
+	}
+	set paused(value: boolean) {
+		this._paused = value;
 
-		this.stopAnimation();
+		if (value) {
+			this.stopAnimation();
+		} else {
+			this.onConfigurationChanged();
+		}
 	}
 
 	private onAppEvent(e: AppEvent) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		switch (e.type) {
 			case 'display': {
@@ -80,14 +78,14 @@ export class HeartRateDisplay implements Disposable {
 
 	@debounce(250)
 	private onBodyPresenceChanged(sensor: BodyPresenceSensor) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		this.isOnBody = sensor.present ?? undefined;
 		this.updateState();
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
-		if (this.disposed) return;
+		if (this.paused) return;
 		if (
 			e?.key != null &&
 			e.key !== 'animateHeartRate' &&
@@ -132,7 +130,7 @@ export class HeartRateDisplay implements Disposable {
 
 	@debounce(100)
 	private onHeartRateChanged(sensor: HeartRateSensor) {
-		if (this.disposed || this.rate === sensor.heartRate) return;
+		if (this.paused || this.rate === sensor.heartRate) return;
 
 		this.rate = sensor.heartRate ?? undefined;
 		this.render();
@@ -140,7 +138,7 @@ export class HeartRateDisplay implements Disposable {
 
 	@defer()
 	private render() {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		let rate = appManager.editing ? 0 : this.rate;
 		if (rate == null) {
@@ -174,7 +172,7 @@ export class HeartRateDisplay implements Disposable {
 	private animationInterval: number | undefined;
 
 	private startAnimation(rate: number) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		const animate = configuration.get('animateHeartRate');
 		if (!animate) return;
@@ -210,13 +208,13 @@ export class HeartRateDisplay implements Disposable {
 		}
 		this.animationInterval = undefined;
 
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		document.getElementById<GraphicsElement>('hr-icon')!.parent!.animate('disable');
 	}
 
 	private updateState() {
-		if (this.disposed || this.heartRateSensor == null) return;
+		if (this.paused || this.heartRateSensor == null) return;
 
 		if (!display.on || display.aodActive) {
 			// console.log(`HeartRateDisplay.updateState: display.on=${display.on}; stopping sensors...`);

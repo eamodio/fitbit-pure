@@ -5,8 +5,8 @@ import { gettext } from 'i18n';
 import { locale, preferences } from 'user-settings';
 import document from 'document';
 import { AppEvent, appManager } from './appManager';
+import { defer } from '../common/system';
 import { ConfigChangeEvent, configuration } from './configuration';
-import { addEventListener, defer, Disposable } from '../common/system';
 
 const screenWidth = device.screen.width;
 const digitWidth = 66;
@@ -21,25 +21,18 @@ enum Previous {
 	Month = 3,
 }
 
-export class TimeDisplay implements Disposable {
-	private disposed: boolean = false;
-	private readonly disposable: Disposable;
+export class TimeDisplay {
 	private date: Date | undefined;
 	private previous: Int8Array = new Int8Array(4);
-	private readonly $seconds: TextElement;
 
 	constructor() {
-		this.$seconds = document.getElementById<TextElement>('time-secs')!;
-
-		this.disposable = Disposable.from(
-			configuration.onDidChange(this.onConfigurationChanged, this),
-			appManager.onDidTriggerAppEvent(this.onAppEvent, this),
-			addEventListener(clock, 'tick', e => this.onTick(e)),
-		);
+		configuration.onDidChange(this.onConfigurationChanged, this);
+		appManager.onDidTriggerAppEvent(this.onAppEvent, this);
+		clock.addEventListener('tick', this.onTick.bind(this));
 
 		if (display.aodAvailable) {
 			const aodOpacity = configuration.get('aodOpacity');
-			// 0.6 is the default in the svg (index.gui)
+			// 0.6 is the default in the svg (index.view)
 			if (aodOpacity !== 60) {
 				this.updateAlwaysOnOpacity(aodOpacity);
 			}
@@ -48,13 +41,30 @@ export class TimeDisplay implements Disposable {
 		this.onConfigurationChanged();
 	}
 
-	dispose(): void {
-		this.disposed = true;
-		this.disposable.dispose();
+	private _paused: boolean = false;
+	get paused(): boolean {
+		return this._paused;
+	}
+	set paused(value: boolean) {
+		this._paused = value;
+
+		this._$seconds = undefined;
+
+		if (!value) {
+			this.onConfigurationChanged();
+		}
+	}
+
+	private _$seconds: TextElement | undefined;
+	private get $seconds(): TextElement {
+		if (this._$seconds == null) {
+			this._$seconds = document.getElementById<TextElement>('time-secs')!;
+		}
+		return this._$seconds;
 	}
 
 	private onAppEvent(e: AppEvent) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		switch (e.type) {
 			case 'display': {
@@ -99,7 +109,7 @@ export class TimeDisplay implements Disposable {
 	}
 
 	private onConfigurationChanged(e?: ConfigChangeEvent) {
-		if (this.disposed) return;
+		if (this.paused) return;
 		if (
 			e?.key != null &&
 			e.key !== 'animateSeparator' &&
@@ -157,7 +167,9 @@ export class TimeDisplay implements Disposable {
 					this.render();
 				}
 			} else {
-				this.$seconds.style.display = 'none';
+				if (this._$seconds != null) {
+					this.$seconds.style.display = 'none';
+				}
 				this.updateClock(false);
 			}
 
@@ -168,7 +180,7 @@ export class TimeDisplay implements Disposable {
 	}
 
 	private onTick({ date }: TickEvent) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		this.date = date;
 		this.renderCore();
@@ -180,7 +192,7 @@ export class TimeDisplay implements Disposable {
 	}
 
 	private renderCore(force: boolean = false) {
-		if (this.disposed) return;
+		if (this.paused) return;
 
 		const date = this.date ?? new Date();
 

@@ -83,7 +83,7 @@ export const defaultConfig: Config = {
 	showActivityUnits: true,
 	showBatteryPercentage: true,
 	showDate: true,
-	showDayOnDateHide: true,
+	showDayOnDateHide: false,
 	showLeadingZero: true,
 	showRestingHeartRate: false,
 	showSeconds: false,
