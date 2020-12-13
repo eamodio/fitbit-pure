@@ -35,7 +35,7 @@ msgid "month_short_11"
 msgstr "Dez"
 
 msgid "day_short_0"
-msgstr "Son"
+msgstr "So"
 
 msgid "day_short_1"
 msgstr "Mo"
