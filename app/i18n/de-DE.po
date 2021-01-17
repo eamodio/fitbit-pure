@@ -5,7 +5,7 @@ msgid "month_short_1"
 msgstr "Feb"
 
 msgid "month_short_2"
-msgstr "Mär"
+msgstr "März"
 
 msgid "month_short_3"
 msgstr "Apr"
@@ -14,16 +14,16 @@ msgid "month_short_4"
 msgstr "Mai"
 
 msgid "month_short_5"
-msgstr "Jun"
+msgstr "Juni"
 
 msgid "month_short_6"
-msgstr "Jul"
+msgstr "Juli"
 
 msgid "month_short_7"
 msgstr "Aug"
 
 msgid "month_short_8"
-msgstr "Sep"
+msgstr "Sept"
 
 msgid "month_short_9"
 msgstr "Okt"
@@ -71,10 +71,10 @@ msgid "ordinal_suffix_3"
 msgstr "."
 
 msgid "active_minutes_units"
-msgstr "Min"
+msgstr "min"
 
 msgid "calories_units"
-msgstr "Kcal"
+msgstr "kcal"
 
 msgid "distance_units_kilometers"
 msgstr "km"
@@ -83,4 +83,487 @@ msgid "distance_units_miles"
 msgstr "mi"
 
 msgid "steps_units"
-msgstr "Schritte"
+msgstr "schritte"
+
+msgid "heart_rate_color_0"
+msgstr "#3399ff"
+
+msgid "heart_rate_color_1"
+msgstr "#3798ff"
+
+msgid "heart_rate_color_2"
+msgstr "#3c98ff"
+
+msgid "heart_rate_color_3"
+msgstr "#3f97ff"
+
+msgid "heart_rate_color_4"
+msgstr "#4397ff"
+
+msgid "heart_rate_color_5"
+msgstr "#4796ff"
+
+msgid "heart_rate_color_6"
+msgstr "#4a96ff"
+
+msgid "heart_rate_color_7"
+msgstr "#4d95ff"
+
+msgid "heart_rate_color_8"
+msgstr "#5195ff"
+
+msgid "heart_rate_color_9"
+msgstr "#5494ff"
+
+msgid "heart_rate_color_10"
+msgstr "#5794ff"
+
+msgid "heart_rate_color_11"
+msgstr "#5a93ff"
+
+msgid "heart_rate_color_12"
+msgstr "#5c92fe"
+
+msgid "heart_rate_color_13"
+msgstr "#5f92fe"
+
+msgid "heart_rate_color_14"
+msgstr "#6291fe"
+
+msgid "heart_rate_color_15"
+msgstr "#6591fe"
+
+msgid "heart_rate_color_16"
+msgstr "#6790fe"
+
+msgid "heart_rate_color_17"
+msgstr "#6a8ffd"
+
+msgid "heart_rate_color_18"
+msgstr "#6d8ffd"
+
+msgid "heart_rate_color_19"
+msgstr "#6f8efd"
+
+msgid "heart_rate_color_20"
+msgstr "#728efd"
+
+msgid "heart_rate_color_21"
+msgstr "#748dfc"
+
+msgid "heart_rate_color_22"
+msgstr "#768cfc"
+
+msgid "heart_rate_color_23"
+msgstr "#798cfc"
+
+msgid "heart_rate_color_24"
+msgstr "#7b8bfb"
+
+msgid "heart_rate_color_25"
+msgstr "#7d8afb"
+
+msgid "heart_rate_color_26"
+msgstr "#808afa"
+
+msgid "heart_rate_color_27"
+msgstr "#8289fa"
+
+msgid "heart_rate_color_28"
+msgstr "#8488fa"
+
+msgid "heart_rate_color_29"
+msgstr "#8687f9"
+
+msgid "heart_rate_color_30"
+msgstr "#8987f9"
+
+msgid "heart_rate_color_31"
+msgstr "#8b86f8"
+
+msgid "heart_rate_color_32"
+msgstr "#8d85f8"
+
+msgid "heart_rate_color_33"
+msgstr "#8f85f7"
+
+msgid "heart_rate_color_34"
+msgstr "#9184f7"
+
+msgid "heart_rate_color_35"
+msgstr "#9383f6"
+
+msgid "heart_rate_color_36"
+msgstr "#9582f5"
+
+msgid "heart_rate_color_37"
+msgstr "#9782f5"
+
+msgid "heart_rate_color_38"
+msgstr "#9981f4"
+
+msgid "heart_rate_color_39"
+msgstr "#9b80f4"
+
+msgid "heart_rate_color_40"
+msgstr "#9d7ff3"
+
+msgid "heart_rate_color_41"
+msgstr "#9f7ff2"
+
+msgid "heart_rate_color_42"
+msgstr "#a17ef1"
+
+msgid "heart_rate_color_43"
+msgstr "#a37df1"
+
+msgid "heart_rate_color_44"
+msgstr "#a57cf0"
+
+msgid "heart_rate_color_45"
+msgstr "#a77bef"
+
+msgid "heart_rate_color_46"
+msgstr "#a97bef"
+
+msgid "heart_rate_color_47"
+msgstr "#ab7aee"
+
+msgid "heart_rate_color_48"
+msgstr "#ad79ed"
+
+msgid "heart_rate_color_49"
+msgstr "#ae78ec"
+
+msgid "heart_rate_color_50"
+msgstr "#b077eb"
+
+msgid "heart_rate_color_51"
+msgstr "#b276ea"
+
+msgid "heart_rate_color_52"
+msgstr "#b476ea"
+
+msgid "heart_rate_color_53"
+msgstr "#b575e9"
+
+msgid "heart_rate_color_54"
+msgstr "#b774e8"
+
+msgid "heart_rate_color_55"
+msgstr "#b973e7"
+
+msgid "heart_rate_color_56"
+msgstr "#bb72e6"
+
+msgid "heart_rate_color_57"
+msgstr "#bc71e5"
+
+msgid "heart_rate_color_58"
+msgstr "#be70e4"
+
+msgid "heart_rate_color_59"
+msgstr "#bf6fe3"
+
+msgid "heart_rate_color_60"
+msgstr "#c16ee2"
+
+msgid "heart_rate_color_61"
+msgstr "#c36ee1"
+
+msgid "heart_rate_color_62"
+msgstr "#c46de0"
+
+msgid "heart_rate_color_63"
+msgstr "#c66cdf"
+
+msgid "heart_rate_color_64"
+msgstr "#c76bde"
+
+msgid "heart_rate_color_65"
+msgstr "#c96adc"
+
+msgid "heart_rate_color_66"
+msgstr "#ca69db"
+
+msgid "heart_rate_color_67"
+msgstr "#cc68da"
+
+msgid "heart_rate_color_68"
+msgstr "#cd67d9"
+
+msgid "heart_rate_color_69"
+msgstr "#cf66d8"
+
+msgid "heart_rate_color_70"
+msgstr "#d065d7"
+
+msgid "heart_rate_color_71"
+msgstr "#d264d6"
+
+msgid "heart_rate_color_72"
+msgstr "#d363d4"
+
+msgid "heart_rate_color_73"
+msgstr "#d462d3"
+
+msgid "heart_rate_color_74"
+msgstr "#d661d2"
+
+msgid "heart_rate_color_75"
+msgstr "#d760d1"
+
+msgid "heart_rate_color_76"
+msgstr "#d85fcf"
+
+msgid "heart_rate_color_77"
+msgstr "#da5ece"
+
+msgid "heart_rate_color_78"
+msgstr "#db5dcd"
+
+msgid "heart_rate_color_79"
+msgstr "#dc5ccb"
+
+msgid "heart_rate_color_80"
+msgstr "#de5bca"
+
+msgid "heart_rate_color_81"
+msgstr "#df5ac9"
+
+msgid "heart_rate_color_82"
+msgstr "#e059c7"
+
+msgid "heart_rate_color_83"
+msgstr "#e158c6"
+
+msgid "heart_rate_color_84"
+msgstr "#e257c5"
+
+msgid "heart_rate_color_85"
+msgstr "#e456c3"
+
+msgid "heart_rate_color_86"
+msgstr "#e555c2"
+
+msgid "heart_rate_color_87"
+msgstr "#e654c0"
+
+msgid "heart_rate_color_88"
+msgstr "#e753bf"
+
+msgid "heart_rate_color_89"
+msgstr "#e852be"
+
+msgid "heart_rate_color_90"
+msgstr "#e951bc"
+
+msgid "heart_rate_color_91"
+msgstr "#ea50bb"
+
+msgid "heart_rate_color_92"
+msgstr "#eb4fb9"
+
+msgid "heart_rate_color_93"
+msgstr "#ec4eb8"
+
+msgid "heart_rate_color_94"
+msgstr "#ed4db6"
+
+msgid "heart_rate_color_95"
+msgstr "#ee4cb5"
+
+msgid "heart_rate_color_96"
+msgstr "#ef4bb3"
+
+msgid "heart_rate_color_97"
+msgstr "#f04ab2"
+
+msgid "heart_rate_color_98"
+msgstr "#f149b0"
+
+msgid "heart_rate_color_99"
+msgstr "#f248ae"
+
+msgid "heart_rate_color_100"
+msgstr "#f247ad"
+
+msgid "heart_rate_color_101"
+msgstr "#f346ab"
+
+msgid "heart_rate_color_102"
+msgstr "#f444aa"
+
+msgid "heart_rate_color_103"
+msgstr "#f543a8"
+
+msgid "heart_rate_color_104"
+msgstr "#f642a7"
+
+msgid "heart_rate_color_105"
+msgstr "#f641a5"
+
+msgid "heart_rate_color_106"
+msgstr "#f740a3"
+
+msgid "heart_rate_color_107"
+msgstr "#f83fa2"
+
+msgid "heart_rate_color_108"
+msgstr "#f93ea0"
+
+msgid "heart_rate_color_109"
+msgstr "#f93e9e"
+
+msgid "heart_rate_color_110"
+msgstr "#fa3d9d"
+
+msgid "heart_rate_color_111"
+msgstr "#fa3c9b"
+
+msgid "heart_rate_color_112"
+msgstr "#fb3b99"
+
+msgid "heart_rate_color_113"
+msgstr "#fc3a98"
+
+msgid "heart_rate_color_114"
+msgstr "#fc3996"
+
+msgid "heart_rate_color_115"
+msgstr "#fd3894"
+
+msgid "heart_rate_color_116"
+msgstr "#fd3793"
+
+msgid "heart_rate_color_117"
+msgstr "#fe3691"
+
+msgid "heart_rate_color_118"
+msgstr "#fe358f"
+
+msgid "heart_rate_color_119"
+msgstr "#ff358e"
+
+msgid "heart_rate_color_120"
+msgstr "#ff348c"
+
+msgid "heart_rate_color_121"
+msgstr "#ff338a"
+
+msgid "heart_rate_color_122"
+msgstr "#ff3288"
+
+msgid "heart_rate_color_123"
+msgstr "#ff3287"
+
+msgid "heart_rate_color_124"
+msgstr "#ff3185"
+
+msgid "heart_rate_color_125"
+msgstr "#ff3083"
+
+msgid "heart_rate_color_126"
+msgstr "#ff3081"
+
+msgid "heart_rate_color_127"
+msgstr "#ff2f80"
+
+msgid "heart_rate_color_128"
+msgstr "#ff2e7e"
+
+msgid "heart_rate_color_129"
+msgstr "#ff2e7c"
+
+msgid "heart_rate_color_130"
+msgstr "#ff2d7a"
+
+msgid "heart_rate_color_131"
+msgstr "#ff2d79"
+
+msgid "heart_rate_color_132"
+msgstr "#ff2d77"
+
+msgid "heart_rate_color_133"
+msgstr "#ff2c75"
+
+msgid "heart_rate_color_134"
+msgstr "#ff2c73"
+
+msgid "heart_rate_color_135"
+msgstr "#ff2c72"
+
+msgid "heart_rate_color_136"
+msgstr "#ff2b70"
+
+msgid "heart_rate_color_137"
+msgstr "#ff2b6e"
+
+msgid "heart_rate_color_138"
+msgstr "#ff2b6c"
+
+msgid "heart_rate_color_139"
+msgstr "#ff2b6a"
+
+msgid "heart_rate_color_140"
+msgstr "#ff2b69"
+
+msgid "heart_rate_color_141"
+msgstr "#ff2b67"
+
+msgid "heart_rate_color_142"
+msgstr "#ff2b65"
+
+msgid "heart_rate_color_143"
+msgstr "#ff2b63"
+
+msgid "heart_rate_color_144"
+msgstr "#ff2b61"
+
+msgid "heart_rate_color_145"
+msgstr "#ff2b60"
+
+msgid "heart_rate_color_146"
+msgstr "#ff2c5e"
+
+msgid "heart_rate_color_147"
+msgstr "#ff2c5c"
+
+msgid "heart_rate_color_148"
+msgstr "#ff2c5a"
+
+msgid "heart_rate_color_149"
+msgstr "#ff2d58"
+
+msgid "heart_rate_color_150"
+msgstr "#ff2d57"
+
+msgid "heart_rate_color_151"
+msgstr "#ff2d55"
+
+msgid "heart_rate_color_152"
+msgstr "#ff2e53"
+
+msgid "heart_rate_color_153"
+msgstr "#ff2e51"
+
+msgid "heart_rate_color_154"
+msgstr "#ff2f4f"
+
+msgid "heart_rate_color_155"
+msgstr "#ff304d"
+
+msgid "heart_rate_color_156"
+msgstr "#ff304b"
+
+msgid "heart_rate_color_157"
+msgstr "#ff314a"
+
+msgid "heart_rate_color_158"
+msgstr "#ff3248"
+
+msgid "heart_rate_color_159"
+msgstr "#ff3246"
+
+msgid "heart_rate_color_160"
+msgstr "#ff3344"
