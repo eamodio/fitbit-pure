@@ -353,14 +353,7 @@
 							x="50%"
 							y="0"
 						/>
-						<!-- <rect id="date-day-bg" x="0" y="0" height="0" width="0" fill="fb-black" /> -->
-						<text
-							id="date-day"
-							class="text text--lg primary theme-fg-color"
-							text-anchor="end"
-							text-length="2"
-							y="0"
-						/>
+						<text id="date-day" class="text text--lg primary theme-fg-color" text-length="2" y="0" />
 					</g>
 				</use>
 				<use href="#cycleview-item">
