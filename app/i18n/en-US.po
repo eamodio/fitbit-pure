@@ -58,18 +58,6 @@ msgstr "Sat"
 msgid "day_month_separator"
 msgstr ","
 
-msgid "ordinal_suffix_0"
-msgstr "th"
-
-msgid "ordinal_suffix_1"
-msgstr "st"
-
-msgid "ordinal_suffix_2"
-msgstr "nd"
-
-msgid "ordinal_suffix_3"
-msgstr "rd"
-
 msgid "active_minutes_units"
 msgstr "mins"
 
