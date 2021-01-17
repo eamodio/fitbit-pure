@@ -396,18 +396,6 @@ export class TimeDisplay {
 	}
 }
 
-// const suffixes = [
-// 	gettext('ordinal_suffix_0'),
-// 	gettext('ordinal_suffix_1'),
-// 	gettext('ordinal_suffix_2'),
-// 	gettext('ordinal_suffix_3'),
-// ];
-
-// function getOrdinalSuffix(num: number): string {
-// 	const index = num % 100;
-// 	return suffixes[(index - 20) % 10] || suffixes[index] || suffixes[0];
-// }
-
 const chars = String.fromCharCode(0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19);
 
 function toMonospaceDigits(num: number, pad = true): string {
