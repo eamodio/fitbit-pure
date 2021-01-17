@@ -308,23 +308,23 @@ export class TimeDisplay {
 		switch (locale.language) {
 			case 'zh-cn':
 				// 2月7日周二 = Month_Date_Weekday
-				$date.text = `${monthName}${dayMonthSeparator}${dayOfMonth}`;
+				$date.text = `${monthName}${dayMonthSeparator}`;
 				x = $date.getBBox().width;
-				$date.text += `${dayName}`;
+				$date.text += `${dayOfMonth}${dayName}`;
 				x += $date.getBBox().left;
 				break;
 			case 'ja-jp':
 				// 8月3日（木）= Month_Date (Weekday)
-				$date.text = `${monthName}${dayMonthSeparator}${dayOfMonth}`;
+				$date.text = `${monthName}${dayMonthSeparator}`;
 				x = $date.getBBox().width;
-				$date.text += ` (${dayName})`;
+				$date.text += `${dayOfMonth} (${dayName})`;
 				x += $date.getBBox().left;
 				break;
 			case 'ko-kr':
 				// 2/7 (목) = Month/date (day)
-				$date.text = `${date.getMonth() + 1}${dayMonthSeparator}${dayOfMonth}`;
+				$date.text = `${date.getMonth() + 1}${dayMonthSeparator}`;
 				x = $date.getBBox().width;
-				$date.text += ` (${dayName})`;
+				$date.text += `${dayOfMonth} (${dayName})`;
 				x += $date.getBBox().left;
 				break;
 			case 'en-us':
@@ -333,14 +333,16 @@ export class TimeDisplay {
 			case 'es-pr':
 			case 'en-se':
 				// Thu, Feb 7
-				$date.text = `${dayName}${dayMonthSeparator} ${monthName} ${dayOfMonth}`;
-				x = $date.getBBox().right;
+				$date.text = `${dayName}${dayMonthSeparator} ${monthName} `;
+				x = $date.getBBox().width;
+				$date.text += dayOfMonth;
+				x += $date.getBBox().left;
 				break;
 			default:
 				// Thu, 7 Feb
-				$date.text = `${dayName}${dayMonthSeparator} ${dayOfMonth}`;
+				$date.text = `${dayName}${dayMonthSeparator} `;
 				x = $date.getBBox().width;
-				$date.text += ` ${monthName}`;
+				$date.text += `${dayOfMonth} ${monthName}`;
 				x += $date.getBBox().left;
 				break;
 		}
@@ -348,16 +350,6 @@ export class TimeDisplay {
 		const $dateHighlight = document.getElementById<TextElement>('date-day')!;
 		$dateHighlight.x = x;
 		$dateHighlight.text = dayOfMonth.toString();
-
-		// const rect = $dateHighlight.getBBox();
-
-		// // Required because there seems to be an off-by-1 pixel calc with certain characters
-		// // So instead of relying on exact overlay, paint a black rect below the highlight
-		// const $dateHighlightBg = document.getElementById<RectElement>('date-day-bg')!;
-		// $dateHighlightBg.x = rect.x;
-		// $dateHighlightBg.y = -rect.height;
-		// $dateHighlightBg.height = rect.height;
-		// $dateHighlightBg.width = rect.width;
 	}
 
 	private updateAlwaysOnOpacity(aodOpacity: number) {
