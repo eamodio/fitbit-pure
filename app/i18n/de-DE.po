@@ -5,7 +5,7 @@ msgid "month_short_1"
 msgstr "Feb"
 
 msgid "month_short_2"
-msgstr "Mär"
+msgstr "März"
 
 msgid "month_short_3"
 msgstr "Apr"
@@ -14,16 +14,16 @@ msgid "month_short_4"
 msgstr "Mai"
 
 msgid "month_short_5"
-msgstr "Jun"
+msgstr "Juni"
 
 msgid "month_short_6"
-msgstr "Jul"
+msgstr "Juli"
 
 msgid "month_short_7"
 msgstr "Aug"
 
 msgid "month_short_8"
-msgstr "Sep"
+msgstr "Sept"
 
 msgid "month_short_9"
 msgstr "Okt"
@@ -59,10 +59,10 @@ msgid "day_month_separator"
 msgstr ","
 
 msgid "active_minutes_units"
-msgstr "Min"
+msgstr "min"
 
 msgid "calories_units"
-msgstr "Kcal"
+msgstr "kcal"
 
 msgid "distance_units_kilometers"
 msgstr "km"
@@ -71,7 +71,7 @@ msgid "distance_units_miles"
 msgstr "mi"
 
 msgid "steps_units"
-msgstr "Schritte"
+msgstr "schritte"
 
 msgid "heart_rate_color_0"
 msgstr "#3399ff"
