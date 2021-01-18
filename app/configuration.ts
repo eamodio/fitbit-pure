@@ -73,6 +73,14 @@ class Configuration {
 		return this.config.donated ?? false;
 	}
 
+	private _syncing = true;
+	get syncing(): boolean {
+		return this._syncing;
+	}
+	set syncing(value: boolean) {
+		this._syncing = value;
+	}
+
 	get version(): number {
 		return this.config.version ?? 0;
 	}
@@ -217,6 +225,8 @@ class Configuration {
 	}
 
 	private isLocalSetting(key: keyof Config): boolean {
+		if (!this.syncing) return true;
+
 		// 'currentActivityView' is a local only setting
 		return key === 'currentActivityView';
 	}
@@ -239,6 +249,7 @@ class Configuration {
 	}
 
 	private send<T extends keyof Config>(key: T, value: Config[T]): boolean {
+		if (!this.syncing) return false;
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.send: failed readyState=${peerSocket.readyState}`);
 
@@ -266,6 +277,7 @@ class Configuration {
 	}
 
 	private sendSync(): boolean {
+		if (!this.syncing) return false;
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.sendSync: failed readyState=${peerSocket.readyState}`);
 
@@ -288,6 +300,7 @@ class Configuration {
 	}
 
 	// private sendSyncCheck() {
+	// 	if (!this.sync) return false;
 	// 	if (peerSocket.readyState !== peerSocket.OPEN) {
 	// 		console.log(`Configuration.sendSyncCheck: failed readyState=${peerSocket.readyState}`);
 
@@ -309,6 +322,7 @@ class Configuration {
 	// }
 
 	private sendSyncRequest(): boolean {
+		if (!this.syncing) return false;
 		if (peerSocket.readyState !== peerSocket.OPEN) {
 			console.log(`Configuration.sendSyncRequest: failed readyState=${peerSocket.readyState}`);
 

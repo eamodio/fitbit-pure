@@ -25,7 +25,7 @@ interface Activity {
 	goalReached: [boolean, boolean];
 }
 
-enum Side {
+const enum Side {
 	Left = 0,
 	Right = 1,
 }
@@ -138,20 +138,12 @@ export class ActivityDisplay {
 			e?.key != null &&
 			e.key !== 'autoRotate' &&
 			e.key !== 'autoRotateInterval' &&
-			// e.key !== 'currentActivityView' &&
 			e.key !== 'donated' &&
 			e.key !== 'showActivityUnits' &&
 			e.key !== 'showDayOnDateHide'
 		) {
 			return;
 		}
-
-		// DEMO MODE
-		// if (e?.key === 'currentActivityView') {
-		// 	this.setView(configuration.get('currentActivityView'));
-
-		// 	return;
-		// }
 
 		if (e?.key == null || e?.key === 'autoRotate' || e?.key === 'autoRotateInterval') {
 			this.setAutoRotate(configuration.get('autoRotate'));
@@ -167,7 +159,7 @@ export class ActivityDisplay {
 				document.getElementById<GroupElement>(`stats${i}`)!.style.visibility = visibility;
 			}
 
-			if (e != null) {
+			if (e?.key != null) {
 				requestAnimationFrame(() => this.setView(appManager.donated ? ActivityViews.Date : this.maxViews));
 			}
 
@@ -226,6 +218,7 @@ export class ActivityDisplay {
 		} else {
 			this.autoRotateOverride = true;
 		}
+
 		this.setView(view, 'nudge');
 		display.on = true;
 	}
@@ -420,5 +413,10 @@ export class ActivityDisplay {
 
 	private get maxViews() {
 		return appManager.donated ? this.activities.length : this.activities.length + 1;
+	}
+
+	// DEMO MODE
+	switchView(view: ActivityViews) {
+		this.setView(view);
 	}
 }
