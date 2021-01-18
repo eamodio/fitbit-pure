@@ -14,7 +14,7 @@ const separatorWidth = 16;
 const fourDigitTimeX = screenWidth / 2 - (digitWidth * 4 + separatorWidth) / 2;
 const threeDigitTimeX = screenWidth / 2 - (digitWidth * 5 + separatorWidth) / 2;
 
-enum Previous {
+const enum Previous {
 	Minutes = 0,
 	Hours = 1,
 	Day = 2,
@@ -264,6 +264,8 @@ export class TimeDisplay {
 		}
 
 		document.getElementById<ImageElement>('time-hr1')!.href = `images/${hour[1] ?? 0}.png`;
+
+		if (appManager.editing) return;
 
 		const day = date.getDay();
 		if (!force && day === this.previous[Previous.Day]) return;

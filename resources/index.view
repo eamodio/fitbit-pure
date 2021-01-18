@@ -461,8 +461,8 @@
 	<!-- DEMO MODE -->
 	<!--
 	<g id="demo-tap" opacity="0">
-		<circle cx="50%+2" cy="50%-2" r="18" fill="white" fill-opacity="0.8" />
-		<circle cx="50%+2" cy="50%-2" r="24" fill="white" fill-opacity="0.4" />
+		<circle cx="50%+2" cy="50%-2" r="36" fill="white" fill-opacity="0.8" />
+		<circle cx="50%+2" cy="50%-2" r="48" fill="white" fill-opacity="0.4" />
 
 		<animate attributeName="opacity" to="0.3" dur="0.1s" begin="enable" easing="ease-out" />
 		<animate attributeName="opacity" to="0" dur="0.3s" begin="enable+0.1s" easing="ease-in" />
@@ -470,8 +470,26 @@
 		<animate attributeName="opacity" to="0.6" dur="0.2s" begin="select" easing="ease-out" />
 		<animate attributeName="opacity" to="0" dur="0.3s" begin="select+1.2s" easing="ease-in" />
 	</g>
-	<text id="demo-text0" class="text text--extra-bold primary" font-size="30" text-anchor="middle" text-length="18" x="50%" fill="fb-red" display="none" />
-	<text id="demo-text1" class="text text--extra-bold primary" font-size="30" text-anchor="middle" text-length="18" x="50%" fill="fb-red" display="none" />
+	<text
+		id="demo-text0"
+		class="text text--extra-bold primary"
+		font-size="30"
+		text-anchor="middle"
+		text-length="18"
+		x="50%"
+		fill="fb-red"
+		display="none"
+	/>
+	<text
+		id="demo-text1"
+		class="text text--extra-bold primary"
+		font-size="30"
+		text-anchor="middle"
+		text-length="18"
+		x="50%"
+		fill="fb-red"
+		display="none"
+	/>
 	-->
 
 	<rect id="trigger" x="0" y="0" height="100%" width="100%" layer="100" pointer-events="visible" fill="none" />
